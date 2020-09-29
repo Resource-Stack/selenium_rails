@@ -57,7 +57,10 @@
 
 <script>
 	$(document).ready(function(){
-		$("#suite-table-dude").dataTable();
+		$("#suite-table-dude").dataTable(
+			{
+				"iDisplayLength": 50
+			});
 		setupScheduleEvents();
 	});
 </script>
