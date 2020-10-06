@@ -133,6 +133,6 @@ class TestCasesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def test_case_params
-      params.require(:test_case).permit(:field_name, :field_type, :read_element, :base_url, :input_value, :string, :action, :action_url, :base_url, :dependency, :login, :sleeps, :new_tab, :description, :need_screenshot, :xpath, test_suite_ids: [])
+      params.require(:test_case).permit(:field_name, :field_type, :read_element, :base_url, :input_value, :string, :action, :action_url, :base_url, :dependency, :login, :sleeps, :new_tab, :description, :need_screenshot, :xpath, :enter_action, test_suite_ids: [])
     end
 end

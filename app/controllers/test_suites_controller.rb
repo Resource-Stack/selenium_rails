@@ -15,6 +15,12 @@ class TestSuitesController < ApplicationController
   # GET /test_suites/1
   # GET /test_suites/1.json
   def show
+    @ts = TestSuite.find(params[:id])
+    logger.debug("INSIDE TS SHOW ACTION")
+      respond_to do |format|
+      format.html
+      format.js
+      end
   end
 
   # GET /test_suites/new
