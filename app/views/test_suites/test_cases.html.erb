@@ -7,7 +7,7 @@
   			<th>Read Element</th>
   			<th>Input Value</th>
   			<th>Action</th>
-  			<th>Action URL</th>
+  			<th>Xpath</th>
   			<th>Created At</th>
   			<th></th>
 		</tr>
@@ -20,7 +20,7 @@
   			<td><%= tc.read_element %></td>
   			<td><%= tc.input_value %></td>
   			<td><%= tc.action %></td>
-  			<td><%= tc.action_url %></td>
+  			<td><%= tc.xpath %></td>
   			<td><%= tc.created_at %></td>
   			<td><%= link_to 'Show', tc %><%= link_to 'Edit', edit_test_case_path(tc) %><%= link_to 'Destroy', tc, method: :delete, data: { confirm: 'Are you sure?' } %></td>
 		</tr>
