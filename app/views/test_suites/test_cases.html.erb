@@ -2,7 +2,7 @@
 <table id="test-cases">
 	<thead>
 		<tr>
-        <th>Position</th>
+        <th>Priority</th>
         <th>Case ID</th>
 			  <th>Field Name</th>
   			<th>Field Type</th>
@@ -17,7 +17,7 @@
 	<tbody class="sortable cases-sorting">
 	  <% @test_cases.each do |tc| %>
 		<tr id= "<%= tc.sortable_id %>", class= "test_case", data-id= "<%= tc.id %>">
-        <td><%= tc.position %></td>
+        <td><%= tc.priority %></td>
         <td><%= tc.id %></td>
 			  <td><%= tc.field_name %></td>
   			<td><%= tc.field_type %></td>

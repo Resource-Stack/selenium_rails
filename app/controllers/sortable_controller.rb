@@ -9,7 +9,7 @@ class SortableController < ApplicationController
   	 	#position = 0 
   	 	tc_id.each_with_index do |t_id, index|
   	 		logger.debug("INSIDE TestCase ID t_id #{t_id}, index #{index}")
-  	 		TestCase.where(id: t_id).update(position: index+1)
+  	 		TestCase.where(id: t_id).update(priority: index+1)
   	 		 #t = TestCase.where(id: t_id)
   	 		 #t.priority = index+1 
   	 		 #t.save!

@@ -121,7 +121,7 @@ class TestSuitesController < ApplicationController
   
   def test_cases
     @test_suite = TestSuite.find(params[:id])
-    @test_cases = @test_suite.test_cases.order('position DESC')
+    @test_cases = @test_suite.test_cases.order('priority DESC')
   end
 
   def sort
