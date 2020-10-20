@@ -39,7 +39,7 @@ class SuiteScheduleController < ApplicationController
                 if schedule_immediately
                     Scheduler.create_new_schedule(@suite_schedule.test_suite_id, @suite_schedule.start_date)
                 end
-                format.html {redirect_to "/environments/#{environ_id}/test_suites"}
+                format.html {redirect_to "/test_suites"}
                 # format.json { render json: 
                 #     message: 'Suite scheduled succesfully!',
                 #     status: true,

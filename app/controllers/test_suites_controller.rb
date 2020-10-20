@@ -5,16 +5,25 @@ class TestSuitesController < ApplicationController
   # GET /test_suites.json
   def index
     environ_id = session[:enviro_id] 
-    if environ_id.present? 
-      @test_suites = TestSuite.where(environment_id: environ_id)
+    @environment_name = Environment.find(environ_id).name
+    if !params[:status].blank? 
+      logger.debug("INSIDE IF TESTSUITES")
+      @test_suites = TestSuite.where(environment_id: environ_id, status: params[:status])
     else
-      @test_suites
+      @test_suites = TestSuite.where(environment_id: environ_id)
     end  
+    logger.debug("#{@test_suites.count}")
   end
 
   # GET /test_suites/1
   # GET /test_suites/1.json
   def show
+    @ts = TestSuite.find(params[:id])
+    logger.debug("INSIDE TS SHOW ACTION")
+      respond_to do |format|
+      format.html
+      format.js
+      end
   end
 
   # GET /test_suites/new
@@ -25,6 +34,10 @@ class TestSuitesController < ApplicationController
   # GET /test_suites/1/edit
   def edit
     @test_cases = @test_suite.test_cases
+    respond_to do |format|
+      format.html
+      format.js
+    end
   end
 
   # POST /test_suites
@@ -47,22 +60,24 @@ class TestSuitesController < ApplicationController
   # PATCH/PUT /test_suites/1.json
   def update
     env = Environment.find(@test_suite.environment_id)
-    logger.debug "deeeefault #{params[:default]} default_suite_id #{env.default_suite_id != @test_suite.id} params is 1? #{params[:default] == '1'}"
-    if (params[:default] == "1") && (env.default_suite_id != @test_suite.id)
-      logger.debug "Getting here"
-      env.update(default_suite_id: @test_suite.id)
-    end
-    if !params[:case].nil?
-      params[:case].each do |c|
-        logger.debug "#{c[0]}"
-        CaseSuite.create(test_suite_id: @test_suite.id, test_case_id: c[0])
-      end
+    #logger.debug "deeeefault #{params[:default]} default_suite_id #{env.default_suite_id != @test_suite.id} params is 1? #{params[:default] == '1'}"
+    #if (params[:default] == "1") && (env.default_suite_id != @test_suite.id)
+    #  logger.debug "Getting here"
+    #  env.update(default_suite_id: @test_suite.id)
+    #end
+    #if !params[:case].nil?
+    #  params[:case].each do |c|
+    #    logger.debug "#{c[0]}"
+    #    CaseSuite.create(test_suite_id: @test_suite.id, test_case_id: c[0])
+    #  end
       
-    end
+    #end
+    logger.debug("TEST SUITE #{test_suite_params.inspect}")
+
     respond_to do |format|
       if @test_suite.update(test_suite_params)
-        format.html { redirect_to @test_suite, notice: 'Test suite was successfully updated.' }
-        format.json { render :show, status: :ok, location: @test_suite }
+        format.html { redirect_to test_suites_path, notice: 'Test suite was successfully updated.' }
+        format.json { render :index, status: :ok, location: @test_suite }
       else
         format.html { render :edit }
         format.json { render json: @test_suite.errors, status: :unprocessable_entity }
@@ -106,7 +121,14 @@ class TestSuitesController < ApplicationController
   
   def test_cases
     @test_suite = TestSuite.find(params[:id])
-    @test_cases = @test_suite.test_cases
+    @test_cases = @test_suite.test_cases.order('position DESC')
+  end
+
+  def sort
+    params[:order].each do |key,value|
+      #TestSuite.find(value[:id]).update_attribute(:priority,value[:position])
+    end
+    render :nothing => true
   end
   
   def import_suite
@@ -158,6 +180,6 @@ class TestSuitesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def test_suite_params
-      params.require(:test_suite).permit(:name, :environment_id, :dependency, test_case_ids: [])
+      params.require(:test_suite).permit(:name, :environment_id, :description, :status, :dependency, test_case_ids: [])
     end
 end

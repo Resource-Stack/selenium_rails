@@ -12,6 +12,8 @@
 //
 //= require jquery
 //= require jquery_ujs
+//= require jquery-ui/sortable
+//= require rails_sortable
 //= require turbolinks
 //= require bootstrap
 //= require datatables/jquery.dataTables
