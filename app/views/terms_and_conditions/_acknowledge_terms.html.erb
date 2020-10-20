@@ -1,0 +1,28 @@
+<div id="termsAndConditions" class="modal" style="display:none; padding-left: 0px; overflow: hidden;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <p style="position: relative;text-align: left;float: left;left: 37%;"><strong>Terms And Conditions</strong> </p>
+        </div>
+        <div>
+            <%= form_tag acknowledge_terms_path , remote: true  do |form| %>
+            <div style="height: 80vh; overflow-y: scroll; overflow-x: hidden; padding: 20px">
+                <%= render "terms_and_conditions/terms_and_conditions_partial" %>
+            </div>
+            <br>
+            <div class="modal-footer">
+                <%= submit_tag "Accept", class: "btn btn-primary", id: "terms_condition" %>
+
+            </div>
+
+            <% end  %>
+        </div>
+    </div>
+
+
+
+    <script type="text/javascript">
+        $('#termsAndConditions').modal({
+            backdrop: 'static',
+            keyboard: false
+        })
+    </script>

@@ -1,23 +1,39 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>RSI - Testing Portal</title>
-  <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
-  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
 
-  <%= csrf_meta_tags %>
-  <script src='https://www.google.com/recaptcha/api.js'></script>
+<head>
+    <title>RSI - Testing Portal</title>
+    <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
+    <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+
+    <%= csrf_meta_tags %>
+    <script src='https://www.google.com/recaptcha/api.js'></script>
 </head>
+
 <body>
-<div class="container-fluid">
-	<%= render 'layouts/header'%>
-	<% if user_signed_in? %>
-		<%= render 'layouts/nav'%>
-	<% end %>
-	<%= yield %>
-	<div class="push"></div>
-	</div>
-	<%= render 'layouts/footer'%>
+    <div class="container-fluid">
+        <%= render 'layouts/header'%>
+        <% if user_signed_in? %>
+        <%= render 'layouts/nav'%>
+        <% end %>
+        <%= yield %>
+        <div class="push"></div>
+    </div>
+
+    <%= render 'layouts/footer'%>
+
+
+    <% if !current_user.nil?%>
+
+    <% if !current_user.terms_acknowledged %>
+    <%= render "terms_and_conditions/acknowledge_terms" %>
+    <% elsif !current_user.privacy_acknowledged %>
+    <%= render "privacy_policies/acknowledge_privacy" %>
+    <% end %>
+    <% end %>
+
+
 
 </body>
+
 </html>

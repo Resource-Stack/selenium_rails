@@ -76,5 +76,12 @@ Rails.application.routes.draw do
   match '/suite_schedule/get_suite_schedules', :to => 'suite_schedule#get_suite_schedules',  via: [:post]
   match '/suite_schedule/update_suite_schedule', :to => 'suite_schedule#update_suite_schedule',  via: [:post]
   match '/suite_schedule/delete_suite_schedule', :to => 'suite_schedule#delete_suite_schedule',  via: [:get]
+
+
+  get '/terms' => 'terms_and_conditions#terms_and_conditions'
+  post '/acknowledge_terms' => 'terms_and_conditions#acknowledge_terms'
+  get '/privacy' => 'privacy_policies#privacy_policy'
+  post '/acknowledge_privacy' => 'privacy_policies#acknowledge_privacy'
+  
 end
 
