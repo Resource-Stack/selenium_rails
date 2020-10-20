@@ -1,11 +1,14 @@
 
 Rails.application.routes.draw do
+  get 'sortable/reorder'
   devise_for :users
   devise_scope :user do
     root to: "devise/sessions#new", via: 'get'
     match '/logout', to: "devise/sessions#destroy", via: 'get'
   end
-  resources :test_suites
+  resources :test_suites do
+    put :sort, on: :collection
+  end
 
   resources :results_dictionaries
 

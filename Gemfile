@@ -43,6 +43,8 @@ gem 'caxlsx_rails'
 gem 'whenever', require: false
 #TabsOnRails is a simple Rails plugin for creating tabs and navigation menus. It provides helpers for generating navigation menus with a flexible interface.
 gem "tabs_on_rails"
+gem "jquery-ui-rails", '~> 5.0.5'
+gem 'rails_sortable'
 # Use Redis adapter to run Action Cable in production
 # gem 'redis', '~> 3.0'
 # Use ActiveModel has_secure_password
@@ -50,6 +52,9 @@ gem "tabs_on_rails"
 
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
+
+#modalwindow setup
+gem 'popper_js'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
