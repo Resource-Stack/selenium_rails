@@ -1,0 +1,37 @@
+<div class="modal-header">
+  <button type="button" class="close" data-dismiss="modal">x</button>
+  <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+</div>
+<div class="modal-body">
+<h2 style="text-align:center;">Editing Test Suites</h1>
+
+<div class="row">
+	<div class="suite_edit">
+		<%= form_for(@test_suite) do |f| %>
+			    <%= f.label :name %>
+      		<%= f.text_field :name %>
+
+      		<%= f.label :description %>
+      		<%= f.text_field :description %>
+
+          <br>
+          <br>
+          <br>
+          <%= f.label :status%>
+          <%= f.select :status, ['Draft', 'Final'] %>
+          <br>
+          <br>
+      		
+        <div class="modal-footer">
+          <button class="btn btn-primary">Save</button>
+        </div>
+
+		<% end -%>
+	</div>
+  
+</div>
+
+</div>
+
+
+
