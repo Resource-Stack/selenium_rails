@@ -5,7 +5,7 @@
 	<div id="navbar">
 		<a href="/home" class="col-md-2 col-sm-1 col-xs-2 nav-button">Home</a>
 		<% if !session[:enviro_id].nil? %>
-			<a href="/environments/<%= session[:enviro_id] %>/test_suites" class="col-md-2 col-sm-1 col-xs-2 nav-button">Suites</a>
+			<a href="/test_suites" class="col-md-2 col-sm-1 col-xs-2 nav-button">Suites</a>
 			
 		<% else %>
 			<a href="/test_suites" class="col-md-2 col-sm-1 col-xs-2 nav-button">Suites</a>

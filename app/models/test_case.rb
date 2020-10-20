@@ -1,4 +1,6 @@
 class TestCase < ActiveRecord::Base
+  include RailsSortable::Model
+  set_sortable :sort# Indicate a sort column, Mine is position followed https://github.com/itmammoth/rails_sortable
   has_many :case_suites
   has_and_belongs_to_many :test_suites, join_table: :case_suites
 

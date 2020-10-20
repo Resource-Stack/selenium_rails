@@ -12,9 +12,10 @@
 //
 //= require jquery
 //= require jquery_ujs
+//= require jquery-ui/sortable
+//= require rails_sortable
 //= require turbolinks
 //= require bootstrap
-//= require bootstrap/modal
 //= require datatables/jquery.dataTables
 //= require datatables/dataTables.tableTools
 //= require_tree .

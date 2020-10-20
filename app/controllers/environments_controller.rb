@@ -73,15 +73,16 @@ class EnvironmentsController < ApplicationController
   
   def test_suites
     @environment_id = params[:id]
+    @environment_name = Environment.find(@environment_id).name
     @status = params[:status]
     #if params[:status].present?
     #  @status = params[:status] 
     #else
     #  @status = "Draft"
     #end
-    if @environment_id.present? && params[:status].present?
+    if !params[:status].nil?
       logger.debug("STATUS AND ENVIRONMENT")
-      @environment_name = Environment.find(@environment_id).name
+      
       @test_suites = TestSuite.where('environment_id = ? AND status = ?', @environment_id, @status)
       logger.debug("TEST SUITE #{@test_suites.inspect}")
     else

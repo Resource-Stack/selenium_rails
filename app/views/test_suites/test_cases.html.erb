@@ -2,7 +2,9 @@
 <table id="test-cases">
 	<thead>
 		<tr>
-			<th>Field Name</th>
+        <th>Position</th>
+        <th>Case ID</th>
+			  <th>Field Name</th>
   			<th>Field Type</th>
   			<th>Read Element</th>
   			<th>Input Value</th>
@@ -12,10 +14,12 @@
   			<th></th>
 		</tr>
 	</thead>
-	<tbody>
+	<tbody class="sortable cases-sorting">
 	  <% @test_cases.each do |tc| %>
-		<tr>
-			<td><%= tc.field_name %></td>
+		<tr id= "<%= tc.sortable_id %>", class= "test_case", data-id= "<%= tc.id %>">
+        <td><%= tc.position %></td>
+        <td><%= tc.id %></td>
+			  <td><%= tc.field_name %></td>
   			<td><%= tc.field_type %></td>
   			<td><%= tc.read_element %></td>
   			<td><%= tc.input_value %></td>
@@ -34,4 +38,12 @@
 
 <script>
 	$("#test-cases").dataTable();
+
+  $(function() {
+  $('.sortable').railsSortable();
+  });
+
+  $('.column_sort').change(function(){
+    alert($(this).val());
+})
 </script>
