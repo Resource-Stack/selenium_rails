@@ -124,12 +124,6 @@ class TestSuitesController < ApplicationController
     @test_cases = @test_suite.test_cases.order('priority DESC')
   end
 
-  def sort
-    params[:order].each do |key,value|
-      #TestSuite.find(value[:id]).update_attribute(:priority,value[:position])
-    end
-    render :nothing => true
-  end
   
   def import_suite
     
