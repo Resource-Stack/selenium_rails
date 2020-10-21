@@ -1,26 +1,26 @@
 <h1 style="text-align:center; font-weight:bold">Results for <%= @test_suite.name %></h1>
 <table id="scheduled-suites">
-	<thead>
-		<tr>
-			<th>Scheduled Date</th>
-			<th>Completed Date</th>
-			<th>Status</th>
-			<th></th>
-		</tr>
-	</thead>
-	<tbody>
-	  <% @schedulers.each do |s| %>
-		<tr>
-			<td><%= s.scheduled_date %></td>
-			<td><%= s.completed_date %></td>
-			<td><%= s.status %></td>
-			<td><%= link_to "Results Link", list_all_reports_path(params: {id: s.id}), method: :get, target: "_blank" %></td>
-		</tr>
-	  <% end %>
-	</tbody>
+    <thead>
+        <tr>
+            <th>Scheduled Date</th>
+            <th>Completed Date</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <% @schedulers.each do |s| %>
+        <tr>
+            <td><%= s.scheduled_date %></td>
+            <td><%= s.completed_date %></td>
+            <td><%= s.status %></td>
+            <td><%= link_to "Result", list_all_reports_path(params: {id: s.id}), method: :get, target: "_blank" , class: "btn btn-primary btn-sm"%></td>
+        </tr>
+        <% end %>
+    </tbody>
 </table>
 
 
 <script>
-	$("#scheduled-suites").DataTable();
+    $("#scheduled-suites").DataTable();
 </script>
