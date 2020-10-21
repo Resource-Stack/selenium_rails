@@ -10,7 +10,10 @@ class Scheduler < ActiveRecord::Base
        if !tester_path.nil?
           scheduler_id = self.id
           mode = "headless"
-          system("#{tester_path} #{mode} #{scheduler_id}")
+            file_directory = File.dirname(tester_path)
+            Dir.chdir(file_directory){
+                      system("#{tester_path} #{mode} #{scheduler_id}")
+            }
        end
     end
   end
