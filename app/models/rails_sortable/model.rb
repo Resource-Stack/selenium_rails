@@ -36,8 +36,8 @@ module RailsSortable
   protected
 
     def maximize_sort
-      return if read_attribute(sort_attribute)
-      write_attribute sort_attribute, max_sort
+      #return if read_attribute(sort_attribute)
+      #write_attribute sort_attribute, max_sort
     end
 
     def without_updating_timestamps
@@ -48,9 +48,9 @@ module RailsSortable
       self.class.record_timestamps = original_record_timestamps
     end
 
-    def max_sort
-      (self.class.maximum(sort_attribute) || 0) + 1
-    end
+    #def max_sort
+    #  (self.class.maximum(sort_attribute) || 0) + 1
+    #end
 
     def sort_attribute
       self.class.sort_attribute
