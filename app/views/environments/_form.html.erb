@@ -1,115 +1,120 @@
 <%= form_for(@environment) do |f| %>
-  <% if @environment.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@environment.errors.count, "error") %> prohibited this environment from being saved:</h2>
+<% if @environment.errors.any? %>
+<div id="error_explanation">
+    <h2><%= pluralize(@environment.errors.count, "error") %> prohibited this environment from being saved:</h2>
 
-      <ul>
-      <% @environment.errors.full_messages.each do |message| %>
+    <ul>
+        <% @environment.errors.full_messages.each do |message| %>
         <li><%= message %></li>
-      <% end %>
-      </ul>
+        <% end %>
+    </ul>
+</div>
+<% end %>
+<div id="centerbox">
+    <div class="field">
+        <%= f.label :name %>
+        <%= f.text_field :name, placeholder:"Name of your application" %>
     </div>
-  <% end %>
-  <div id="centerbox">
-  <div class="field">
-    <%= f.label :name %>
-    <%= f.text_field :name, placeholder:"Name of your application" %>
-  </div>
-  <div class="field">
-    <%= f.label :url %>
-    <%= f.text_field :url, placeholder:"please enter your application login url" %>
-  </div>
-  </div>
-  <br>
-  <br>
-  <br>
-  <br>
+    <div class="field">
+        <%= f.label :url %>
+        <%= f.text_field :url, placeholder:"please enter your application login url" %>
+    </div>
+</div>
+<br>
+<br>
+<br>
+<br>
 <div class="container">
-  <ul class="nav nav-tabs">
-              <li class="nav-item active">
-                <a class="nav-link active" data-toggle="tab" href="#login_details">Login Details</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#custom_commands">Custom Commands</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#git_branch">Observe Git Branch</a>
-              </li>
-            </ul>
-            <div id="myTabContent" class="tab-content">
-              <div class="tab-pane fade  active in " id="login_details">
-                <fieldset>
-                  <div class="field">
+    <ul class="nav nav-tabs">
+        <li class="nav-item active">
+            <a class="nav-link active" data-toggle="tab" href="#login_details">Login Details</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#custom_commands">Custom Commands</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#git_branch">Observe Git Branch</a>
+        </li>
+    </ul>
+    <div id="myTabContent" class="tab-content">
+        <div class="tab-pane fade  active in " id="login_details">
+            <fieldset>
+                <div class="field">
                     <%= f.label :username %>
                     <%= f.text_field :username, placeholder:"username/email" %>
-                  </div>
-                  <div class="field">
+                </div>
+                <div class="field">
                     <%= f.label :password %>
                     <%= f.text_field :password, placeholder:"password" %>
-                  </div>
-                  <div class="field">
+                </div>
+                <div class="field">
                     <%= f.label :login_field %>
                     <%= f.text_field :login_field, placeholder:"Inspect your application username and enter the id of that field" %>
-                  </div>
-                  <div class="field">
+                </div>
+                <div class="field">
                     <%= f.label :password_field %>
                     <%= f.text_field :password_field, placeholder:"Inspect your application password field and enter the id " %>
-                  </div>
-                  <div class="field">
+                </div>
+                <div class="field">
                     <%= f.label :action_button %>
                     <%= f.text_field :action_button, placeholder:"Inspect your application login button field and look for name and enter it. " %>
-                  </div>
-                  <div class="field">
+                </div>
+                <div class="field">
                     <%= f.label :user_emails %>
                     <%= f.text_area :user_emails, placeholder:"please enter email addresses to which you want to send emails after our jobs got finished " %>
-                  </div>
-                  <div class="field">
+                </div>
+                <div class="field">
                     <%= f.label :selenium_webtester_path %>
                     <%= f.text_field :selenium_tester_url, placeholder:"Enter the path of your Selenium Webtester " %>
-                  </div>
-                  
-                  <br>
-                  
-                  <%= f.submit %>
-                </fieldset>  
-              </div>
-              <div class="tab-pane fade" id="custom_commands">
-                <br>
-                <fieldset> 
-                  <legend>Add New Command</legend>
+                </div>
 
-                  <%= render template: "custom_commands/_custom_commands" %>
-                  <div class="field">
+                <div class="field">
+                    <%= f.label "Login Required" %>
+                    <%= f.check_box :login_required, placeholder:"Login Required" %>
+                </div>
+
+                <br>
+
+                <%= f.submit %>
+            </fieldset>
+        </div>
+        <div class="tab-pane fade" id="custom_commands">
+            <br>
+            <fieldset>
+                <legend>Add New Command</legend>
+
+                <%= render template: "custom_commands/_custom_commands" %>
+                <div class="field">
                     <%#= render partial: "custom_commands", locals: {zone: @zone} %>
-                  </div>
-                </fieldset>
-              </div>
-              <div class="tab-pane fade " id="git_branch">
-              <p>Enable Git Repository to be observed</p>
-              <fieldset> 
-                  <legend>Git Repository Details</legend>
-                  <div>
+                </div>
+            </fieldset>
+        </div>
+        <div class="tab-pane fade " id="git_branch">
+            <p>Enable Git Repository to be observed</p>
+            <fieldset>
+                <legend>Git Repository Details</legend>
+                <div>
                     <%= f.label :Git_Repository_URL_to_be_observed %>
                     <%= f.text_field :git_url, placeholder:"git repo" %>
-                  </div>
-                  <div>
+                </div>
+                <div>
                     <%= f.label :Git_Repository_Username %>
                     <%= f.text_field :git_username, placeholder:"username to login into git" %>
-                  </div>
-                  <div>
+                </div>
+                <div>
                     <%= f.label :Git_Repository_Password %>
                     <%= f.text_field :git_password, placeholder:"git password" %>
-                  </div>
-                   <div>
+                </div>
+                <div>
                     <%= f.label :Git_Repository_Branch_to_observed %>
                     <%= f.text_field :git_branch, placeholder:"Git branch that you want to test with" %>
-                  </div>
-                  <br>
-                  <br>
-                  <%= f.submit %>
-              </fieldset>
-            </div>
-     </div>  
-     </div>  
+                </div>
+                <br>
+                <br>
+                <%= f.submit %>
+            </fieldset>
+        </div>
+    </div>
+</div>
 
 <% end %>

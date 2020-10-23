@@ -182,6 +182,6 @@ class EnvironmentsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def environment_params
-      params.require(:environment).permit(:name, :url, :username, :password, :login_field, :password_field, :action_button,:default_suite_id, :user_emails, :git_url, :git_username, :git_password, :git_branch, :selenium_tester_url, test_suite_ids: [])
+      params.require(:environment).permit(:name, :url, :username, :password, :login_field, :password_field, :action_button,:default_suite_id, :user_emails, :git_url, :git_username, :git_password, :git_branch, :selenium_tester_url, :login_required, test_suite_ids: [])
     end
 end
