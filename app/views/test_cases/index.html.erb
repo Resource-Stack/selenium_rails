@@ -1,39 +1,39 @@
 <h1 style="text-align: center;">Test Cases for <%= @e %></h1>
 
 <table id="test-cases">
-  <thead>
-    <tr>
-      <th>Field name</th>
-      <th>Field type</th>
-      <th>Read element</th>
-      <th>Input value</th>
-      <th>Action</th>
-      <th>Action url</th>
-      <th>Description</th>
-      <th></th>
-    </tr>
-  </thead>
+    <thead>
+        <tr>
+            <th>Field name</th>
+            <th>Field type</th>
+            <th>Read element</th>
+            <th>Input value</th>
+            <th>Action</th>
+            <th>Action url</th>
+            <th>Description</th>
+            <th></th>
+        </tr>
+    </thead>
 
-  <tbody>
-    <% if !@test_cases.nil? %>
-    <% @test_cases.each do |test_case| %>
-      <tr>
-        <td><%= test_case.field_name %></td>
-        <td><%= test_case.field_type %></td>
-        <td><%= test_case.read_element %></td>
-        <td><%= test_case.input_value %></td>
-        <td><%= test_case.action %></td>
-        <td><%= test_case.action_url %></td>
-        <td><%= test_case.description%></td>
-        <td><%= link_to 'Show', test_case %><%= link_to 'Edit', edit_test_case_path(test_case) %><%= link_to 'Destroy', test_case, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-      </tr>
-    <% end %>
-    <% end %>
-  </tbody>
+    <tbody>
+        <% if !@test_cases.nil? %>
+        <% @test_cases.each do |test_case| %>
+        <tr>
+            <td><%= test_case.field_name %></td>
+            <td><%= test_case.field_type %></td>
+            <td><%= test_case.read_element %></td>
+            <td><%= test_case.input_value %></td>
+            <td><%= test_case.action %></td>
+            <td><%= test_case.action_url %></td>
+            <td><%= test_case.description%></td>
+            <td><%= link_to 'Edit', edit_test_case_path(test_case) , class: "btn btn-primary btn-sm"%><%= link_to 'Delete', test_case, method: :delete, data: { confirm: 'Are you sure?' } , class: "btn btn-secondary btn-sm"%></td>
+        </tr>
+        <% end %>
+        <% end %>
+    </tbody>
 </table>
 
 <script>
-	$("#test-cases").dataTable();
+    $("#test-cases").dataTable();
 </script>
 
 <br>

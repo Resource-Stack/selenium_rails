@@ -27,10 +27,13 @@
   			<td><%= tc.xpath %></td>
   			<td><%= tc.created_at %></td>
   			<td><%= link_to 'Edit', {controller: "test_cases", action: "edit", id: tc.id }, class: "btn btn-default btn-sm", "data-toggle" => "modal", "data-target" => "#cases_edit", remote: true  %>
-          <%= link_to 'Destroy', tc, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+          <%= link_to 'Destroy', tc, method: :delete, data: { confirm: 'Are you sure?' } %>
+            <%#= link_to 'Edit', edit_test_case_path(tc), class: "btn btn-primary btn-sm" %><%#= link_to 'Delete', tc, method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-secondary btn-sm" %>
+          </td>
 		</tr>
 	  <% end %>
 	</tbody>
+
 </table>
 
 <%= link_to 'Export to CSV', export_path(test_suite_ids: @test_suite.id, format: 'csv'), class: "btn btn-default btn-sm"%>
@@ -43,13 +46,13 @@
 </div>
         </div>
 <script>
-	$("#test-cases").dataTable();
+    $("#test-cases").dataTable();
 
-  $(function() {
-  $('.sortable').railsSortable();
-  });
+    $(function() {
+        $('.sortable').railsSortable();
+    });
 
-  $('.column_sort').change(function(){
-    alert($(this).val());
-})
+    $('.column_sort').change(function() {
+        alert($(this).val());
+    })
 </script>

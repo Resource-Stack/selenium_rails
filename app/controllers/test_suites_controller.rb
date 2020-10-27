@@ -157,12 +157,11 @@ class TestSuitesController < ApplicationController
       if st.status == "READY"
         logger.debug("GOING INTO READY")
         st.destroy
-        respond_to do |format|
-          format.html {redirect_to "/environments/#{session[:enviro_id]}/test_suites"}
-        end
       end
     end
-     
+    respond_to do |format|
+        format.html {redirect_to "/test_suites/"}
+    end
     #render :template => "environments/test_suites.html.erb"
   end
 
