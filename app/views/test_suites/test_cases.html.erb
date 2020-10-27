@@ -26,7 +26,8 @@
   			<td><%= tc.action %></td>
   			<td><%= tc.xpath %></td>
   			<td><%= tc.created_at %></td>
-  			<td><%= link_to 'Show', tc %><%= link_to 'Edit', edit_test_case_path(tc) %><%= link_to 'Destroy', tc, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  			<td><%= link_to 'Edit', {controller: "test_cases", action: "edit", id: tc.id }, class: "btn btn-default btn-sm", "data-toggle" => "modal", "data-target" => "#cases_edit", remote: true  %>
+          <%= link_to 'Destroy', tc, method: :delete, data: { confirm: 'Are you sure?' } %></td>
 		</tr>
 	  <% end %>
 	</tbody>
@@ -35,7 +36,12 @@
 <%= link_to 'Export to CSV', export_path(test_suite_ids: @test_suite.id, format: 'csv'), class: "btn btn-default btn-sm"%>
 <%= hidden_field_tag :id, @test_suite.id  %>
 
-
+<div id="cases_edit" class="modal fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-cases-content"></div>
+  </div>
+</div>
+        </div>
 <script>
 	$("#test-cases").dataTable();
 

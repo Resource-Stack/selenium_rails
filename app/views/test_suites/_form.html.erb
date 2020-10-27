@@ -1,3 +1,12 @@
+<div class="modal-header">
+  <button type="button" class="close" data-dismiss="modal">x</button>
+  <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+</div>
+<div class="modal-body">
+<h2 style="text-align:center;">Editing Test Cases</h1>
+
+<div class="row">
+
 <%= form_for(@test_suite) do |f| %>
   <% if @test_suite.errors.any? %>
     <div id="error_explanation">
@@ -57,6 +66,14 @@
     <%= f.submit %>
   </div>
 <% end %>
+
+</div>
+  
+</div>
+
+</div>
+
+
 
 <script>
 	$("#test_case").dataTable();
