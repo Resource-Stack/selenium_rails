@@ -12,11 +12,6 @@
         </tr>
     </thead>
     <tbody>
-        <% if @show_drop_down %>
-        <span>Select Result Suite </span>
-        <%= select_tag "schedulerIndex", options_for_select( @result_suites, @selected_result_suite ), class:"select"%>
-        <% end %>
-
         <% @result_cases.each do |rc| %>
         <tr>
             <% seq = CaseSuite.where(test_case_id: rc.test_case_id).pluck(:sequence).join(',')%>
@@ -54,14 +49,5 @@
         buttons: [
             'excel'
         ]
-    });
-
-    $("#schedulerIndex").change(function(e) {
-        var rs_id = e.target.value;
-        const urlParams = new URLSearchParams(window.location.search);
-        const id = urlParams.get('id');
-
-        var url = window.location.href.replace(window.location.search, `?id=${id}&rs_id=${rs_id}`);
-        window.location.href = url;
     });
 </script>

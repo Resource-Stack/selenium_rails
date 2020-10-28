@@ -61,6 +61,10 @@ class ResultSuitesController < ApplicationController
     end
   end
 
+  def list_all_result_suites
+    @result_suites = ResultSuite.where(:scheduler_id=>params[:id])
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_result_suite

@@ -103,7 +103,6 @@ class EnvironmentsController < ApplicationController
       session[:selected_result_suite] = @selected_result_suite
     end
 
-    @show_drop_down = @result_suites.length>1
     @result_cases = ResultCase.where(scheduler_id: params[:id], result_suite_id: @selected_result_suite)
     respond_to do |format|  
       format.html{}

@@ -14,7 +14,11 @@
             <td><%= s.scheduled_date %></td>
             <td><%= s.completed_date %></td>
             <td><%= s.status %></td>
+            <% if s.number_of_times>1 %>
+            <td><%= link_to "Load Test Result", list_all_result_suites_path(params: {id: s.id}), method: :get, target: "_blank" , class: "btn btn-primary btn-sm"%></td>
+            <% else %>
             <td><%= link_to "Result", list_all_reports_path(params: {id: s.id}), method: :get, target: "_blank" , class: "btn btn-primary btn-sm"%></td>
+            <% end %>
         </tr>
         <% end %>
     </tbody>
