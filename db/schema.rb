@@ -10,9 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_23_151823) do
+ActiveRecord::Schema.define(version: 2020_10_27_152827) do
 
-  create_table "case_suites", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci", force: :cascade do |t|
+  create_table "case_suites", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "test_case_id"
     t.integer "test_suite_id"
     t.integer "sequence"
@@ -20,7 +20,7 @@ ActiveRecord::Schema.define(version: 2020_10_23_151823) do
     t.datetime "updated_at"
   end
 
-  create_table "custom_commands", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "custom_commands", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "environment_id"
     t.string "name"
     t.text "command"
@@ -29,7 +29,7 @@ ActiveRecord::Schema.define(version: 2020_10_23_151823) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
-  create_table "environments", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci", force: :cascade do |t|
+  create_table "environments", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.text "url"
     t.string "username"
     t.string "password"
@@ -53,7 +53,7 @@ ActiveRecord::Schema.define(version: 2020_10_23_151823) do
     t.boolean "login_required", default: true
   end
 
-  create_table "result_cases", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci", force: :cascade do |t|
+  create_table "result_cases", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "rd_id"
     t.integer "test_case_id"
     t.integer "result_suite_id"
@@ -65,7 +65,7 @@ ActiveRecord::Schema.define(version: 2020_10_23_151823) do
     t.boolean "email_sent", default: false
   end
 
-  create_table "result_suites", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci", force: :cascade do |t|
+  create_table "result_suites", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "rd_id"
     t.integer "test_suite_id"
     t.datetime "start_time"
@@ -74,25 +74,27 @@ ActiveRecord::Schema.define(version: 2020_10_23_151823) do
     t.datetime "updated_at"
     t.integer "user_id"
     t.integer "scheduler_id"
+    t.integer "scheduler_index", default: -1
   end
 
-  create_table "results_dictionaries", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci", force: :cascade do |t|
+  create_table "results_dictionaries", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.text "description"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  create_table "schedulers", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci", force: :cascade do |t|
+  create_table "schedulers", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "test_suite_id"
-    t.datetime "scheduled_date"
-    t.datetime "completed_date"
+    t.timestamp "scheduled_date"
+    t.timestamp "completed_date"
     t.string "status"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.boolean "dependency", default: false
+    t.integer "number_of_times", default: 1
   end
 
-  create_table "suite_schedules", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "suite_schedules", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "test_suite_id"
     t.string "name"
     t.boolean "active", default: true
@@ -101,7 +103,7 @@ ActiveRecord::Schema.define(version: 2020_10_23_151823) do
     t.string "time"
   end
 
-  create_table "test_cases", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci", force: :cascade do |t|
+  create_table "test_cases", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "field_name"
     t.string "field_type"
     t.string "read_element"
@@ -133,7 +135,7 @@ ActiveRecord::Schema.define(version: 2020_10_23_151823) do
     t.datetime "updated_at"
   end
 
-  create_table "test_suites", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci", force: :cascade do |t|
+  create_table "test_suites", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -153,7 +155,7 @@ ActiveRecord::Schema.define(version: 2020_10_23_151823) do
     t.datetime "updated_at"
   end
 
-  create_table "users", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci", force: :cascade do |t|
+  create_table "users", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
     t.string "reset_password_token"

@@ -1,5 +1,6 @@
 class Scheduler < ActiveRecord::Base
   belongs_to :test_suite
+  has_many :result_suites
 
   after_create :schedule_created
 
@@ -11,9 +12,11 @@ class Scheduler < ActiveRecord::Base
           scheduler_id = self.id
           mode = "headless"
             file_directory = File.dirname(tester_path)
-            Dir.chdir(file_directory){
-                      system("#{tester_path} #{mode} #{scheduler_id}")
-            }
+            if Dir.exists?(file_directory)
+              Dir.chdir(file_directory){
+                        system("#{tester_path} #{mode} #{scheduler_id}")
+              }
+            end
        end
     end
   end

@@ -1,57 +1,67 @@
 <h3 style="text-align:center;"></h3>
 <table id="sch-cases" style="width:100%">
-	<thead>
-		<tr>
-  			<th>Sequence Number</th>
-  			<th>Status</th>
-  			<th>Start time</th>
-  			<th>End Time</th>
-        <th>Error Description</th>
-  			<th>Screenshot File Location</th>
-        
-		</tr>
-	</thead>
-	<tbody>
-	  <% @result_cases.each do |rc| %>
-		<tr>
-        <% seq = CaseSuite.where(test_case_id: rc.test_case_id).pluck(:sequence).join(',')%>
-  			<td><%#= link_to seq, modal_show_path, remote: true, data: { target: '#modal-show', toggle: 'modal' }, class: 'nav-link' %><%= seq %></td>
-        <% if rc.rd_id == 1%>
-          <td>Completed</td>
-        <% else %>
-          <td>Failed</td>
-        <% end -%>
-        <td><%= rc.created_at %></td>
-  			<td><%= rc.updated_at %></td>
-        <td><%= rc.error_description %></td>
-        <% if !rc.screenshot_file_location.nil? %>
-          <td><%= link_to rc.screenshot_file_location,  {controller: "environments", action: "images", file_name: rc.screenshot_file_location }, target: :_blank %></td>
-        <% else %>
-          <td></td>
-        <% end -%>
-		</tr>
-	  <% end %>
-	</tbody> 
+    <thead>
+        <tr>
+            <th>Sequence Number</th>
+            <th>Status</th>
+            <th>Start time</th>
+            <th>End Time</th>
+            <th>Error Description</th>
+            <th>Screenshot File Location</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        <% if @show_drop_down %>
+        <span>Select Result Suite </span>
+        <%= select_tag "schedulerIndex", options_for_select( @result_suites, @selected_result_suite ), class:"select"%>
+        <% end %>
+
+        <% @result_cases.each do |rc| %>
+        <tr>
+            <% seq = CaseSuite.where(test_case_id: rc.test_case_id).pluck(:sequence).join(',')%>
+            <td><%#= link_to seq, modal_show_path, remote: true, data: { target: '#modal-show', toggle: 'modal' }, class: 'nav-link' %><%= seq %></td>
+            <% if rc.rd_id == 1%>
+            <td>Completed</td>
+            <% else %>
+            <td>Failed</td>
+            <% end -%>
+            <td><%= rc.created_at %></td>
+            <td><%= rc.updated_at %></td>
+            <td><%= rc.error_description %></td>
+            <% if !rc.screenshot_file_location.nil? %>
+            <td><%= link_to rc.screenshot_file_location,  {controller: "environments", action: "images", file_name: rc.screenshot_file_location }, target: :_blank %></td>
+            <% else %>
+            <td></td>
+            <% end -%>
+        </tr>
+        <% end %>
+    </tbody>
 </table>
 
 <div id="modal-show" class="modal hide fade" role="dialog" aria-labelledby="myModalLabels" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content"></div>
-  </div>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content"></div>
+    </div>
 </div>
 
 <%= link_to 'Download', download_results_path(result_cases: @result_cases.ids, format: 'csv'), class: "btn btn-default btn-sm"%>
 
 <script>
-  $("#sch-cases").DataTable({
-    "iDisplayLength": 100,
-    dom: 'Bfrtip',
+    $("#sch-cases").DataTable({
+        "iDisplayLength": 100,
+        dom: 'Bfrtip',
         buttons: [
             'excel'
         ]
-    }
-  );
-  </script>
+    });
 
+    $("#schedulerIndex").change(function(e) {
+        var rs_id = e.target.value;
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get('id');
 
-
+        var url = window.location.href.replace(window.location.search, `?id=${id}&rs_id=${rs_id}`);
+        window.location.href = url;
+    });
+</script>
