@@ -1,41 +1,50 @@
 <h3>Test Cases for <%= @test_suite.name %></h3>
 <table id="test-cases">
-    <thead>
-        <tr>
-            <th>Priority</th>
-            <th>Case ID</th>
-            <th>Field Name</th>
-            <th>Field Type</th>
-            <th>Read Element</th>
-            <th>Input Value</th>
-            <th>Action</th>
-            <th>Xpath</th>
-            <th>Created At</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody class="sortable cases-sorting">
-        <% @test_cases.each do |tc| %>
-        <tr id="<%= tc.sortable_id %>" , class="test_case" , data-id="<%= tc.id %>">
-            <td><%= tc.priority %></td>
-            <td><%= tc.id %></td>
-            <td><%= tc.field_name %></td>
-            <td><%= tc.field_type %></td>
-            <td><%= tc.read_element %></td>
-            <td><%= tc.input_value %></td>
-            <td><%= tc.action %></td>
-            <td><%= tc.xpath %></td>
-            <td><%= tc.created_at %></td>
-            <td><%= link_to 'Edit', edit_test_case_path(tc), class: "btn btn-primary btn-sm" %><%= link_to 'Delete', tc, method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-secondary btn-sm" %></td>
-        </tr>
-        <% end %>
-    </tbody>
+	<thead>
+		<tr>
+        <th>Priority</th>
+        <th>Case ID</th>
+			  <th>Field Name</th>
+  			<th>Field Type</th>
+  			<th>Read Element</th>
+  			<th>Input Value</th>
+  			<th>Action</th>
+  			<th>Xpath</th>
+  			<th>Created At</th>
+  			<th></th>
+		</tr>
+	</thead>
+	<tbody class="sortable cases-sorting">
+	  <% @test_cases.each do |tc| %>
+		<tr id= "<%= tc.sortable_id %>", class= "test_case", data-id= "<%= tc.id %>">
+        <td><%= tc.priority %></td>
+        <td><%= tc.id %></td>
+			  <td><%= tc.field_name %></td>
+  			<td><%= tc.field_type %></td>
+  			<td><%= tc.read_element %></td>
+  			<td><%= tc.input_value %></td>
+  			<td><%= tc.action %></td>
+  			<td><%= tc.xpath %></td>
+  			<td><%= tc.created_at %></td>
+  			<td><%#= link_to 'Edit', {controller: "test_cases", action: "edit", id: tc.id }, class: "btn btn-default btn-sm", "data-toggle" => "modal", "data-target" => "#cases_edit", remote: true  %>
+          <%#= link_to 'Destroy', tc, method: :delete, data: { confirm: 'Are you sure?' } %>
+            <%= link_to 'Edit', edit_test_case_path(tc), class: "btn btn-primary btn-sm" %><%= link_to 'Delete', tc, method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-secondary btn-sm" %>
+          </td>
+		</tr>
+	  <% end %>
+	</tbody>
+
 </table>
 
 <%= link_to 'Export to CSV', export_path(test_suite_ids: @test_suite.id, format: 'csv'), class: "btn btn-default btn-sm"%>
 <%= hidden_field_tag :id, @test_suite.id  %>
 
-
+<div id="cases_edit" class="modal fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-cases-content"></div>
+  </div>
+</div>
+        </div>
 <script>
     $("#test-cases").dataTable();
 

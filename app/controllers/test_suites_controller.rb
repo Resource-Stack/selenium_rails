@@ -114,7 +114,7 @@ class TestSuitesController < ApplicationController
     end
     @test_suite.destroy #This will destroy caseSuites also
     respond_to do |format|
-      format.html { redirect_to "/environments/#{session[:enviro_id]}/test_suites", notice: 'Test suite was successfully destroyed.' }
+      format.html { redirect_to "/test_suites", notice: 'Test suite was successfully destroyed.' }
       format.json { head :no_content }
     end
   end
