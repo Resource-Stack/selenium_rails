@@ -2,49 +2,17 @@ class SuiteScheduleController < ApplicationController
     include FormatConcern
     protect_from_forgery with: :null_session
 
-    # def create_suite_schedule
-    #     begin
-    #         @suite_schedule = SuiteSchedule.new(suite_schedule_params(params[:suite_schedule]).except(:id))
-    #          if @suite_schedule.save
-    #             schedule_immediately = params[:schedule_immediately]
-    #             if schedule_immediately
-    #                 Scheduler.create_new_schedule(@suite_schedule.test_suite_id, @suite_schedule.start_date)
-    #             end
-    #             render json: format_response_json({
-    #                 message: 'Suite scheduled succesfully!',
-    #                 status: true,
-    #                 result: @suite_schedule
-    #             })
-    #          else 
-    #             render json: format_response_json({
-    #                 message: 'Failed to schedule a new suite!',
-    #                 status: false
-    #             })
-    #          end
-    #     rescue
-    #         render json: format_response_json({
-    #             message: 'Failed to schedule a new suite!',
-    #             status: false
-    #         })
-    #     end
-    # end
-
-
     def create_suite_schedule
         environ_id = id = session[:enviro_id]
-        @suite_schedule = SuiteSchedule.new(suite_schedule_params(params[:suite_schedule]).except(:id))
+        @suite_schedule = SuiteSchedule.new(suite_schedule_params(params[:suite_schedule]).except(:id,:number_of_times))
+       
         respond_to do |format|
             if @suite_schedule.save
                 schedule_immediately = params[:schedule_immediately]
                 if schedule_immediately
-                    Scheduler.create_new_schedule(@suite_schedule.test_suite_id, @suite_schedule.start_date)
+                    Scheduler.create_new_schedule(@suite_schedule.test_suite_id, @suite_schedule.start_date, params[:suite_schedule][:number_of_times])
                 end
                 format.html {redirect_to "/test_suites"}
-                # format.json { render json: 
-                #     message: 'Suite scheduled succesfully!',
-                #     status: true,
-                #     result: @suite_schedule
-                # }
             end
         end
     end

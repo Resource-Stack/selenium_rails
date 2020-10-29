@@ -21,10 +21,11 @@ class Scheduler < ActiveRecord::Base
     end
   end
 
-  def self.create_new_schedule(suite_id, date)
+  def self.create_new_schedule(suite_id, date, number_of_times)
     schedule = Scheduler.new
     schedule.test_suite_id = suite_id
     schedule.scheduled_date = date
+    schedule.number_of_times = number_of_times
     schedule.status = "READY"
     schedule.save!
   end

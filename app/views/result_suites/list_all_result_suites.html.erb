@@ -15,7 +15,7 @@
         <tr>
 
             <td><%= rs.id %></td>
-            <td> <%= rs.rd_id == 1 ? "Completed" : "Failed"%></td>
+            <td> <%= (rs.rd_id == 1 ? "Completed" :( rs.rd_id == 2? "Failed": "Running"))%></td>
 
             <td><%= rs.start_time %></td>
             <td><%= rs.end_time %></td>

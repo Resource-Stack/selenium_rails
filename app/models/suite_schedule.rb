@@ -13,7 +13,7 @@ class SuiteSchedule < ActiveRecord::Base
             end
         end
         suite_time_hash.to_a.map do |s|
-            Scheduler.create_new_schedule(s[:suite_id], s[:date])
+            Scheduler.create_new_schedule(s[:suite_id], s[:date], 1)
         end
     end
 end
