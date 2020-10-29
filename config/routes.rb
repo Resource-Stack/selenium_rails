@@ -1,5 +1,6 @@
 
 Rails.application.routes.draw do
+  get 'users/index'
   get 'sortable/reorder'
   devise_for :users
   devise_scope :user do
@@ -58,6 +59,8 @@ Rails.application.routes.draw do
   match 'export', to: "test_cases#export", via: "get"
   
   post "import" => "test_suites#import"
+
+  post 'update' => "users#update"
 
  
   #Browser Extension Apis

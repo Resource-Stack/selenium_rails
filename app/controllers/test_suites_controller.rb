@@ -4,7 +4,11 @@ class TestSuitesController < ApplicationController
   # GET /test_suites
   # GET /test_suites.json
   def index
-    environ_id = session[:enviro_id] 
+    if session[:enviro_id].present?
+      environ_id = session[:enviro_id]
+    else
+      environ_id = current_user.default_environ
+    end
     @environment_name = Environment.find(environ_id).name
     if !params[:status].blank? 
       logger.debug("INSIDE IF TESTSUITES")

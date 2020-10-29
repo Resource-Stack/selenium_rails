@@ -1,6 +1,6 @@
 <div class="container-fluid" id="internal-navbar">
 	<div>
-		<a href="/" class="user_profile"><%= current_user.email %></a>
+		<a href="/" class="user_profile"><%=link_to "#{current_user.email}", users_index_path %></a>
 	</div>
 	<div id="navbar">
 		<a href="/home" class="col-md-2 col-sm-1 col-xs-2 nav-button">Home</a>

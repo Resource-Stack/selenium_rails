@@ -4,6 +4,8 @@ class User < ActiveRecord::Base
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable
 
+  has_many :environments
+
   def self.generate_jwt_token(user_id , expiry_time = 1.hours.from_now.to_i)
     payload = {'user_id'=> user_id, 'exp'=> expiry_time};
     JWT.encode(payload, jwt_secret)
