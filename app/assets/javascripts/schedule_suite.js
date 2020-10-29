@@ -140,8 +140,7 @@ function setupScheduleEvents() {
                 <label for="start_date" class="col-md-4 col-form-label text-md-right left-align left-label" >Start
                     Date</label>
                 <div >
-                    <input type="date" id="start_date" class="form-control" name="start_date" min="${minDate}" value="${
-                model.start_date
+                    <input type="date" id="start_date" class="form-control" name="start_date" min="${minDate}" value="${model.start_date
                 }" required="true" />
                 </div>
             </div>
@@ -150,8 +149,7 @@ function setupScheduleEvents() {
             <label for="end_date" class="col-md-4 col-form-label text-md-right left-align left-label">End
                 Date</label>
             <div >
-                <input type="date" id="end_date" class="form-control" name="end_date" min="${minDate}" value="${
-                model.end_date
+                <input type="date" id="end_date" class="form-control" name="end_date" min="${minDate}" value="${model.end_date
                 }" required="true"  />
             </div>
         </div>
@@ -159,8 +157,7 @@ function setupScheduleEvents() {
             <div class="form-group">
                 <label for="time" class="col-md-4 col-form-label text-md-right left-align left-label">Time</label>
                 <div >
-                <input type="time" id="time" class="form-control" name="time" value="${
-                model.time
+                <input type="time" id="time" class="form-control" name="time" value="${model.time
                 }"  required="true"/>
                 </div>
             </div>
@@ -188,7 +185,7 @@ function setupScheduleEvents() {
 
                 var dataToSave = $().getFormData(form, getDefaultSchedule(suiteID));
 
-                createNewSchedule(suiteID, dataToSave, dialogID);
+                createNewSchedule(suiteID, dataToSave, dialogID, false);
             });
         }
 
@@ -215,17 +212,16 @@ function setupScheduleEvents() {
             start_date: new Date().toISOString().split("T")[0],
             end_date: tomorrowDate.toISOString().split("T")[0],
             time: curTime,
-            test_suite_id: suiteID
+            test_suite_id: suiteID,
+            number_of_times: 1
         };
     }
 
-    function createNewSchedule(suiteID, data = null, dialogID = null) {
+    function createNewSchedule(suiteID, data = null, dialogID = null, scheduleImmediately = false) {
         var dataToSave = getDefaultSchedule(suiteID);
         var forUpdate = false;
-        var scheduleImmediately = true;
         if (data != null) {
             Object.assign(dataToSave, data);
-            scheduleImmediately = false;
         }
         forUpdate = dataToSave.id > 0;
         var tableID = "#scheduleTable";
@@ -259,7 +255,42 @@ function setupScheduleEvents() {
         $(".btn-schedule-now").on('click', function (e) {
             e.preventDefault();
             var suiteID = $(this).data("id");
-            createNewSchedule(suiteID);
+            var suiteName = $(this).data("name");
+
+            var formHtml = `<form id="scheduleSubmitForm" style="min-height:100px;">
+            <div class="form-group">
+                <label for="number_of_times" class="col-md-4 col-form-label text-md-right left-align left-label">Number of Times</label>
+                <div >
+                    <input type="text" id="number_of_times" class="form-control" name="number_of_times" required="true"
+                          value="1" />
+                </div>
+            </div>
+
+            <div class="col-md-6 offset-md-4" style="display: flex; justify-content: center; width: 100%; margin-top:5px;">
+                <button type="submit" class="btn btn-primary md-5">
+                    Schedule
+                </button>
+            </div>
+          </form>`;
+
+            var dialogID = $().showHtmlDialog("Create new Schedule",
+                formHtml, () => {
+
+                }
+            );
+
+            $("#scheduleSubmitForm").submit(function (e) {
+                e.preventDefault();
+                var form = $(this);
+
+                var dataToSave = $().getFormData(form, getDefaultSchedule(suiteID));
+                var number_of_times = Number.parseInt(dataToSave.number_of_times);
+                if (number_of_times <= 0 || number_of_times > 100) {
+                    alert("Total load test should be between 1 and 100");
+                    return;
+                }
+                createNewSchedule(suiteID, dataToSave, dialogID, true);
+            });
         });
 
         $(".btn-schedule-later").on('click', function (e) {

@@ -96,7 +96,14 @@ class EnvironmentsController < ApplicationController
 
   def list_all_reports
     @schedule_cases = Scheduler.find(params[:id])
-    @result_cases = ResultCase.where(scheduler_id: params[:id])
+    @result_suites = ResultSuite.where(:scheduler_id=> @schedule_cases.id).pluck(:id)
+    @selected_result_suite = params[:rs_id].to_i
+    if (@selected_result_suite.nil? || (!@result_suites.include? (@selected_result_suite)))
+      @selected_result_suite = @result_suites[0]
+      session[:selected_result_suite] = @selected_result_suite
+    end
+
+    @result_cases = ResultCase.where(scheduler_id: params[:id], result_suite_id: @selected_result_suite)
     respond_to do |format|  
       format.html{}
     end

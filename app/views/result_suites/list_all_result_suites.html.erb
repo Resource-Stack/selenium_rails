@@ -1,0 +1,30 @@
+<h3 style="text-align:center;"></h3>
+<table id="sch-cases" style="width:100%">
+    <thead>
+        <tr>
+            <th>Result Suite ID</th>
+            <th>Status</th>
+            <th>Start time</th>
+            <th>End Time</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+
+        <% @result_suites.each do |rs| %>
+        <tr>
+
+            <td><%= rs.id %></td>
+            <td> <%= (rs.rd_id == 1 ? "Completed" :( rs.rd_id == 2? "Failed": "Running"))%></td>
+
+            <td><%= rs.start_time %></td>
+            <td><%= rs.end_time %></td>
+            <td><%= link_to "Result", list_all_reports_path(params: {id: rs.scheduler_id, rs_id: rs.id}), method: :get, target: "_blank" , class: "btn btn-primary btn-sm"%></td>
+        </tr>
+        <% end %>
+    </tbody>
+</table>
+
+<script>
+
+</script>

@@ -29,6 +29,7 @@ Rails.application.routes.draw do
   match "environments(/:id)/test_suites", to: "environments#test_suites", via: "get"
 
   match "/list_all_reports", to: "environments#list_all_reports", via: "get"
+  match "/list_all_result_suites", to: "result_suites#list_all_result_suites", via: "get"
 
   match "/reports", to: "environments#reports", via: "get"
 
