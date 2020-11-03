@@ -129,7 +129,11 @@ class EnvironmentsController < ApplicationController
 
   def reports
     logger.debug("SESSION OBJECT #{session[:enviro_id].inspect}")
-    id = session[:enviro_id]
+    if session[:enviro_id].present?
+      id = session[:enviro_id]
+    else
+      id = current_user.default_environ
+    end
     @e = Environment.find(id).name
     #@sch = Array.new
     @schedule = Array.new
