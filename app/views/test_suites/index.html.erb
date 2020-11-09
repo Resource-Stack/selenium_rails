@@ -60,7 +60,10 @@
           <% end %>
           <%= hidden_field_tag :id, ts.id  %>
           <%= link_to 'Destroy', {controller: "test_suites", action: "destroy", id: ts.id }, method: "delete", class: "btn btn-default btn-sm" %>
-          <button class="btn btn-danger btn-sm btn-schedule-later" data-id="<%=ts.id%>" data-name="<%= ts.name %>">Periodic Schedule</button>
+          <% if ts.status == "Final" %>
+            <button class="btn btn-danger btn-sm btn-schedule-later" data-id="<%=ts.id%>" data-name="<%= ts.name %>">Periodic Schedule</button>
+        
+          <% end %>
         </td>
       </tr>
       <% end %>

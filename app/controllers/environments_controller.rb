@@ -128,6 +128,14 @@ class EnvironmentsController < ApplicationController
   end
 
   def reports
+    if params[:start_date].present? && params[:end_date].present?
+      @sche_status = Scheduler.where('scheduled_date BETWEEN ? AND ?', params[:start_date], params[:end_date]).group(:status).count
+      logger.debug("INSIDE IF #{@sche_status.inspect}")
+    else 
+      @sche_status = Scheduler.group(:status).count
+      logger.debug("INSIDE ELSE #{@sche_status.inspect}")
+    end
+    @suite_status = TestSuite.group(:status).count
     logger.debug("SESSION OBJECT #{session[:enviro_id].inspect}")
     if session[:enviro_id].present?
       id = session[:enviro_id]
