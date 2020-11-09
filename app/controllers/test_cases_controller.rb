@@ -98,7 +98,7 @@ class TestCasesController < ApplicationController
 
   def export
     Rails.logger.debug("PARRAAAAAAAAAAAAAAAMSSSSSSSSSSSS #{params.inspect}")
-    @results = TestSuite.find(params[:test_suite_ids]).test_cases.joins(:case_suites).select("test_cases.*", "case_suites.sequence")
+    @results = TestSuite.find(params[:test_suite_ids]).test_cases.joins(:case_suites).select("test_cases.*", "case_suites.sequence").order("case_suites.sequence ASC")
     respond_to do |format|
       format.html
       format.csv { send_data prep_csv(@results), filename: "test_suite_#{TestSuite.find(params[:test_suite_ids]).name.sub(" ", "")}_#{Time.now.strftime("%m/%d/%Y_%I:%M%p")}.csv"}
