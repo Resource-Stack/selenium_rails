@@ -12,10 +12,10 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td><%= f.date_field :start_date, class: 'datepicker', selected: :"#{params[:start_date]}" %>
+				<td><%= f.date_field :start_date, class: 'datepicker', value: :"#{params[:start_date]}" %>
 				<%#= f.input :start_date, as: :date_picker, :input_html => { :value => "#{params[:start_date]}"} %>
  </td>
-				<td><%= f.date_field :end_date, class: 'datepicker' %><%#= select_tag :default_environ, options_for_select(@environ_list) %> <%#= f.select :default_environ, @environ_list, selected: :"#{current_user.default_environ}" %></td>
+				<td><%= f.date_field :end_date, class: 'datepicker', value: :"#{params[:end_date]}" %><%#= select_tag :default_environ, options_for_select(@environ_list) %> <%#= f.select :default_environ, @environ_list, selected: :"#{current_user.default_environ}" %></td>
 				<td><%= f.submit :submit %></td>
 			</tr>
 		</tbody>
