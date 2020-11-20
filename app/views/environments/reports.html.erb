@@ -27,6 +27,10 @@
 <h3>Status of test Suite</h3>
 <%= pie_chart(@suite_status) %>
 
+<% @sche_status_name.each do |s| %>
+	<%= button_to "#{s.status}", reports_path(status: "#{s.status}"), class: :pie_chart_class %>
+<% end %>
+
 <h1 style="text-align: center;">Reports for <%= @e %></h1>
 <div class="modal fade" id="cases" title="My modal">
   <div class="modal-header">
@@ -84,9 +88,32 @@ table, th, td {
 }
 </style>
 
-<script>
+<script >
 	$("#suite-table-dude").dataTable({
     "iDisplayLength": 50
     });
+
+    $('.pie_chart_class').click(function(){
+    	console.log($(this))
+    });
+
+    $('#chart-1').click(function(){
+    	console.log($(this))
+    });
+    
+    $(document).ready(function(){
+    	var ctx = document.getElementById('chart-1');
+    	var myNewChart = new Chart(ctx, {
+    		type: 'Pie',
+    		data: @sche_status, 
+    		options: {
+    			events: ['click']
+    		}}
+    	);
+    	console.log("CTX", + myNewChart);
+    });
+
+    var chart = Chartkick.charts["chart-1"]
+
 </script>
 
