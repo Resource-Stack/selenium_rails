@@ -128,6 +128,7 @@ class EnvironmentsController < ApplicationController
   end
 
   def reports
+    @sche_status_name = Scheduler.group(:status)
     if params[:start_date].present? && params[:end_date].present?
       @sche_status = Scheduler.where('scheduled_date BETWEEN ? AND ?', params[:start_date], params[:end_date]).group(:status).count
       logger.debug("INSIDE IF #{@sche_status.inspect}")
@@ -149,11 +150,18 @@ class EnvironmentsController < ApplicationController
     if @test_suites.present?
       logger.debug(" TEST SUITE #{@test_suites} ")
       @test_suites.each do |ts_id|
-        sch_id = Scheduler.where(test_suite_id: ts_id).pluck(:id)
+        if !params[:status].nil?
+          sch_id = Scheduler.where(test_suite_id: ts_id, status: params[:status]).pluck(:id)
+          logger.debug("SCH ID #{sch_id.count}")
+          #redirect_to '/reports_path'
+        else
+          sch_id = Scheduler.where(test_suite_id: ts_id).pluck(:id)
+          logger.debug("INSIDE ELSE #{sch_id.count}")
+        end
         if !sch_id.blank?
           #@sch << sch_id
         
-        logger.debug("SCHEDULERS #{sch_id}")
+        logger.debug("SCHEDULERS #{sch_id.count}")
       
         sch_id.each do |id|
           
@@ -164,6 +172,64 @@ class EnvironmentsController < ApplicationController
       
     end
     end
+    respond_to do |format|
+     format.html
+     format.js
+   end
+   #redirect_to '/reports'
+  end
+
+  def filter_reports
+
+
+        @sche_status_name = Scheduler.group(:status)
+    if params[:start_date].present? && params[:end_date].present?
+      @sche_status = Scheduler.where('scheduled_date BETWEEN ? AND ?', params[:start_date], params[:end_date]).group(:status).count
+      logger.debug("INSIDE IF #{@sche_status.inspect}")
+    else 
+      @sche_status = Scheduler.group(:status).count
+      logger.debug("INSIDE ELSE #{@sche_status.inspect}")
+    end
+    @suite_status = TestSuite.group(:status).count
+    logger.debug("SESSION OBJECT #{session[:enviro_id].inspect}")
+    if session[:enviro_id].present?
+      id = session[:enviro_id]
+    else
+      id = current_user.default_environ
+    end
+    @e = Environment.find(id).name
+    #@sch = Array.new
+    @schedule = Array.new
+    @test_suites = TestSuite.where(environment_id: id).pluck(:id)
+    if @test_suites.present?
+      logger.debug(" TEST SUITE #{@test_suites} ")
+      @test_suites.each do |ts_id|
+        if !params[:status].nil?
+          sch_id = Scheduler.where(test_suite_id: ts_id, status: params[:status]).pluck(:id)
+          logger.debug("SCH ID #{sch_id.count}")
+          #redirect_to '/reports_path'
+        else
+          sch_id = Scheduler.where(test_suite_id: ts_id).pluck(:id)
+          logger.debug("INSIDE ELSE #{sch_id.count}")
+        end
+        if !sch_id.blank?
+          #@sch << sch_id
+        
+        logger.debug("SCHEDULERS #{sch_id.count}")
+      
+        sch_id.each do |id|
+          
+          @schedule << Scheduler.find(id)
+          logger.debug(" TEST SUITE #{@schedule.inspect}")
+        end
+        end
+      
+    end
+    end
+    respond_to do |format|
+     format.js
+   end
+
   end
   
   def run_suites

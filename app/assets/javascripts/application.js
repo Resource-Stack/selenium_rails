@@ -17,6 +17,7 @@
 //= require turbolinks
 //= require bootstrap
 //= require chartkick
+//= require Chart.bundle
 //= require datatables/jquery.dataTables
 //= require datatables/dataTables.tableTools
 //= require_tree .

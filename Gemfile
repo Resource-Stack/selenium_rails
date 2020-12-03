@@ -24,6 +24,8 @@ gem 'coffee-rails', '~> 4.2'
 # gem 'therubyracer', platforms: :ruby
 # Bootstrap to make designing quicker
 gem 'bootstrap-sass'
+# Cancancan for user environments restriction
+gem 'cancancan'
 # Use jquery as the JavaScript library
 gem 'jquery-rails'
 # Turbolinks makes navigating your web application faster. Read more: https://github.com/turbolinks/turbolinks
@@ -31,6 +33,7 @@ gem 'turbolinks', '~> 5'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 2.5'
 gem 'devise'
+gem 'devise_invitable', '~> 2.0.0'
 gem 'acts_as_xlsx'
 gem 'rubyzip', '~> 1.2'
 gem 'iconv', '~> 1.0.3'
