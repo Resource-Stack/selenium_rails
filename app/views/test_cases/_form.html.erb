@@ -1,75 +1,101 @@
 <%= form_for(@test_case) do |f| %>
-  <% if @test_case.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@test_case.errors.count, "error") %> prohibited this test_case from being saved:</h2>
+<% if @test_case.errors.any? %>
+<div id="error_explanation">
+    <h2><%= pluralize(@test_case.errors.count, "error") %> prohibited this test_case from being saved:</h2>
 
-      <ul>
-      <% @test_case.errors.full_messages.each do |message| %>
+    <ul>
+        <% @test_case.errors.full_messages.each do |message| %>
         <li><%= message %></li>
-      <% end %>
-      </ul>
-    </div>
-  <% end %>
-
-  <div class="field" id = "leftbox">
-    <%= f.label :field_name %>
-    <%= f.text_field :field_name %>
-  </div>
-  <div class="field" id = "middlebox">
-    <%= f.label :field_type %>
-    <%= f.text_field :field_type %>
-  </div>
-  <div class="field" id = "rightbox">
-    <%= f.label :read_element %>
-    <%= f.text_field :read_element %>
-  </div>
-  <div class="field" id = "endbox">
-    <%= f.label :input_value %>
-    <%= f.text_field :input_value %>
-  </div>
-  <div class="field" id = "leftbox">
-    <%= f.label :string %>
-    <%= f.text_field :string %>
-  </div>
-  <div class="field" id = "middlebox">
-    <%= f.label :action %>
-    <%= f.text_field :action %>
-  </div>
-  <div class="field" id = "rightbox">
-    <%= f.label :action_url %>
-    <%= f.text_area :action_url %>
-  </div>
-  <div class="field" id = "endbox">
-    <%= f.label :base_url %>
-    <%= f.text_area :base_url %>
-  </div>
-  <div class="field" id = "leftbox">
-    <%= f.label :xpath %>
-    <%= f.text_area :xpath %>
-  </div>
-  <div class="field" id = "middlebox">
-    <%= f.label :sleeps %>
-    <%= f.text_area :sleeps %>
-  </div>
-  <div class="field" id = "rightbox">
-    <%= f.label :new_tab %>
-    <%= f.text_area :new_tab %>
-  </div>
-  <div class="field" id = "endbox">
-    <%= f.label :description %>
-    <%= f.text_area :description %>
-  </div>
-  <div class="field">
-    <%= f.label :need_screenshot %>
-    <%= f.text_area :need_screenshot %>
-  </div>
-  <div class="field">
-  	<%= f.label :enter_action %>
-  	<%= f.check_box :enter_action %>
-  </div>
-  <div class="actions">
-    <%= f.submit %>
-  </div>
+        <% end %>
+    </ul>
+</div>
 <% end %>
 
+<div class="field" id="leftbox">
+    <%= f.label :field_name %>
+    <%= f.text_field :field_name %>
+</div>
+<div class="field" id="middlebox">
+    <%= f.label :field_type %>
+    <%= f.text_field :field_type %>
+</div>
+<div class="field" id="rightbox">
+    <%= f.label :read_element %>
+    <%= f.text_field :read_element %>
+</div>
+<div class="field" id="endbox">
+    <%= f.label :input_value %>
+    <%= f.text_field :input_value %>
+</div>
+<div class="field" id="leftbox">
+    <%= f.label :string %>
+    <%= f.text_field :string %>
+</div>
+<div class="field" id="middlebox">
+    <%= f.label :action %>
+    <%= f.text_field :action %>
+</div>
+<div class="field" id="rightbox">
+    <%= f.label :action_url %>
+    <%= f.text_area :action_url %>
+</div>
+<div class="field" id="endbox">
+    <%= f.label :base_url %>
+    <%= f.text_area :base_url %>
+</div>
+<div class="field" id="leftbox">
+    <%= f.label :xpath %>
+    <%= f.text_area :xpath %>
+</div>
+<div class="field" id="middlebox">
+    <%= f.label :sleeps %>
+    <%= f.text_area :sleeps %>
+</div>
+<div class="field" id="rightbox">
+    <%= f.label :new_tab %>
+    <%= f.text_area :new_tab %>
+</div>
+<div class="field" id="endbox">
+    <%= f.label :description %>
+    <%= f.text_area :description %>
+</div>
+<div class="field">
+    <%= f.label :need_screenshot %>
+    <%= f.text_area :need_screenshot %>
+</div>
+<div class="field">
+    <%= f.label :enter_action %>
+    <%= f.check_box :enter_action %>
+</div>
+<div class="field">
+    <%= f.label "Enable JS Condition" %>
+    <%= f.check_box :javascript_conditional_enabled, id: 'enableJavascript' %>
+</div>
+<div class="field" id="conditionalDiv">
+    <%= f.label "Conditional" %>
+    <%= f.text_area :javascript_conditional, id: "conditionalTb" %>
+</div>
+<div class="actions">
+    <%= f.submit %>
+</div>
+<% end %>
 
+<script>
+    $(function() {
+        var enableJavascriptCb = document.getElementById("enableJavascript");
+        var conditionalDiv = document.getElementById("conditionalDiv");
+        if (!enableJavascriptCb.checked) {
+            conditionalDiv.style.display = "none";
+        }
+        $("#enableJavascript").change(function() {
+            var checked = this.checked;
+
+            if (checked) {
+                conditionalDiv.style.display = "block";
+            } else {
+                conditionalDiv.style.display = "none";
+                $("#conditionalTb").val("")
+            }
+        });
+    });
+</script>

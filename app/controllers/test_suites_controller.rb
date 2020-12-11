@@ -1,4 +1,5 @@
 class TestSuitesController < ApplicationController
+   include FormatConcern
   before_action :set_test_suite, only: [:show, :edit, :update, :destroy]
 
   # GET /test_suites
@@ -126,6 +127,48 @@ class TestSuitesController < ApplicationController
   def test_cases
     @test_suite = TestSuite.find(params[:id])
     @test_cases = @test_suite.test_cases.order('priority DESC')
+
+    @chartData = {
+      suiteID: @test_suite.id,
+      case_detail: @test_cases.select(:id, :description).as_json,
+      flowState: @test_suite.flow_state
+    }
+  end
+
+  def update_suite_flow
+    begin
+      flow_state = params[:flow_state]
+      suite_id = params[:suite_id]
+      case_data = params[:case_data]
+
+      @test_suite = TestSuite.find(suite_id)
+      @test_suite.flow_state = flow_state.to_json
+      @test_suite.save!
+      case_ids = case_data.pluck(:test_case_id)
+
+      @caseSuites = CaseSuite.where(:test_case_id=> case_ids, :test_suite_id => suite_id)
+
+      @caseSuites.each do |suite|
+        @case_suite =case_data.to_a.find { |cd| cd[:test_case_id] == suite.test_case_id}.as_json
+        rejected_case_id_array = @case_suite["rejectedCaseIds"]
+        accepted_case_id_array = @case_suite["acceptedCaseIds"]
+
+        suite.rejected_case_ids = rejected_case_id_array.as_json
+        suite.accepted_case_ids = accepted_case_id_array.as_json
+        suite.save!
+      end
+
+      render json: format_response_json({
+                  message: 'Updated the flow!',
+                  status: true
+              })
+    rescue => exception
+      render json: format_response_json({
+                  message: 'Failed to update the flow!',
+                  status: false
+              })
+    end
+
   end
 
   
