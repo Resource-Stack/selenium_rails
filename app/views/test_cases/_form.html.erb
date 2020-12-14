@@ -73,10 +73,10 @@
 </div>
 <div class="field" id="conditionalDiv">
     <%= f.label "Conditional" %>
-    <%= f.text_area :javascript_conditional, id: "conditionalTb" %>
+    <%= f.text_area :javascript_conditional, id: "conditionalTb", style: "height: 130px; width: 400px;" %>
 </div>
 <div class="actions">
-    <%= f.submit %>
+    <%= f.submit "Submit", :class=> "btn btn-primary" %>
 </div>
 <% end %>
 

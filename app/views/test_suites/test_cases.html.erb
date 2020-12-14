@@ -106,27 +106,56 @@
         tableViewTab.classList.remove("active");
         graphViewPanel.style.display = "block";
         tableViewPanel.style.display = "none";
+
+        initializeGraphView();
     });
 </script>
 
 <script>
     var disableMultipleConnections = true;
-    var id = document.getElementById("drawflow");
-    const editor = new Drawflow(id);
-    editor.reroute = true;
-    editor.start();
+    let editor = null;
 
-    editor.on('connectionCreated', function(connection) {
-        if (disableMultipleConnections) {
-            var node = editor.getNodeFromId(connection.output_id);
-            var outputConnections = node.outputs[connection.output_class].connections;
-            var connectionToRemove = outputConnections.filter(c => c.node != connection.input_id);
-            if (connectionToRemove && connectionToRemove.length == 1) {
-                connectionToRemove = connectionToRemove[0];
-                editor.removeSingleConnection(connection.output_id, connectionToRemove.node, connection.output_class, connectionToRemove.output);
+    var graphInitialized = false;
+
+    function initializeGraphView() {
+        if (graphInitialized) return;
+        graphInitialized = true;
+        var id = document.getElementById("drawflow");
+        editor = new Drawflow(id);
+        editor.reroute = true;
+        editor.start();
+
+        editor.on('connectionCreated', function(connection) {
+            if (disableMultipleConnections) {
+                var node = editor.getNodeFromId(connection.output_id);
+                var outputConnections = node.outputs[connection.output_class].connections;
+                var connectionToRemove = outputConnections.filter(c => c.node != connection.input_id);
+                if (connectionToRemove && connectionToRemove.length == 1) {
+                    connectionToRemove = connectionToRemove[0];
+                    editor.removeSingleConnection(connection.output_id, connectionToRemove.node, connection.output_class, connectionToRemove.output);
+                }
             }
+        });
+
+        var chartData = $('#chartData').data();
+        if (chartData && chartData.flowstate != null) {
+            editor.drawflow = chartData.flowstate;
+            editor.start();
+        } else {
+            var test_cases = chartData.caseDetail;
+
+            var curNode = 0;
+            test_cases.forEach(c => {
+                var newNode = editor.addNode("1", 1, 2, curNode * 200, curNode * 80, "", {
+                    id: c.id
+                }, "<div style='title'>" + c.description + "</div>");
+                editor.addConnection(curNode, newNode, 'output_1', 'input_1')
+                curNode = newNode;
+            });
         }
-    })
+    }
+
+
 
     function changeMode(option) {
 
@@ -138,24 +167,6 @@
             unlock.style.display = 'none';
         }
     }
-
-    var chartData = $('#chartData').data();
-    if (chartData && chartData.flowstate != null) {
-        editor.drawflow = chartData.flowstate;
-        editor.start();
-    } else {
-        var test_cases = chartData.caseDetail;
-
-        var curNode = 0;
-        test_cases.forEach(c => {
-            var newNode = editor.addNode("1", 1, 2, curNode * 200 + 50, curNode * 80, "", {
-                id: c.id
-            }, "<div style='title'>" + c.description + "</div>");
-            editor.addConnection(curNode, newNode, 'output_1', 'input_1')
-            curNode = newNode;
-        });
-    }
-
 
     function exportResult() {
         var suiteID = chartData.suiteid;
