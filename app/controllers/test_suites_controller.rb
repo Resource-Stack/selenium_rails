@@ -127,10 +127,9 @@ class TestSuitesController < ApplicationController
   def test_cases
     @test_suite = TestSuite.find(params[:id])
     @test_cases = @test_suite.test_cases.order('priority DESC')
-
     @chartData = {
       suiteID: @test_suite.id,
-      case_detail: @test_cases.select(:id, :description).as_json,
+      case_detail: @test_cases.select(:id, :description).reverse.as_json,
       flowState: @test_suite.flow_state
     }
   end

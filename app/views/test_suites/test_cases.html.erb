@@ -116,11 +116,13 @@
     let editor = null;
 
     var graphInitialized = false;
+    var suiteID = -1;
 
     function initializeGraphView() {
         if (graphInitialized) return;
         graphInitialized = true;
         var id = document.getElementById("drawflow");
+
         editor = new Drawflow(id);
         editor.reroute = true;
         editor.start();
@@ -139,6 +141,7 @@
 
         var chartData = $('#chartData').data();
         if (chartData && chartData.flowstate != null) {
+            suiteID = chartData.suiteid;
             editor.drawflow = chartData.flowstate;
             editor.start();
         } else {
@@ -169,7 +172,6 @@
     }
 
     function exportResult() {
-        var suiteID = chartData.suiteid;
         var result = editor.export();
         var nodeCaseIdMap = {};
         var nodeResult = [];
