@@ -15,6 +15,9 @@
 
 <div class="tab-content">
     <div id="graphViewPanel" class="tab-pane fade in active" style="padding: 20px;">
+        <div class="alert">
+            Double click each element to update the test case. Click 'Update' button to save the graph sequence.
+        </div>
         <div id="drawflow" style="height: 400px;">
             <div class="btn-export" onclick="exportResult();">Update</div>
             <div class="btn-lock">
@@ -96,15 +99,6 @@
         editor = new Drawflow(id);
         editor.reroute = true;
         editor.start();
-
-        editor.on('nodeSelected', function(id) {
-            $.get(
-                window.location.origin + "/edit_test_case?id=1881",
-                function(data) {
-                    $().showHtmlDialog("Test", data);
-                });
-        })
-
         editor.on('connectionCreated', function(connection) {
             if (disableMultipleConnections) {
                 var node = editor.getNodeFromId(connection.output_id);
@@ -116,6 +110,7 @@
                 }
             }
         });
+
 
         var chartData = $('#chartData').data();
         if (chartData && chartData.flowstate != null) {
@@ -220,4 +215,17 @@
     setupTabs();
 
     initializeGraphView();
+
+    document.getElementById("drawflow").addEventListener('dblclick', function(e) {
+        var node = $(e.target).parents(".drawflow-node")[0];
+        if (node) {
+            var id = node.id.split("-")[1];
+            var curNode = editor.getNodeFromId(id);
+            $.get(
+                window.location.origin + "/edit_test_case?id=" + curNode.data.id,
+                function(data) {
+                    $().showHtmlDialog("Update case", data);
+                });
+        }
+    });
 </script>
