@@ -1,5 +1,5 @@
 class TestCasesController < ApplicationController
-  before_action :set_test_case, only: [:show, :edit, :update, :destroy]
+  before_action :set_test_case, only: [:show, :edit, :update, :destroy, :edit_test_case]
 
   # GET /test_cases
   # GET /test_cases.json
@@ -42,6 +42,12 @@ class TestCasesController < ApplicationController
 
   # GET /test_cases/1/edit
   def edit
+    @dialog_mode = false
+  end
+
+  def edit_test_case
+    @dialog_mode = true
+    render partial: "test_cases/form"
   end
 
   # POST /test_cases
@@ -63,13 +69,23 @@ class TestCasesController < ApplicationController
   # PATCH/PUT /test_cases/1
   # PATCH/PUT /test_cases/1.json
   def update
+    dialog_mode = params[:test_case][:dialog_mode] == 'true'
+  
+    case_updated = @test_case.update(test_case_params)
+
+    if dialog_mode
+      message = case_updated ? "Test case updated successfully!" : "Failed to update test case!"
+      render_message = "alert('#{message}');"
+      render js: render_message;
+      return
+    end
     respond_to do |format|
-      if @test_case.update(test_case_params)
-        format.html { redirect_to @test_case, notice: 'Test case was successfully updated.' }
-        format.json { render :show, status: :ok, location: @test_case }
+      if case_updated
+          format.html { redirect_to @test_case, notice: 'Test case was successfully updated.' }
+          format.json { render :show, status: :ok, location: @test_case }
       else
-        format.html { render :edit }
-        format.json { render json: @test_case.errors, status: :unprocessable_entity }
+          format.html { render :edit }
+          format.json { render json: @test_case.errors, status: :unprocessable_entity }
       end
     end
   end

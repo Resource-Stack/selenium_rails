@@ -6,19 +6,34 @@
     <b><u>Test Suite: <%= @test_suite.name %></u></b>
 </div>
 <ul class="nav nav-tabs">
-    <li class="active" id="tableViewTab"><a>Table View</a></li>
-    <li id="graphViewTab"><a data-toggle="pill">Graph View</a></li>
+    <li id="graphViewTab" class="active"><a data-toggle="pill">Graph View</a></li>
+    <li id="tableViewTab"><a>Table View</a></li>
 </ul>
 
 <%= content_tag :div, id: "chartData", data: @chartData do %>
 <% end %>
 
 <div class="tab-content">
-    <div id="tableViewPanel" class="tab-pane fade in active" style="padding: 20px;">
+    <div id="graphViewPanel" class="tab-pane fade in active" style="padding: 20px;">
+        <div id="drawflow" style="height: 400px;">
+            <div class="btn-export" onclick="exportResult();">Update</div>
+            <div class="btn-lock">
+                <i id="lock" class="fas fa-lock" onclick="editor.editor_mode='fixed'; changeMode('lock');"></i>
+                <i id="unlock" class="fas fa-lock-open" onclick="editor.editor_mode='edit'; changeMode('unlock');" style="display:none;"></i>
+            </div>
+            <div class="bar-zoom">
+                <i class="fas fa-search-minus" onclick="editor.zoom_out()"></i>
+                <i class="fas fa-search-plus" onclick="editor.zoom_in()"></i>
+            </div>
+        </div>
+    </div>
+    <div id="tableViewPanel" class="tab-pane fade in " style="padding: 20px;">
+        <div class="alert">
+            Order of the test cases in the graph view doesn't affect the ordering of the test cases in the table.
+        </div>
         <table id="test-cases">
             <thead>
                 <tr>
-                    <th>Priority</th>
                     <th>Case ID</th>
                     <th>Field Name</th>
                     <th>Field Type</th>
@@ -30,10 +45,10 @@
                     <th></th>
                 </tr>
             </thead>
-            <tbody class="sortable cases-sorting">
+            <tbody>
                 <% @test_cases.each do |tc| %>
                 <tr id="<%= tc.sortable_id %>" , class="test_case" , data-id="<%= tc.id %>">
-                    <td><%= tc.priority %></td>
+
                     <td><%= tc.id %></td>
                     <td><%= tc.field_name %></td>
                     <td><%= tc.field_type %></td>
@@ -61,57 +76,12 @@
             </div>
         </div>
     </div>
-    <div id="graphViewPanel" class="tab-pane fade" style="padding: 20px;">
-        <div id="drawflow" style="height: 400px;">
 
-            <div class="btn-export" onclick="exportResult();">Update</div>
-            <div class="btn-lock">
-                <i id="lock" class="fas fa-lock" onclick="editor.editor_mode='fixed'; changeMode('lock');"></i>
-                <i id="unlock" class="fas fa-lock-open" onclick="editor.editor_mode='edit'; changeMode('unlock');" style="display:none;"></i>
-            </div>
-            <div class="bar-zoom">
-                <i class="fas fa-search-minus" onclick="editor.zoom_out()"></i>
-                <i class="fas fa-search-plus" onclick="editor.zoom_in()"></i>
-            </div>
-        </div>
-    </div>
 </div>
 
 <script>
     $("#test-cases").dataTable();
 
-    $(function() {
-        $('.sortable').railsSortable();
-    });
-
-    $('.column_sort').change(function() {
-        alert($(this).val());
-    })
-
-    var tableViewTab = document.getElementById("tableViewTab");
-    var graphViewTab = document.getElementById("graphViewTab");
-    var tableViewPanel = document.getElementById("tableViewPanel");
-    var graphViewPanel = document.getElementById("graphViewPanel");
-
-    $(tableViewTab).on("click", function() {
-        tableViewTab.classList.add("active");
-        graphViewTab.classList.remove("active");
-        tableViewPanel.style.display = "block";
-        graphViewPanel.style.display = "none";
-    });
-
-    $(graphViewTab).on("click", function() {
-        graphViewPanel.classList.add("in");
-        graphViewPanel.classList.add("active");
-        tableViewTab.classList.remove("active");
-        graphViewPanel.style.display = "block";
-        tableViewPanel.style.display = "none";
-
-        initializeGraphView();
-    });
-</script>
-
-<script>
     var disableMultipleConnections = true;
     let editor = null;
 
@@ -126,6 +96,14 @@
         editor = new Drawflow(id);
         editor.reroute = true;
         editor.start();
+
+        editor.on('nodeSelected', function(id) {
+            $.get(
+                window.location.origin + "/edit_test_case?id=1881",
+                function(data) {
+                    $().showHtmlDialog("Test", data);
+                });
+        })
 
         editor.on('connectionCreated', function(connection) {
             if (disableMultipleConnections) {
@@ -159,10 +137,7 @@
         suiteID = chartData.suiteid;
     }
 
-
-
     function changeMode(option) {
-
         if (option == 'lock') {
             lock.style.display = 'none';
             unlock.style.display = 'block';
@@ -218,4 +193,31 @@
             alert("Failed to save flow state!")
         });
     }
+
+
+    function setupTabs() {
+        var tableViewTab = document.getElementById("tableViewTab");
+        var graphViewTab = document.getElementById("graphViewTab");
+        var tableViewPanel = document.getElementById("tableViewPanel");
+        var graphViewPanel = document.getElementById("graphViewPanel");
+
+        $(tableViewTab).on("click", function() {
+            tableViewTab.classList.add("active");
+            graphViewTab.classList.remove("active");
+            tableViewPanel.style.display = "block";
+            graphViewPanel.style.display = "none";
+        });
+
+        $(graphViewTab).on("click", function() {
+            graphViewPanel.classList.add("in");
+            graphViewPanel.classList.add("active");
+            tableViewTab.classList.remove("active");
+            graphViewPanel.style.display = "block";
+            tableViewPanel.style.display = "none";
+        });
+    }
+
+    setupTabs();
+
+    initializeGraphView();
 </script>

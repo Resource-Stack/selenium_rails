@@ -1,4 +1,5 @@
-<%= form_for(@test_case) do |f| %>
+<%= form_for(@test_case, :remote=>true)  do |f| %>
+<%= f.hidden_field :dialog_mode, :value => @dialog_mode %>
 <% if @test_case.errors.any? %>
 <div id="error_explanation">
     <h2><%= pluralize(@test_case.errors.count, "error") %> prohibited this test_case from being saved:</h2>
