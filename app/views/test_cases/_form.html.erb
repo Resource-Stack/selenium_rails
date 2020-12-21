@@ -1,94 +1,106 @@
 <%= javascript_include_tag('editor/ace.js') %>
-<%= form_for(@test_case, :remote=>true)  do |f| %>
-<%= f.hidden_field :dialog_mode, :value => @dialog_mode %>
-<% if @test_case.errors.any? %>
-<div id="error_explanation">
-    <h2><%= pluralize(@test_case.errors.count, "error") %> prohibited this test_case from being saved:</h2>
+<div style="padding: 20px;">
+    <%= form_for(@test_case, :remote=>true)  do |f| %>
+    <%= f.hidden_field :dialog_mode, :value => @dialog_mode %>
+    <% if @test_case.errors.any? %>
+    <div id="error_explanation">
+        <h2><%= pluralize(@test_case.errors.count, "error") %> prohibited this test_case from being saved:</h2>
 
-    <ul>
-        <% @test_case.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
-        <% end %>
-    </ul>
-</div>
-<% end %>
-
-<div class="field" id="leftbox">
-    <%= f.label :field_name %>
-    <%= f.text_field :field_name %>
-</div>
-<div class="field" id="middlebox">
-    <%= f.label :field_type %>
-    <%= f.text_field :field_type %>
-</div>
-<div class="field" id="rightbox">
-    <%= f.label :read_element %>
-    <%= f.text_field :read_element %>
-</div>
-<div class="field" id="endbox">
-    <%= f.label :input_value %>
-    <%= f.text_field :input_value %>
-</div>
-<div class="field" id="leftbox">
-    <%= f.label :string %>
-    <%= f.text_field :string %>
-</div>
-<div class="field" id="middlebox">
-    <%= f.label :action %>
-    <%= f.text_field :action %>
-</div>
-<div class="field" id="rightbox">
-    <%= f.label :action_url %>
-    <%= f.text_area :action_url %>
-</div>
-<div class="field" id="endbox">
-    <%= f.label :base_url %>
-    <%= f.text_area :base_url %>
-</div>
-<div class="field" id="leftbox">
-    <%= f.label :xpath %>
-    <%= f.text_area :xpath %>
-</div>
-<div class="field" id="middlebox">
-    <%= f.label :sleeps %>
-    <%= f.text_area :sleeps %>
-</div>
-<div class="field" id="rightbox">
-    <%= f.label :new_tab %>
-    <%= f.text_area :new_tab %>
-</div>
-<div class="field" id="endbox">
-    <%= f.label :description %>
-    <%= f.text_area :description %>
-</div>
-<div class="field">
-    <%= f.label :need_screenshot %>
-    <%= f.text_area :need_screenshot %>
-</div>
-<div class="field">
-    <%= f.label :enter_action %>
-    <%= f.check_box :enter_action %>
-</div>
-<div class="field">
-    <%= f.label "Enable JS Condition" %>
-    <%= f.check_box :javascript_conditional_enabled, id: 'enableJavascript' %>
-</div>
-<div class="field" id="conditionalDiv">
-    <%= f.label "Conditional" %>
-    <%= f.text_area :javascript_conditional, id: "conditionalTb", style: "display: none;" %>
-    <div id="editor" style="height: 200px;">
+        <ul>
+            <% @test_case.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+            <% end %>
+        </ul>
     </div>
+    <% end %>
+
+    <div style="display:flex;">
+        <div class="form-group row">
+            <%= f.label :field_name %>
+            <%= f.text_field :field_name, class: "form-control form-control-sm" %>
+        </div>
+        <div class="form-group row">
+            <%= f.label :field_type %>
+            <%= f.text_field :field_type, class: "form-control form-control-sm" %>
+        </div>
+        <div class="form-group row">
+            <%= f.label :read_element %>
+            <%= f.text_field :read_element, class: "form-control form-control-sm" %>
+        </div>
+    </div>
+    <div style="display:flex;">
+        <div class="form-group row">
+            <%= f.label :input_value %>
+            <%= f.text_field :input_value, class: "form-control form-control-sm" %>
+        </div>
+        <div class="form-group row">
+            <%= f.label :string %>
+            <%= f.text_field :string, class: "form-control form-control-sm" %>
+        </div>
+        <div class="form-group row">
+            <%= f.label :action %>
+            <%= f.text_field :action , class: "form-control form-control-sm"%>
+        </div>
+    </div>
+    <div style="display:flex;">
+        <div class="form-group row">
+            <%= f.label :action_url %>
+            <%= f.text_area :action_url, class: "form-control form-control-sm" %>
+        </div>
+        <div class="form-group row">
+            <%= f.label :base_url %>
+            <%= f.text_area :base_url , class: "form-control form-control-sm"%>
+        </div>
+        <div class="form-group row">
+            <%= f.label :xpath %>
+            <%= f.text_area :xpath , class: "form-control form-control-sm"%>
+        </div>
+    </div>
+    <div style="display:flex;">
+        <div class="form-group row">
+            <%= f.label :sleeps %>
+            <%= f.text_area :sleeps , class: "form-control form-control-sm"%>
+        </div>
+        <div class="form-group row">
+            <%= f.label :new_tab %>
+            <%= f.text_area :new_tab, class: "form-control form-control-sm" %>
+        </div>
+        <div class="form-group row">
+            <%= f.label :description %>
+            <%= f.text_area :description, class: "form-control form-control-sm" %>
+        </div>
+    </div>
+    <div style="display:flex;">
+        <div class="form-group row">
+            <%= f.label :need_screenshot %>
+            <%= f.text_area :need_screenshot, class: "form-control form-control-sm" %>
+        </div>
+        <div class="form-group row">
+            <%= f.label :enter_action %>
+            <%= f.check_box :enter_action , class: "form-check-input"%>
+        </div>
+        <div class="form-group row">
+            <%= f.label "Enable JS Condition" %>
+            <%= f.check_box :javascript_conditional_enabled, id: 'enableJavascript', class: "form-check-input" %>
+        </div>
+    </div>
+    <div class="form-group row" id="conditionalDiv">
+        <%= f.label "Conditional" %>
+        <%= f.text_area :javascript_conditional, id: "conditionalTb", style: "display: none;" %>
+        <div id="editor" style="height: 200px;">
+        </div>
+    </div>
+    <div class="actions">
+        <input type='button' onclick="handleSubmitButtonClick();" value="Submit" class="btn btn-primary">
+        <%= f.submit "Submit", id: "btnSubmit",  :class=> "btn btn-primary", style: "display: none;" %>
+    </div>
+    <% end %>
 </div>
-<div class="actions">
-    <input type='button' onclick="handleSubmitButtonClick();" value="Submit" class="btn btn-primary">
-    <%= f.submit "Submit", id: "btnSubmit",  :class=> "btn btn-primary", style: "display: none;" %>
-</div>
-<% end %>
 <script>
     var defaultJsConditional = `function execute(){ 
     return true;
 } 
-execute();`;
+return execute();`;
 
     var conditionalTb = $("#conditionalTb");
 
