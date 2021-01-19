@@ -52,6 +52,7 @@ class TestSuite < ActiveRecord::Base
         test_case.new_tab = row['new_tab']
         test_case.description = row['description']
         test_case.need_screenshot = row['need_screenshot']
+        test_case.priority = row['sequence']
         #test_case = TestCase.where(field_name: row['field_name']).first
         #if test_case.blank?
         #  test_case = TestCase.new

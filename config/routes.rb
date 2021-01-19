@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   devise_scope :user do
     root to: "devise/sessions#new", via: 'get'
     match '/logout', to: "devise/sessions#destroy", via: 'get'
+    match '/invitation/resend_invite' => 'invitations#resend_invite', via: [:post]
   end
   resources :test_suites do
     put :sort, on: :collection
@@ -31,7 +32,10 @@ Rails.application.routes.draw do
   match "/list_all_reports", to: "environments#list_all_reports", via: "get"
   match "/list_all_result_suites", to: "result_suites#list_all_result_suites", via: "get"
 
-  match "/reports", to: "environments#reports", via: "get"
+  match "/reports", to: "environments#reports", via: ["get", "post"]
+
+  match "/filter_reports", to: "environments#filter_reports", via: ["get", "post"]
+
 
   match "run_suites", to: "environments#run_suites", via: "get"
 
@@ -86,6 +90,7 @@ Rails.application.routes.draw do
   post '/acknowledge_terms' => 'terms_and_conditions#acknowledge_terms'
   get '/privacy' => 'privacy_policies#privacy_policy'
   post '/acknowledge_privacy' => 'privacy_policies#acknowledge_privacy'
+  post "/users/invite_to_project" => "users#invite_to_project"
   
 end
 
