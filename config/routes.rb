@@ -90,7 +90,13 @@ Rails.application.routes.draw do
   post '/acknowledge_terms' => 'terms_and_conditions#acknowledge_terms'
   get '/privacy' => 'privacy_policies#privacy_policy'
   post '/acknowledge_privacy' => 'privacy_policies#acknowledge_privacy'
+
   post "/users/invite_to_project" => "users#invite_to_project"
+
+  post '/update_suite_flow' => 'test_suites#update_suite_flow'
+
+  get '/edit_test_case' => 'test_cases#edit_test_case'
+
   
 end
 

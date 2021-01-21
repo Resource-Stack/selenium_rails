@@ -1,58 +1,231 @@
-<h3>Test Cases for <%= @test_suite.name %></h3>
-<table id="test-cases">
-	<thead>
-		<tr>
-        <th>Priority</th>
-        <th>Case ID</th>
-			  <th>Field Name</th>
-  			<th>Field Type</th>
-  			<th>Read Element</th>
-  			<th>Input Value</th>
-  			<th>Action</th>
-  			<th>Xpath</th>
-  			<th>Created At</th>
-  			<th></th>
-		</tr>
-	</thead>
-	<tbody class="sortable cases-sorting">
-	  <% @test_cases.each do |tc| %>
-		<tr id= "<%= tc.sortable_id %>", class= "test_case", data-id= "<%= tc.id %>">
-        <td><%= tc.priority %></td>
-        <td><%= tc.id %></td>
-			  <td><%= tc.field_name %></td>
-  			<td><%= tc.field_type %></td>
-  			<td><%= tc.read_element %></td>
-  			<td><%= tc.input_value %></td>
-  			<td><%= tc.action %></td>
-  			<td><%= tc.xpath %></td>
-  			<td><%= tc.created_at %></td>
-  			<td><%#= link_to 'Edit', {controller: "test_cases", action: "edit", id: tc.id }, class: "btn btn-default btn-sm", "data-toggle" => "modal", "data-target" => "#cases_edit", remote: true  %>
-          <%#= link_to 'Destroy', tc, method: :delete, data: { confirm: 'Are you sure?' } %>
-            <%= link_to 'Edit', edit_test_case_path(tc), class: "btn btn-primary btn-sm" %><%= link_to 'Delete', tc, method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-secondary btn-sm" %>
-          </td>
-		</tr>
-	  <% end %>
-	</tbody>
+<%= javascript_include_tag('drawflow.js') %>
+<%= javascript_include_tag('font-awesome.js') %>
+<%= stylesheet_link_tag('drawflow.css') %>
 
-</table>
-
-<%= link_to 'Export to CSV', export_path(test_suite_ids: @test_suite.id, format: 'csv'), class: "btn btn-default btn-sm"%>
-<%= hidden_field_tag :id, @test_suite.id  %>
-
-<div id="cases_edit" class="modal fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-cases-content"></div>
-  </div>
+<div style="margin: 10px;">
+    <b><u>Test Suite: <%= @test_suite.name %></u></b>
 </div>
+<ul class="nav nav-tabs">
+    <li id="graphViewTab" class="active"><a data-toggle="pill">Graph View</a></li>
+    <li id="tableViewTab"><a>Table View</a></li>
+</ul>
+
+<%= content_tag :div, id: "chartData", data: @chartData do %>
+<% end %>
+
+<div class="tab-content">
+    <div id="graphViewPanel" class="tab-pane fade in active" style="padding: 20px;">
+        <div class="alert">
+            Double click each element to update the test case. Click 'Update' button to save the graph sequence.
         </div>
+        <div id="drawflow" style="height: 400px;">
+            <div class="btn-export" onclick="exportResult();">Update</div>
+            <div class="btn-lock">
+                <i id="lock" class="fas fa-lock" onclick="drawFlow.drawFlow_mode='fixed'; changeMode('lock');"></i>
+                <i id="unlock" class="fas fa-lock-open" onclick="drawFlow.drawFlow_mode='edit'; changeMode('unlock');" style="display:none;"></i>
+            </div>
+            <div class="bar-zoom">
+                <i class="fas fa-search-minus" onclick="drawFlow.zoom_out()"></i>
+                <i class="fas fa-search-plus" onclick="drawFlow.zoom_in()"></i>
+            </div>
+        </div>
+    </div>
+    <div id="tableViewPanel" class="tab-pane fade in " style="padding: 20px;">
+        <div class="alert">
+            Order of the test cases in the graph view doesn't affect the ordering of the test cases in the table.
+        </div>
+        <table id="test-cases">
+            <thead>
+                <tr>
+                    <th>Case ID</th>
+                    <th>Field Name</th>
+                    <th>Field Type</th>
+                    <th>Read Element</th>
+                    <th>Input Value</th>
+                    <th>Action</th>
+                    <th>Xpath</th>
+                    <th>Created At</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <% @test_cases.each do |tc| %>
+                <tr id="<%= tc.sortable_id %>" , class="test_case" , data-id="<%= tc.id %>">
+
+                    <td><%= tc.id %></td>
+                    <td><%= tc.field_name %></td>
+                    <td><%= tc.field_type %></td>
+                    <td><%= tc.read_element %></td>
+                    <td><%= tc.input_value %></td>
+                    <td><%= tc.action %></td>
+                    <td><%= tc.xpath %></td>
+                    <td><%= tc.created_at %></td>
+                    <td><%#= link_to 'Edit', {controller: "test_cases", action: "edit", id: tc.id }, class: "btn btn-default btn-sm", "data-toggle" => "modal", "data-target" => "#cases_edit", remote: true  %>
+                        <%#= link_to 'Destroy', tc, method: :delete, data: { confirm: 'Are you sure?' } %>
+                        <%= link_to 'Edit', edit_test_case_path(tc), class: "btn btn-primary btn-sm" %><%= link_to 'Delete', tc, method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-secondary btn-sm" %>
+                    </td>
+                </tr>
+                <% end %>
+            </tbody>
+
+        </table>
+
+        <%= link_to 'Export to CSV', export_path(test_suite_ids: @test_suite.id, format: 'csv'), class: "btn btn-default btn-sm"%>
+        <%= hidden_field_tag :id, @test_suite.id  %>
+
+        <div id="cases_edit" class="modal fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-cases-content"></div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
 <script>
     $("#test-cases").dataTable();
 
-    $(function() {
-        $('.sortable').railsSortable();
-    });
+    var disableMultipleConnections = true;
+    let drawFlow = null;
 
-    $('.column_sort').change(function() {
-        alert($(this).val());
-    })
+    var graphInitialized = false;
+    var suiteID = -1;
+
+    function initializeGraphView() {
+        if (graphInitialized) return;
+        graphInitialized = true;
+        var id = document.getElementById("drawflow");
+
+        drawFlow = new Drawflow(id);
+        drawFlow.reroute = true;
+        drawFlow.start();
+        drawFlow.on('connectionCreated', function(connection) {
+            if (disableMultipleConnections) {
+                var node = drawFlow.getNodeFromId(connection.output_id);
+                var outputConnections = node.outputs[connection.output_class].connections;
+                var connectionToRemove = outputConnections.filter(c => c.node != connection.input_id);
+                if (connectionToRemove && connectionToRemove.length == 1) {
+                    connectionToRemove = connectionToRemove[0];
+                    drawFlow.removeSingleConnection(connection.output_id, connectionToRemove.node, connection.output_class, connectionToRemove.output);
+                }
+            }
+        });
+
+
+        var chartData = $('#chartData').data();
+        if (chartData && chartData.flowstate != null) {
+            drawFlow.drawflow = chartData.flowstate;
+            drawFlow.start();
+        } else {
+            var test_cases = chartData.caseDetail;
+
+            var curNode = 0;
+            test_cases.forEach(c => {
+                var newNode = drawFlow.addNode("1", 1, 2, curNode * 200, curNode * 80, "", {
+                    id: c.id
+                }, "<div style='title'>" + c.description + "</div>");
+                drawFlow.addConnection(curNode, newNode, 'output_1', 'input_1')
+                curNode = newNode;
+            });
+        }
+
+        suiteID = chartData.suiteid;
+    }
+
+    function changeMode(option) {
+        if (option == 'lock') {
+            lock.style.display = 'none';
+            unlock.style.display = 'block';
+        } else {
+            lock.style.display = 'block';
+            unlock.style.display = 'none';
+        }
+    }
+
+    function exportResult() {
+        var result = drawFlow.export();
+        var nodeCaseIdMap = {};
+        var nodeResult = [];
+        var nodes = result.drawflow.Home.data;
+        for (node in nodes) {
+            var curNode = nodes[node];
+            var test_case_id = curNode.data.id;
+            nodeCaseIdMap[node] = test_case_id;
+
+            var acceptedNodes = curNode.outputs.output_1.connections.map(n => n.node);
+            var rejectedNodes = curNode.outputs.output_2.connections.map(n => n.node);
+
+            nodeResult.push({
+                test_case_id: test_case_id,
+                acceptedNodes: acceptedNodes,
+                rejectedNodes: rejectedNodes
+            });
+        }
+
+        var dataToSave = {
+            flow_state: result,
+            suite_id: suiteID,
+            case_data: nodeResult.map(n => {
+                return {
+                    test_case_id: n.test_case_id,
+                    acceptedCaseIds: n.acceptedNodes.map(nodeId => {
+                        return nodeCaseIdMap[nodeId]
+                    }),
+                    rejectedCaseIds: n.rejectedNodes.map(nodeId => {
+                        return nodeCaseIdMap[nodeId]
+                    }),
+                }
+            })
+        }
+
+        function getApiUrl(partialUrl) {
+            return `${window.location.origin}/${partialUrl}`;
+        }
+
+        $().makeHttpRequest(getApiUrl("./update_suite_flow"), "POST", dataToSave, (res) => {
+            alert("Saved flow state!");
+        }, () => {
+            alert("Failed to save flow state!")
+        });
+    }
+
+
+    function setupTabs() {
+        var tableViewTab = document.getElementById("tableViewTab");
+        var graphViewTab = document.getElementById("graphViewTab");
+        var tableViewPanel = document.getElementById("tableViewPanel");
+        var graphViewPanel = document.getElementById("graphViewPanel");
+
+        $(tableViewTab).on("click", function() {
+            tableViewTab.classList.add("active");
+            graphViewTab.classList.remove("active");
+            tableViewPanel.style.display = "block";
+            graphViewPanel.style.display = "none";
+        });
+
+        $(graphViewTab).on("click", function() {
+            graphViewPanel.classList.add("in");
+            graphViewPanel.classList.add("active");
+            tableViewTab.classList.remove("active");
+            graphViewPanel.style.display = "block";
+            tableViewPanel.style.display = "none";
+        });
+    }
+
+    setupTabs();
+
+    initializeGraphView();
+
+    document.getElementById("drawflow").addEventListener('dblclick', function(e) {
+        var node = $(e.target).parents(".drawflow-node")[0];
+        if (node) {
+            var id = node.id.split("-")[1];
+            var curNode = drawFlow.getNodeFromId(id);
+            $.get(
+                window.location.origin + "/edit_test_case?id=" + curNode.data.id,
+                function(data) {
+                    $().showHtmlDialog("Update case", data);
+                });
+        }
+    });
 </script>

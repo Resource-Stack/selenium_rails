@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_27_152827) do
+ActiveRecord::Schema.define(version: 202012111533081) do
 
   create_table "case_suites", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "test_case_id"
@@ -18,6 +18,8 @@ ActiveRecord::Schema.define(version: 2020_10_27_152827) do
     t.integer "sequence"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string "accepted_case_ids", default: "[]"
+    t.string "rejected_case_ids", default: "[]"
   end
 
   create_table "custom_commands", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -123,6 +125,8 @@ ActiveRecord::Schema.define(version: 2020_10_27_152827) do
     t.integer "custom_command_id", default: 0
     t.boolean "enter_action", default: false
     t.integer "priority"
+    t.boolean "javascript_conditional_enabled", default: false
+    t.string "javascript_conditional"
   end
 
   create_table "test_data", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci", force: :cascade do |t|
@@ -145,6 +149,7 @@ ActiveRecord::Schema.define(version: 2020_10_27_152827) do
     t.integer "base_suite_id"
     t.string "description"
     t.string "status"
+    t.text "flow_state"
   end
 
   create_table "testing_cases", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci", force: :cascade do |t|
@@ -170,6 +175,7 @@ ActiveRecord::Schema.define(version: 2020_10_27_152827) do
     t.datetime "updated_at", null: false
     t.boolean "terms_acknowledged", default: false
     t.boolean "privacy_acknowledged", default: false
+    t.integer "default_environ"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
