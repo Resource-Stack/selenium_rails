@@ -1,10 +1,11 @@
 class User < ActiveRecord::Base
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
-  devise :invitable, :database_authenticatable, :registerable,
+  devise :invitable, :database_authenticatable, :confirmable,
          :recoverable, :rememberable, :trackable, :validatable
 
   has_many :environments
+  attribute :admin, :boolean, default: false
 
   def self.generate_jwt_token(user_id , expiry_time = 1.hours.from_now.to_i)
     payload = {'user_id'=> user_id, 'exp'=> expiry_time};

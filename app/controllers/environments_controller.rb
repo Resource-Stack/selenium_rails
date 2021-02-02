@@ -44,10 +44,8 @@ class EnvironmentsController < ApplicationController
   # PATCH/PUT /environments/1.json
   def update
     custom_command_params = params[:custom_command]
-    logger.debug("PARAMS OF CUSTOM COMMAND #{custom_command_params.inspect}")
     if !custom_command_params.present?
       @custom.update(custom_command_params)
-      logger.debug("IN THE ENV UPDATE CUSTOM COMMAND #{@custom.inspect}")
     end
     respond_to do |format|
       if @environment.update(environment_params)
@@ -81,13 +79,9 @@ class EnvironmentsController < ApplicationController
     #  @status = "Draft"
     #end
     if !params[:status].nil?
-      logger.debug("STATUS AND ENVIRONMENT")
-      
       @test_suites = TestSuite.where('environment_id = ? AND status = ?', @environment_id, @status)
-      logger.debug("TEST SUITE #{@test_suites.inspect}")
     else
       @test_suites = TestSuite.where(environment_id: @environment_id)
-      logger.debug("TEST SUITE in ELSE #{@test_suites.inspect}")
     end
     respond_to do |format|  
       format.html
@@ -110,13 +104,11 @@ class EnvironmentsController < ApplicationController
   end
 
   def download_results
-    logger.debug("PARAMS FROM DOWNLOAD #{params.inspect}")
     ids = params[:result_cases]
     @rc_cases = Array.new
     ids.each do |rc|
       @rc_cases << ResultCase.find(rc)
     end
-    logger.debug("RC IN RESULTS ENVIRO #{@rc_cases.inspect}")
     respond_to do |format|
       format.html
       format.csv do#{ send_data @results.to_csv, filename: "result-#{Date.today}.csv" }
@@ -131,13 +123,10 @@ class EnvironmentsController < ApplicationController
     @sche_status_name = Scheduler.group(:status)
     if params[:start_date].present? && params[:end_date].present?
       @sche_status = Scheduler.where('scheduled_date BETWEEN ? AND ?', params[:start_date], params[:end_date]).group(:status).count
-      logger.debug("INSIDE IF #{@sche_status.inspect}")
     else 
       @sche_status = Scheduler.group(:status).count
-      logger.debug("INSIDE ELSE #{@sche_status.inspect}")
     end
     @suite_status = TestSuite.group(:status).count
-    logger.debug("SESSION OBJECT #{session[:enviro_id].inspect}")
     if session[:enviro_id].present?
       id = session[:enviro_id]
     else
@@ -148,25 +137,16 @@ class EnvironmentsController < ApplicationController
     @schedule = Array.new
     @test_suites = TestSuite.where(environment_id: id).pluck(:id)
     if @test_suites.present?
-      logger.debug(" TEST SUITE #{@test_suites} ")
       @test_suites.each do |ts_id|
         if !params[:status].nil?
           sch_id = Scheduler.where(test_suite_id: ts_id, status: params[:status]).pluck(:id)
-          logger.debug("SCH ID #{sch_id.count}")
-          #redirect_to '/reports_path'
         else
           sch_id = Scheduler.where(test_suite_id: ts_id).pluck(:id)
-          logger.debug("INSIDE ELSE #{sch_id.count}")
         end
         if !sch_id.blank?
           #@sch << sch_id
-        
-        logger.debug("SCHEDULERS #{sch_id.count}")
-      
         sch_id.each do |id|
-          
           @schedule << Scheduler.find(id)
-          logger.debug(" TEST SUITE #{@schedule.inspect}")
         end
         end
       
@@ -185,13 +165,10 @@ class EnvironmentsController < ApplicationController
         @sche_status_name = Scheduler.group(:status)
     if params[:start_date].present? && params[:end_date].present?
       @sche_status = Scheduler.where('scheduled_date BETWEEN ? AND ?', params[:start_date], params[:end_date]).group(:status).count
-      logger.debug("INSIDE IF #{@sche_status.inspect}")
     else 
       @sche_status = Scheduler.group(:status).count
-      logger.debug("INSIDE ELSE #{@sche_status.inspect}")
     end
     @suite_status = TestSuite.group(:status).count
-    logger.debug("SESSION OBJECT #{session[:enviro_id].inspect}")
     if session[:enviro_id].present?
       id = session[:enviro_id]
     else
@@ -202,25 +179,16 @@ class EnvironmentsController < ApplicationController
     @schedule = Array.new
     @test_suites = TestSuite.where(environment_id: id).pluck(:id)
     if @test_suites.present?
-      logger.debug(" TEST SUITE #{@test_suites} ")
       @test_suites.each do |ts_id|
         if !params[:status].nil?
           sch_id = Scheduler.where(test_suite_id: ts_id, status: params[:status]).pluck(:id)
-          logger.debug("SCH ID #{sch_id.count}")
-          #redirect_to '/reports_path'
         else
           sch_id = Scheduler.where(test_suite_id: ts_id).pluck(:id)
-          logger.debug("INSIDE ELSE #{sch_id.count}")
         end
         if !sch_id.blank?
-          #@sch << sch_id
-        
-        logger.debug("SCHEDULERS #{sch_id.count}")
-      
-        sch_id.each do |id|
+          sch_id.each do |id|
           
           @schedule << Scheduler.find(id)
-          logger.debug(" TEST SUITE #{@schedule.inspect}")
         end
         end
       
@@ -233,17 +201,14 @@ class EnvironmentsController < ApplicationController
   end
   
   def run_suites
-    logger.debug "COMMIT #{params[:commit]}"
     if params[:suite].present?
       params[:suite].each do |s|
-        logger.debug "CHECK CHECK SUITE SUITE #{s}"
         suite = TestSuite.find(s[0])
         schedule = Scheduler.new
         schedule.test_suite_id = s[0]
         schedule.scheduled_date = DateTime.now
         schedule.status = "READY"
         schedule.save!
-        logger.debug "#{suite.id} #{suite.name}"
         if params[:commit] == "Schedule Now"
           system "/home/newprod/SeleniumWebTester/start.sh"
         end

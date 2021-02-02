@@ -4,24 +4,19 @@ class TestCasesController < ApplicationController
   # GET /test_cases
   # GET /test_cases.json
   def index
-    logger.debug("SESSION OBJECT #{session[:enviro_id].inspect}")
     id = session[:enviro_id]
     @e = Environment.find(id).name
     @tc = TestSuite.where(environment_id: id)
     @t = TestSuite.where(environment_id: id).pluck(:id)
-    logger.debug("TEST SUITE #{@t.inspect}")
     if @t.present?
       @test_cases = Array.new
       @t.each do |t_id|
         tc_ids = TestSuite.find(t_id).test_cases.pluck(:id)
-        logger.debug("TEST CASES #{tc_ids.inspect}")
         if tc_ids.present?
           tc_ids.each do |id|
           #@ids = tc_ids.pluck(:id) 
-          #logger.debug("TEST SUITES IDS #{@ids}")
           #@test_cases = TestCase.find(@ids)
             @test_cases << TestCase.find(id)
-            logger.debug("TEST SUITES ARE #{@test_cases.count}")
           end
       end
       end
@@ -113,7 +108,6 @@ class TestCasesController < ApplicationController
   end
 
   def export
-    Rails.logger.debug("PARRAAAAAAAAAAAAAAAMSSSSSSSSSSSS #{params.inspect}")
     @results = TestSuite.find(params[:test_suite_ids]).test_cases.joins(:case_suites).select("test_cases.*", "case_suites.sequence").order("case_suites.sequence ASC")
     respond_to do |format|
       format.html

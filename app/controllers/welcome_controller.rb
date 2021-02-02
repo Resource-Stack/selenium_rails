@@ -2,9 +2,7 @@ class WelcomeController < ApplicationController
   def home
     @environments = Environment.all
     if params[:commit] == "Go"
-      logger.debug "HELP ME"
       session[:enviro_id] = params[:environment][:id]
-      #redirect_to :controller => "environments", :action => "test_suites", :id => params[:environment][:id]
       redirect_to :controller => "test_suites", :action => "index", :environ_id => params[:environment][:id]
     end
   end

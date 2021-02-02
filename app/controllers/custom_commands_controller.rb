@@ -8,7 +8,6 @@ class CustomCommandsController < ApplicationController
 	end
 
 	def show
-		logger.debug("PARAMS IN SHOW #{params.inspect}")
 	end 
 
 	def custom_commands
@@ -16,13 +15,11 @@ class CustomCommandsController < ApplicationController
   	end
 
   	def edit
-  		logger.debug("PARAMS IN EDIT #{params.inspect}")
   		@id = params[:id]
   		@custom = CustomCommand.where(environment_id: @id)
   	end
 
   	def update
-  		logger.debug("PARAMS OF UPDATE")
   	end
 
 	private

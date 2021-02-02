@@ -12,19 +12,16 @@ class TestSuitesController < ApplicationController
     end
     @environment_name = Environment.find(environ_id).name
     if !params[:status].blank? 
-      logger.debug("INSIDE IF TESTSUITES")
       @test_suites = TestSuite.where(environment_id: environ_id, status: params[:status])
     else
       @test_suites = TestSuite.where(environment_id: environ_id)
     end  
-    logger.debug("#{@test_suites.count}")
   end
 
   # GET /test_suites/1
   # GET /test_suites/1.json
   def show
     @ts = TestSuite.find(params[:id])
-    logger.debug("INSIDE TS SHOW ACTION")
       respond_to do |format|
       format.html
       format.js
@@ -65,19 +62,6 @@ class TestSuitesController < ApplicationController
   # PATCH/PUT /test_suites/1.json
   def update
     env = Environment.find(@test_suite.environment_id)
-    #logger.debug "deeeefault #{params[:default]} default_suite_id #{env.default_suite_id != @test_suite.id} params is 1? #{params[:default] == '1'}"
-    #if (params[:default] == "1") && (env.default_suite_id != @test_suite.id)
-    #  logger.debug "Getting here"
-    #  env.update(default_suite_id: @test_suite.id)
-    #end
-    #if !params[:case].nil?
-    #  params[:case].each do |c|
-    #    logger.debug "#{c[0]}"
-    #    CaseSuite.create(test_suite_id: @test_suite.id, test_case_id: c[0])
-    #  end
-      
-    #end
-    logger.debug("TEST SUITE #{test_suite_params.inspect}")
 
     respond_to do |format|
       if @test_suite.update(test_suite_params)
@@ -96,7 +80,6 @@ class TestSuitesController < ApplicationController
     id = params[:id]
     test_suite = TestSuite.find(id)
     if test_suite.test_cases.present?
-      logger.debug("TEST CASES ARE #{test_suite.test_cases.inspect}")
       tc_ids = test_suite.test_cases.pluck(:id)
       tc_ids.each do |id|
         rc = ResultCase.where(test_case_id: id)
@@ -114,7 +97,6 @@ class TestSuitesController < ApplicationController
         sch = Scheduler.where(id: s_id)
         sch.destroy_all
       end
-      logger.debug("SCHEDULERS ARE  #{test_suite.schedulers.inspect}")
       #test_suite.schedulers.destroy
     end
     @test_suite.destroy #This will destroy caseSuites also
@@ -176,9 +158,7 @@ class TestSuitesController < ApplicationController
   end
   
   def import
-    logger.debug("THE PARAMS ARE #{params.inspect}")
     if params[:dependency].present?
-      logger.debug("DEPENDENCY PRESENT")
       dependency = params[:dependency]
     else
       dependency = 0
@@ -192,16 +172,12 @@ class TestSuitesController < ApplicationController
   end
 
   def unschedule 
-    logger.debug("THE PARAMS IN UNSCHEDULE ARE")
     id = params[:id]
-    logger.debug("THE ID is #{id.inspect}")
     #environ_id = id = session[:enviro_id]
     #@test_suites = TestSuite.where(environment_id: environ_id)
     s = Scheduler.where(test_suite_id: id)
-    logger.debug("THE Scheduler is #{s.inspect}")
     s.each do |st|
       if st.status == "READY"
-        logger.debug("GOING INTO READY")
         st.destroy
       end
     end
