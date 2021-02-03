@@ -1,8 +1,6 @@
 class UsersController < ApplicationController
   def index
   	@user = current_user
-    @all_users = User.all
-  	@environ_list = Environment.all.pluck(:name, :id)
   end
 
   def update
@@ -12,7 +10,22 @@ class UsersController < ApplicationController
 
   	redirect_to users_index_path
   end
-  
+
+  def invite_user
+    if current_user.admin?
+      @user = User.invite!({email: params[:userEmail]},current_user)
+      redirect_to users_index_path
+    end
+  end
+
+  def remove_invitation
+    if current_user.admin? && params[:user_id].present?
+      @user_to_delete = User.find(params[:user_id])
+      @user_to_delete.destroy if !@user_to_delete.nil?
+       redirect_to users_index_path
+    end
+  end
+
   private
 
   	def user_params

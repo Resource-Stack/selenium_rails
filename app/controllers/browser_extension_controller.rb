@@ -29,6 +29,7 @@ class BrowserExtensionController < ApplicationController
   
   def login_user
     begin
+      byebug
       @params =params[:data]
       user_name = @params["email-address"]
       password = @params[:password]
