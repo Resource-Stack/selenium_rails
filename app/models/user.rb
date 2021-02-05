@@ -6,7 +6,8 @@ class User < ActiveRecord::Base
 
   has_many :environments
   has_many :invitations, class_name: self.to_s, as: :invited_by
-  
+  has_many :project_users
+  has_many :projects
   attribute :admin, :boolean, default: false
 
   def self.generate_jwt_token(user_id , expiry_time = 1.hours.from_now.to_i)

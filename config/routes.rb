@@ -96,5 +96,12 @@ Rails.application.routes.draw do
 
   post "/invite_user" => "users#invite_user"
   delete "/remove_invitation" => "users#remove_invitation"
+  get "/resend_invitation" => "users#resend_invitation"
+
+  get "projects/index"
+
+  match "/projects", to: "projects#index", via: ["get"]
+  delete "/delete_project" => "projects#delete_project"
+  post "/create_project" => "projects#create_project"
 end
 

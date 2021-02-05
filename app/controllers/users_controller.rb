@@ -26,6 +26,16 @@ class UsersController < ApplicationController
     end
   end
 
+  def resend_invitation
+    if params[:user_id].present?
+      @user = User.find(params[:user_id])
+      if !@user.nil?
+         @user.invite!(current_user) 
+         render js: "alert('Invitation resent!')"
+      end
+    end
+  end
+
   private
 
   	def user_params
