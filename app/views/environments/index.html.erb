@@ -1,29 +1,33 @@
 <h1>Listing environments</h1>
 
 <table id="envir_table">
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Url</th>
-      <th>Username</th>
-      <th>Password</th>
-      <th colspan="4"></th>
-    </tr>
-  </thead>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Url</th>
+            <th>Username</th>
+            <th>Password</th>
+            <th colspan="4">Actions</th>
+        </tr>
+    </thead>
 
-  <tbody>
-    <% @environments.each do |environment| %>
-      <tr>
-        <td><%= environment.name %></td>
-        <td><%= environment.url %></td>
-        <td><%= environment.username %></td>
-        <td><%= environment.password %></td>
-        <td><%= link_to 'Show', environment %></td>
-        <td><%= link_to 'Edit', edit_environment_path(environment) %></td>
-        <td><%= link_to 'Destroy', environment, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-      </tr>
-    <% end %>
-  </tbody>
+    <tbody>
+        <% @environments.each do |environment| %>
+        <tr>
+            <td><%= environment.name %></td>
+            <td><%= environment.url %></td>
+            <td><%= environment.username %></td>
+            <td><%= environment.password %></td>
+            <%
+=begin%>
+            <td><%= link_to 'Show', environment %></td>
+            <%
+=end%>
+            <td><%= link_to 'Edit', edit_environment_path(environment) %></td>
+            <td><%= link_to 'Destroy', environment, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        </tr>
+        <% end %>
+    </tbody>
 </table>
 
 <br>

@@ -1,0 +1,45 @@
+<div style="padding:20px;">
+    <h1>Project Users</h1>
+    <span class='btn btn-primary'><%= link_to 'Create New', create_project_user_script_path(:project_user_id=> nil, :project_id=>@project_id), method: :get, remote: true %> </span>
+    <table id="activeProjectUsers">
+        <thead>
+            <tr>
+                <th>Project User ID </th>
+                <th>Email</th>
+                <th>Created At</th>
+                <th>Project Role</th>
+                <th colspan="4">Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <% @project_users.map do |proj_user| %>
+            <tr>
+                <td><%= proj_user["id"] %></td>
+                <td><%= proj_user["email"] %></td>
+                <td><%= proj_user["created_at"] %></td>
+                <td><%= proj_user["role"] %></td>
+                <td>
+                    <% if proj_user["owner_id"].to_i == current_user.id && proj_user["owner_id"].to_i != proj_user["id"] %>
+                    <span class='btn' style="color: #4680b5 !important;"><%= link_to 'Edit', create_project_user_script_path(:project_user_id=> proj_user["id"], :project_id=>@project_id), method: :get, remote: true %> </span>
+                    <span class='btn' style=" color: #4680b5 !important;"><%= link_to 'Remove', delete_project_user_path(:project_user_id=> proj_user["id"]), method: :delete, data: { confirm: 'Are you sure you want to remove the user?' } %> </span>
+                    <% end %>
+                </td>
+            </tr>
+            <% end %>
+            <% if @project_users.count == 0 %>
+            <tr>
+                <td align="center" colspan="4">
+                    <center>No project user available!</center>
+                </td>
+            </tr>
+            <% end %>
+        </tbody>
+    </table>
+</div>
+
+<style>
+    .btn>a {
+        color: inherit;
+    }
+</style>

@@ -3,7 +3,7 @@
         <a href="/" class="user_profile"><%=link_to_if current_user.admin?, "#{current_user.email}", users_index_path %></a>
     </div>
     <div id="navbar">
-        <a href="/home" class="col-md-2 col-sm-1 col-xs-2 nav-button">Home</a>
+        <a href="/projects/index" class="col-md-2 col-sm-1 col-xs-2 nav-button">Home</a>
         <% if !session[:enviro_id].nil? %>
         <a href="/test_suites" class="col-md-2 col-sm-1 col-xs-2 nav-button">Suites</a>
 

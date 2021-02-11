@@ -5,7 +5,14 @@ class EnvironmentsController < ApplicationController
   # GET /environments
   # GET /environments.json
   def index
-    @environments = Environment.all
+    project_id = params[:project_id]
+    if project_id.present?
+      #TODO: Validate user access to projects
+      session[:project_id] = project_id
+      @environments = Environment.where.not(:project_id=>nil).where(:project_id=>project_id)
+    else
+      redirect_to projects_index_path
+    end    
   end
 
   # GET /environments/1
@@ -16,6 +23,7 @@ class EnvironmentsController < ApplicationController
   # GET /environments/new
   def new
     @environment = Environment.new
+    @environment.project_id = session[:project_id]
   end
 
   # GET /environments/1/edit
@@ -27,17 +35,14 @@ class EnvironmentsController < ApplicationController
   # POST /environments.json
   def create
     @environment = Environment.new(environment_params)
-    
-
-    respond_to do |format|
       if @environment.save
-        format.html { redirect_to @environment, notice: 'Environment was successfully created.' }
-        format.json { render :show, status: :created, location: @environment }
+        redirect_to environments_path(:project_id=> @environment.project_id)
       else
+        respond_to do |format|
         format.html { render :new }
         format.json { render json: @environment.errors, status: :unprocessable_entity }
+        end
       end
-    end
   end
 
   # PATCH/PUT /environments/1
@@ -47,15 +52,14 @@ class EnvironmentsController < ApplicationController
     if !custom_command_params.present?
       @custom.update(custom_command_params)
     end
-    respond_to do |format|
-      if @environment.update(environment_params)
-        format.html { redirect_to @environment, notice: 'Environment was successfully updated.' }
-        format.json { render :show, status: :ok, location: @environment }
-      else
-        format.html { render :edit }
-        format.json { render json: @environment.errors, status: :unprocessable_entity }
+   
+    if @environment.update(environment_params)
+      redirect_to environments_path(:project_id=> @environment.project_id)
+    else
+      respond_to do |format|
+          format.html { render :edit }
+          format.json { render json: @environment.errors, status: :unprocessable_entity }
       end
-
     end
   end
 
@@ -63,10 +67,7 @@ class EnvironmentsController < ApplicationController
   # DELETE /environments/1.json
   def destroy
     @environment.destroy
-    respond_to do |format|
-      format.html { redirect_to environments_url, notice: 'Environment was successfully destroyed.' }
-      format.json { head :no_content }
-    end
+    redirect_to environments_path(:project_id=> @environment.project_id)
   end
   
   def test_suites
@@ -160,9 +161,7 @@ class EnvironmentsController < ApplicationController
   end
 
   def filter_reports
-
-
-        @sche_status_name = Scheduler.group(:status)
+    @sche_status_name = Scheduler.group(:status)
     if params[:start_date].present? && params[:end_date].present?
       @sche_status = Scheduler.where('scheduled_date BETWEEN ? AND ?', params[:start_date], params[:end_date]).group(:status).count
     else 
@@ -232,6 +231,6 @@ class EnvironmentsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def environment_params
-      params.require(:environment).permit(:name, :url, :username, :password, :login_field, :password_field, :action_button,:default_suite_id, :user_emails, :git_url, :git_username, :git_password, :git_branch, :selenium_tester_url, :login_required, test_suite_ids: [])
+      params.require(:environment).permit(:name, :url, :username, :password, :login_field, :password_field, :action_button,:default_suite_id, :user_emails, :git_url, :git_username, :project_id, :git_password, :git_branch, :selenium_tester_url, :login_required, test_suite_ids: [])
     end
 end

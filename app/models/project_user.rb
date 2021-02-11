@@ -4,8 +4,11 @@ class ProjectUser < ApplicationRecord
      belongs_to :project_role
 
      def self.create_new_user(project_id, user_id, role_id)
-          @project_user = ProjectUser.create({:project_id=>project_id, :user_id=> user_id, :project_role_id=> role_id, :is_active=>true})
-          return @project_user
+          already_exists = ProjectUser.where(:is_active=>true, :user_id=> user_id, :project_id=>project_id).count>0
+          if !already_exists
+               @project_user = ProjectUser.create({:project_id=>project_id, :user_id=> user_id, :project_role_id=> role_id, :is_active=>true})
+               return @project_user
+          end
      end
 
      def self.update_user_role(id, role_id)

@@ -317,7 +317,10 @@ function setupScheduleEvents() {
             </div>`;
             $().showHtmlDialog(
                 suiteName,
-                html
+                html,
+                () => {
+                    firstTime = true
+                }
             );
             if (firstTime) {
                 initializeDataTable("#scheduleTable", suiteID);

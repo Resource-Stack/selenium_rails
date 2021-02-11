@@ -99,6 +99,13 @@ Rails.application.routes.draw do
   get "/resend_invitation" => "users#resend_invitation"
 
   get "projects/index"
+  get "project_users/index"
+
+  match "/project_users", to: "project_users#index", via: ["get"]
+  get "create_project_user_script", to: "project_users#create_project_user_script"
+  delete "/delete_project_user" => "project_users#delete_project_user"
+  post "/create_project_user" => "project_users#create_project_user"
+  post "/update_project_user" => "project_users#update_project_user"
 
   match "/projects", to: "projects#index", via: ["get"]
   delete "/delete_project" => "projects#delete_project"
