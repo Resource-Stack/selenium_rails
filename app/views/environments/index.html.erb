@@ -21,13 +21,8 @@
                 <td><%= environment.url %></td>
                 <td><%= environment.username %></td>
                 <td><%= environment.password %></td>
-                <%
-=begin%>
-                <td><%= link_to 'Show', environment %></td>
-                <%
-=end%>
-                <td><%= link_to 'Edit', edit_environment_path(environment) %></td>
-                <td><%= link_to 'Destroy', environment, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+
+                <td><span class='btn btn-primary' style="color: #4680b5 !important;"><%= link_to 'Edit', edit_environment_path(environment)  %></span><span class='btn btn-primary' style="color: #4680b5 !important;"><%= link_to 'Destroy', environment, method: :delete, data: { confirm: 'Are you sure?' } %></span></td>
             </tr>
             <% end %>
         </tbody>

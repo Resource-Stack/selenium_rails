@@ -2,8 +2,6 @@ class EnvironmentsController < ApplicationController
   skip_before_action :verify_authenticity_token, only: [:create, :update]
   before_action :set_environment, only: [:show, :edit, :update, :destroy]
 
-  # GET /environments
-  # GET /environments.json
   def index
     project_id = params[:project_id]
     if project_id.present?
@@ -15,24 +13,18 @@ class EnvironmentsController < ApplicationController
     end    
   end
 
-  # GET /environments/1
-  # GET /environments/1.json
   def show
   end
 
-  # GET /environments/new
   def new
     @environment = Environment.new
     @environment.project_id = session[:project_id]
   end
 
-  # GET /environments/1/edit
   def edit
     @custom = @environment.custom_commands.new
   end
 
-  # POST /environments
-  # POST /environments.json
   def create
     @environment = Environment.new(environment_params)
       if @environment.save
@@ -45,8 +37,6 @@ class EnvironmentsController < ApplicationController
       end
   end
 
-  # PATCH/PUT /environments/1
-  # PATCH/PUT /environments/1.json
   def update
     custom_command_params = params[:custom_command]
     if !custom_command_params.present?
@@ -63,8 +53,6 @@ class EnvironmentsController < ApplicationController
     end
   end
 
-  # DELETE /environments/1
-  # DELETE /environments/1.json
   def destroy
     @environment.destroy
     redirect_to environments_path(:project_id=> @environment.project_id)

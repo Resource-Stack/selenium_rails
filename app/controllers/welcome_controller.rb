@@ -1,11 +1,6 @@
 class WelcomeController < ApplicationController
   def home
      redirect_to projects_index_path
-    # @environments = Environment.all
-    # if params[:commit] == "Go"
-    #   session[:enviro_id] = params[:environment][:id]
-    #   redirect_to :controller => "test_suites", :action => "index", :environ_id => params[:environment][:id]
-    # end
   end
   private
 

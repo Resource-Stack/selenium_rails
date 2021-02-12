@@ -1,6 +1,8 @@
 <div class="container-fluid" id="internal-navbar">
-    <div>
-        <a href="/" class="user_profile"><%=link_to_if current_user.admin?, "#{current_user.email}", users_index_path %></a>
+    <div style="display:flex; justify-content: flex-end;">
+        <span class="btn btn-link">
+            <%=link_to_if current_user.admin?, "#{current_user.email}", users_index_path %>
+        </span>
     </div>
     <div id="navbar">
         <a href="/projects/index" class="col-md-2 col-sm-1 col-xs-2 nav-button">Home</a>

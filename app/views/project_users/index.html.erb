@@ -21,8 +21,8 @@
                 <td><%= proj_user["role"] %></td>
                 <td>
                     <% if proj_user["owner_id"].to_i == current_user.id && proj_user["owner_id"].to_i != proj_user["id"] %>
-                    <span class='btn' style="color: #4680b5 !important;"><%= link_to 'Edit', create_project_user_script_path(:project_user_id=> proj_user["id"], :project_id=>@project_id), method: :get, remote: true %> </span>
-                    <span class='btn' style=" color: #4680b5 !important;"><%= link_to 'Remove', delete_project_user_path(:project_user_id=> proj_user["id"]), method: :delete, data: { confirm: 'Are you sure you want to remove the user?' } %> </span>
+                    <span class='btn btn-primary' style="color: #4680b5 !important;"><%= link_to 'Edit', create_project_user_script_path(:project_user_id=> proj_user["id"], :project_id=>@project_id), method: :get, remote: true %> </span>
+                    <span class='btn btn-primary' style=" color: #4680b5 !important;"><%= link_to 'Remove', delete_project_user_path(:project_user_id=> proj_user["id"]), method: :delete, data: { confirm: 'Are you sure you want to remove the user?' } %> </span>
                     <% end %>
                 </td>
             </tr>

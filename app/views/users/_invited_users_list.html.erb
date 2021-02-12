@@ -1,4 +1,4 @@
-<p><strong>Invited Users:</strong> </p>
+<h4><strong>Invited Users:</strong> </h4>
 <table id="invitedUsers">
     <thead>
         <tr>
@@ -15,7 +15,7 @@
             <td><%= user.email %></td>
             <td><%= user.created_at %></td>
             <td><%= user.invitation_accepted_at.nil? ? "Pending" :"Accepted"%></td>
-            <td><span class='btn' style="color: #4680b5 !important;"><%= link_to_if user.invitation_accepted_at.nil?, 'Delete Invitation', remove_invitation_path(:user_id=> user.id), method: :delete, data: { confirm: 'Are you sure you want to remove the invitation?' } %> </span><span class='btn' style="color: #4680b5 !important;"><%= link_to_if user.invitation_accepted_at.nil?, 'Resend Invitation', resend_invitation_path(:user_id=> user.id), method: :get, remote: true%> </span></td>
+            <td><span class='btn btn-primary'><%= link_to_if user.invitation_accepted_at.nil?, 'Delete Invitation', remove_invitation_path(:user_id=> user.id), method: :delete, data: { confirm: 'Are you sure you want to remove the invitation?' } %> </span><span class='btn btn-primary'><%= link_to_if user.invitation_accepted_at.nil?, 'Resend Invitation', resend_invitation_path(:user_id=> user.id), method: :get, remote: true%> </span></td>
         </tr>
         <% end %>
         <% if @user.invitations.count == 0 %>
@@ -30,6 +30,6 @@
 
 <style>
     .btn>a {
-        color: inherit;
+        color: white !important;
     }
 </style>
