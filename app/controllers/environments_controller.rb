@@ -104,48 +104,58 @@ class EnvironmentsController < ApplicationController
         headers['Content-Disposition'] = "attachment; filename=\"reports-#{Date.today}.csv\""
         headers['Content-Type'] ||= 'text/csv'
       end
-      #format.xlsx #{render xlsx: 'export_results'}
     end
   end
 
-  def reports
-    @sche_status_name = Scheduler.group(:status)
-    if params[:start_date].present? && params[:end_date].present?
-      @sche_status = Scheduler.where('scheduled_date BETWEEN ? AND ?', params[:start_date], params[:end_date]).group(:status).count
-    else 
-      @sche_status = Scheduler.group(:status).count
+  def reports_main
+    @project_id = session[:project_id]
+    @environment_id = session[:environment_id]
+
+    if params[:project_id].present?
+      @project_id = params[:project_id] 
+      @environment_id = params[:environment_id]
     end
-    @suite_status = TestSuite.group(:status).count
-    if session[:enviro_id].present?
-      id = session[:enviro_id]
-    else
-      id = current_user.default_environ
-    end
-    @e = Environment.find(id).name
-    #@sch = Array.new
-    @schedule = Array.new
-    @test_suites = TestSuite.where(environment_id: id).pluck(:id)
-    if @test_suites.present?
-      @test_suites.each do |ts_id|
-        if !params[:status].nil?
-          sch_id = Scheduler.where(test_suite_id: ts_id, status: params[:status]).pluck(:id)
+
+    session[:project_id] = @project_id
+    session[:environment_id] = @environment_id
+
+    @projects = ProjectUser.where({:is_active=>true, :user_id=> current_user.id}).joins(:project).select(:id, :name)
+    @environments = @project_id.nil? ? [] : Environment.all.select(:id, :name)
+
+    if @project_id.present? && @environment_id.present?
+        @sche_status_name = Scheduler.group(:status)
+        if params[:start_date].present? && params[:end_date].present?
+          @sche_status = Scheduler.where('scheduled_date BETWEEN ? AND ?', params[:start_date], params[:end_date]).group(:status).count
+        else 
+          @sche_status = Scheduler.group(:status).count
+        end
+        @suite_status = TestSuite.group(:status).count
+        if session[:enviro_id].present?
+          id = session[:enviro_id]
         else
-          sch_id = Scheduler.where(test_suite_id: ts_id).pluck(:id)
+          id = current_user.default_environ
         end
-        if !sch_id.blank?
-          #@sch << sch_id
-        sch_id.each do |id|
-          @schedule << Scheduler.find(id)
+        @schedule = Array.new
+        @test_suites = TestSuite.where(environment_id: id).pluck(:id)
+        if @test_suites.present?
+          @test_suites.each do |ts_id|
+            if !params[:status].nil?
+              sch_id = Scheduler.where(test_suite_id: ts_id, status: params[:status]).pluck(:id)
+            else
+              sch_id = Scheduler.where(test_suite_id: ts_id).pluck(:id)
+            end
+            if !sch_id.blank?
+              sch_id.each do |id|
+                @schedule << Scheduler.find(id)
+              end
+            end
         end
         end
-      
+      end 
     end
-    end
-    respond_to do |format|
-     format.html
-     format.js
-   end
-   #redirect_to '/reports'
+
+  def reports
+    redirect_to reports_main_path
   end
 
   def filter_reports

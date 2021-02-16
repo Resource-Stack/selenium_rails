@@ -110,5 +110,9 @@ Rails.application.routes.draw do
   match "/projects", to: "projects#index", via: ["get"]
   delete "/delete_project" => "projects#delete_project"
   post "/create_project" => "projects#create_project"
+  get "/get_environments" => "projects#get_environments_for_filter"
+
+  match "/test_suite_main", to: "test_suites#test_suite_main", via: ["get", "post"]
+  match "/reports_main", to: "environments#reports_main", via: ["get", "post"]
 end
 

@@ -1,25 +1,35 @@
 class TestSuitesController < ApplicationController
-   include FormatConcern
+  include FormatConcern
   before_action :set_test_suite, only: [:show, :edit, :update, :destroy]
 
-  # GET /test_suites
-  # GET /test_suites.json
-  def index
-    if session[:enviro_id].present?
-      environ_id = session[:enviro_id]
-    else
-      environ_id = current_user.default_environ
+  def test_suite_main
+    @project_id = session[:project_id]
+    @environment_id = session[:environment_id]
+
+    if params[:project_id].present?
+      @project_id = params[:project_id] 
+      @environment_id = params[:environment_id]
     end
-    @environment_name = Environment.find(environ_id).name
-    if !params[:status].blank? 
-      @test_suites = TestSuite.where(environment_id: environ_id, status: params[:status])
-    else
-      @test_suites = TestSuite.where(environment_id: environ_id)
-    end  
+
+    session[:project_id] = @project_id
+    session[:environment_id] = @environment_id
+
+    @projects = ProjectUser.where({:is_active=>true, :user_id=> current_user.id}).joins(:project).select(:id, :name)
+    @environments = @project_id.nil? ? [] : Environment.all.select(:id, :name)
+
+    if @project_id.present? && @environment_id.present?
+      if !params[:status].blank? 
+          @test_suites = TestSuite.where(environment_id: @environment_id, status: params[:status])
+        else
+          @test_suites = TestSuite.where(environment_id: @environment_id)
+      end  
+    end
   end
 
-  # GET /test_suites/1
-  # GET /test_suites/1.json
+  def index
+    redirect_to test_suite_main_path
+  end
+
   def show
     @ts = TestSuite.find(params[:id])
       respond_to do |format|
@@ -28,12 +38,10 @@ class TestSuitesController < ApplicationController
       end
   end
 
-  # GET /test_suites/new
   def new
     @test_suite = TestSuite.new
   end
 
-  # GET /test_suites/1/edit
   def edit
     @test_cases = @test_suite.test_cases
     respond_to do |format|
@@ -42,8 +50,6 @@ class TestSuitesController < ApplicationController
     end
   end
 
-  # POST /test_suites
-  # POST /test_suites.json
   def create
     @test_suite = TestSuite.new(test_suite_params)
 
@@ -58,8 +64,6 @@ class TestSuitesController < ApplicationController
     end
   end
 
-  # PATCH/PUT /test_suites/1
-  # PATCH/PUT /test_suites/1.json
   def update
     env = Environment.find(@test_suite.environment_id)
 
@@ -74,8 +78,6 @@ class TestSuitesController < ApplicationController
     end
   end
 
-  # DELETE /test_suites/1
-  # DELETE /test_suites/1.json
   def destroy
     id = params[:id]
     test_suite = TestSuite.find(id)

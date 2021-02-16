@@ -1,0 +1,108 @@
+<%= form_with(url: reports_main_path, method: "post") do |f| %>
+<%= hidden_field_tag "project_id", project_id %>
+<%= hidden_field_tag "environment_id", environment_id %>
+<%= params[:status] %>
+<table>
+    <thead>
+        <tr>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><%= f.date_field :start_date, class: 'datepicker', value: :"#{params[:start_date]}" %>
+
+            </td>
+            <td><%= f.date_field :end_date, class: 'datepicker', value: :"#{params[:end_date]}" %></td>
+            <td><%= f.submit :submit %></td>
+        </tr>
+    </tbody>
+</table>
+
+<% end -%>
+<div style="display: flex; justify-content: center;">
+    <div>
+        <h3>Run status of Test Suite</h3>
+        <%= pie_chart sche_status,id: "schedulerStatus", donut: true, library: {backgroundColor: "#eee"} %>
+    </div>
+    <div>
+        <h3>Status of test Suite</h3>
+        <%= pie_chart suite_status,id: "suiteStatus", donut: true, library: {backgroundColor: "#eee"} %>
+    </div>
+</div>
+<br>
+<br>
+
+<div class="modal fade" id="cases" title="My modal">
+    <div class="modal-header">
+
+    </div>
+    <div class="modal-body">
+        <button aria-hidden="true" class="close" id="health-modal-close" type="button">×</button>
+        <div id="health-modal">
+
+        </div>
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+
+<div id="pie-data">
+    <%= render partial: 'graph', locals: {schedule: schedule}%>
+</div>
+
+<style>
+    table,
+    th,
+    td {
+        border: 1px solid black;
+        border-collapse: collapse;
+    }
+</style>
+
+
+<script>
+    $("#suite-table-dude").dataTable({
+        "iDisplayLength": 50
+    });
+
+    $(document).ready(function() {
+        var chartRunStatus = Chartkick.charts["schedulerStatus"]
+        chartRunStatus.options.library.onClick = function(ev, item) {
+            if (item == null || item.length == 0) return;
+
+            var curIndex = item[0]._index;
+
+            var curItem = chartRunStatus.dataSource[curIndex];
+            if (curItem != null) {
+                console.log(curItem[0]);
+                $.ajax({
+                    type: 'POST',
+                    url: '/filter_reports?status=' + curItem[0]
+                });
+                //location.reload();
+            }
+        }
+        chartRunStatus.redraw();
+
+        var chartModeStatus = Chartkick.charts["suiteStatus"]
+        chartModeStatus.options.library.onClick = function(ev, item) {
+            if (item == null || item.length == 0) return;
+
+            var curIndex = item[0]._index;
+
+            var curItem = chartModeStatus.dataSource[curIndex];
+            if (curItem != null) {
+
+                $().makeHttpRequest(getApiUrl("./reports?status=" + curItem[0]), "GET", null, (res) => {
+                    console.log(res);
+
+                });
+                console.log(curItem[0]);
+            }
+        }
+        chartModeStatus.redraw();
+    })
+</script>

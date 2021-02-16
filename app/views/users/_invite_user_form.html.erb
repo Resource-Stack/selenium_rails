@@ -2,12 +2,14 @@
 <div id="inviteUsers" class="card" style="padding:20px; outline: black 1px; ">
     <%= form_tag invite_user_path  do |f| %>
 
-    <div class="form-group">
-        <label for="userEmail">Email:</label>
-        <input id="userEmail" name="userEmail" type="email" required />
-    </div>
+    <div style="display: flex;">
+        <div class="form-group">
+            <label for="userEmail">Email:</label>
+            <input id="userEmail" name="userEmail" type="email" required />
+        </div>
 
-    <%= submit_tag "Invite", class: "btn btn-primary"%>
+        <%= submit_tag "Invite", class: "btn btn-primary"%>
+    </div>
 
     <% end  %>
 </div>

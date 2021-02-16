@@ -1,0 +1,39 @@
+ <%= form_tag request_path  do |form| %>
+ <div class="form-group" style="padding: 10px; display: flex;">
+     <div style="margin: 10px;">
+         <label for="project" class="col-md-4 col-form-label text-md-right left-align left-label">Project</label>
+
+         <%= select_tag(:project_id, options_from_collection_for_select(projects, :id, :name, project_id), include_blank: "Select Project", class: 'form-select')  %>
+     </div>
+
+     <div style="margin: 10px;">
+         <label for="environment" class="col-md-4 col-form-label text-md-right left-align left-label">Environment</label>
+         <%= select_tag(:environment_id, options_from_collection_for_select(environments, :id, :name, environment_id), include_blank: "Select Environment", class: 'form-select')  %>
+     </div>
+     <%= submit_tag "Submit", class: "btn btn-primary"%>
+ </div>
+ <% end  %>
+
+ <script>
+     function getApiUrl(partialUrl) {
+         return `${window.location.origin}/${partialUrl}`;
+     }
+     $(document).on('change', '#project_id', (e) => {
+         var projectID = e.target.value;
+         var optionHtml = "<option value=''>Select Environment</option>"
+
+         if (projectID > 0) {
+             $().makeHttpRequest(getApiUrl("./get_environments?project_id=" + projectID), "GET", null, (res) => {
+                 optionHtml = "<option value=''>Select Environment</option>"
+
+                 res.map(r => {
+                     optionHtml += `<option value='${r.id}'>${r.name}</option>`
+                 });
+
+                 $("#environment_id").html(optionHtml);
+             });
+         }
+
+         $("#environment_id").html(optionHtml);
+     });
+ </script>
