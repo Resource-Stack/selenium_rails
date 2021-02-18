@@ -70,7 +70,7 @@
 
         </table>
 
-        <%= link_to 'Export to CSV', export_path(test_suite_ids: @test_suite.id, format: 'csv'), class: "btn btn-default btn-sm"%>
+        <%= link_to 'Export to CSV', export_path(test_suite_ids: @test_suite.id, format: 'csv'), class: "btn btn-primary btn-sm"%>
         <%= hidden_field_tag :id, @test_suite.id  %>
 
         <div id="cases_edit" class="modal fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

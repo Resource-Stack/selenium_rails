@@ -130,13 +130,8 @@ class EnvironmentsController < ApplicationController
           @sche_status = Scheduler.group(:status).count
         end
         @suite_status = TestSuite.group(:status).count
-        if session[:enviro_id].present?
-          id = session[:enviro_id]
-        else
-          id = current_user.default_environ
-        end
         @schedule = Array.new
-        @test_suites = TestSuite.where(environment_id: id).pluck(:id)
+        @test_suites = TestSuite.where(environment_id: @environment_id).pluck(:id)
         if @test_suites.present?
           @test_suites.each do |ts_id|
             if !params[:status].nil?

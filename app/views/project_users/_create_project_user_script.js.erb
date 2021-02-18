@@ -1,2 +1,2 @@
 $().showHtmlDialog("<%= @title%>", "<div id='projectUserFormDiv'></div>");
-$("#projectUserFormDiv").html("<%= render :partial => 'form', locals: {project_user_id: @project_user_id, roles: @roles, project_id: @project_id, users: @users, role_id: @role_id, user_id: @user_id} %>");
+$("#projectUserFormDiv").html(`<%= render :partial => 'form', locals: {project_user_id: @project_user_id, roles: @roles, project_id: @project_id, users: @users, role_id: @role_id, user_id: @user_id} %>`);

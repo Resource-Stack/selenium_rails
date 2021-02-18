@@ -4,7 +4,7 @@ class TestCasesController < ApplicationController
   # GET /test_cases
   # GET /test_cases.json
   def index
-    id = session[:enviro_id]
+    id = session[:environment_id]
     @e = Environment.find(id).name
     @tc = TestSuite.where(environment_id: id)
     @t = TestSuite.where(environment_id: id).pluck(:id)

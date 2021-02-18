@@ -165,7 +165,7 @@ class TestSuitesController < ApplicationController
     else
       dependency = 0
     end
-    TestSuite.import(params[:file], params[:name], session[:enviro_id], params[:description], dependency)
+    TestSuite.import(params[:file], params[:name], session[:environment_id], params[:description], dependency)
   end
   
   def tests_ran
