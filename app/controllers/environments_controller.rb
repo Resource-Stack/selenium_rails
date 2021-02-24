@@ -134,11 +134,16 @@ class EnvironmentsController < ApplicationController
         @test_suites = TestSuite.where(environment_id: @environment_id).pluck(:id)
         if @test_suites.present?
           @test_suites.each do |ts_id|
-            if !params[:status].nil?
-              sch_id = Scheduler.where(test_suite_id: ts_id, status: params[:status]).pluck(:id)
-            else
-              sch_id = Scheduler.where(test_suite_id: ts_id).pluck(:id)
+            sch = Scheduler.where(test_suite_id: ts_id)
+            if params[:start_date].present? && params[:end_date].present?
+              sch = sch.where('scheduled_date BETWEEN ? AND ?', params[:start_date], params[:end_date])
             end
+
+            if !params[:status].nil?
+              sch = sch.where(status: params[:status])
+            end
+            sch_id = sch.pluck(:id)
+
             if !sch_id.blank?
               sch_id.each do |id|
                 @schedule << Scheduler.find(id)
