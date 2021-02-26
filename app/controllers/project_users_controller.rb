@@ -31,7 +31,7 @@ class ProjectUsersController < ApplicationController
         end
 
         @roles = ProjectRole.where(:is_active=>true).select(:id, :name)
-        @users = User.where.not(:id=> current_user.id).select(:id, :email)
+        @users = User.where.not(id: current_user.id, invitation_accepted_at: nil).select(:id, :email)
 
         render partial: 'create_project_user_script.js.erb', layout: false
     end
