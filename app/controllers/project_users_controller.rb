@@ -5,8 +5,7 @@ class ProjectUsersController < ApplicationController
         if project_id.present?
             session[:project_id] = project_id
             @project_id = project_id
-            
-            @project_users = ProjectUser.where(:is_active=>true).joins(:user, :project_role, :project).select("project_users.id, projects.user_id as owner_id, project_users.created_at, users.email, project_roles.name as role").as_json
+            @project_users = ProjectUser.where(:is_active=>true, :project_id=>@project_id).joins(:user, :project_role, :project).select("project_users.id, projects.user_id as owner_id, project_users.created_at, users.email, project_roles.name as role").as_json
         else
             redirect_to projects_index_path
         end 
