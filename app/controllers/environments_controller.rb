@@ -119,8 +119,8 @@ class EnvironmentsController < ApplicationController
     session[:project_id] = @project_id
     session[:environment_id] = @environment_id
 
-    @projects = ProjectUser.where({:is_active=>true, :user_id=> current_user.id}).joins(:project).select(:id, :name)
-    @environments = @project_id.nil? ? [] : Environment.all.select(:id, :name)
+    @projects = ProjectUser.where({:is_active=>true, :user_id=> current_user.id}).joins(:project).select("projects.id, projects.name")
+    @environments = @project_id.nil? ? [] : Environment.where(:project_id=>@project_id).select(:id, :name)
 
     if @project_id.present? && @environment_id.present?
         @sche_status_name = Scheduler.group(:status)

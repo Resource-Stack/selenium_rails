@@ -20,7 +20,6 @@ class ProjectsController < ApplicationController
 
     def get_environments_for_filter
         @project_id = params[:project_id]
-
         @environments = @project_id.present? ? Environment.where(:project_id=> @project_id).select(:id, :name).as_json : []
         render json: format_response_json({
             status: true,
