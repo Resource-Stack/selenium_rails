@@ -166,8 +166,8 @@ class EnvironmentsController < ApplicationController
       @sche_status = Scheduler.group(:status).count
     end
     @suite_status = TestSuite.group(:status).count
-    if session[:enviro_id].present?
-      id = session[:enviro_id]
+    if session[:environment_id].present?
+      id = session[:environment_id]
     else
       id = current_user.default_environ
     end

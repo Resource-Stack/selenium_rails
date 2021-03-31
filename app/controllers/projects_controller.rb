@@ -2,6 +2,7 @@ class ProjectsController < ApplicationController
     include FormatConcern
     def index
         @user_projects = ProjectUser.where(:user_id => current_user.id, :is_active=>true).joins(:project).where(projects:{:is_active=>true}).joins(:user).select("projects.id, projects.name, projects.user_id as owner_id, projects.created_at, users.email as owner").as_json
+        #render "index.html.erb"
     end
 
     def create_project

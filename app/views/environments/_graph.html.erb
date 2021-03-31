@@ -14,8 +14,8 @@
             </thead>
 
             <tbody>
-                <% if schedule.present? %>
-                <% schedule.each do |s| %>
+                <% if @schedule.present? %>
+                <% @schedule.each do |s| %>
                 <tr>
                     <td><%= s.id %></td>
                     <% hidden_field_tag 'id', '#{s.id}' %>
