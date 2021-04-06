@@ -1,4 +1,5 @@
-<%= javascript_include_tag('editor/ace.js') %>
+<%= javascript_include_tag "editor/ace.js", async: Rails.env.production?, onload: 'pageloaded()' %>
+
 <div style="padding: 20px;">
     <%= form_for(@test_case, :remote=>true)  do |f| %>
     <%= f.hidden_field :dialog_mode, :value => @dialog_mode %>
@@ -97,26 +98,33 @@
     <% end %>
 </div>
 <script>
+
+    
     var defaultJsConditional = `function execute(){ 
-    return true;
-} 
+        return true;
+    } 
 return execute();`;
 
     var conditionalTb = $("#conditionalTb");
 
-    var editor = ace.edit("editor");
-    editor.setFontSize(16);
-    ace.config.set("basePath", window.location.origin + "/assets/editor/");
-    editor.getSession().setMode("ace/mode/javascript");
-    editor.setTheme("ace/theme/chrome");
-    editor.setHighlightActiveLine(true);
-    editor.setHighlightSelectedWord(false)
-    editor.setShowFoldWidgets(true);
-    editor.setShowPrintMargin(true);
-    editor.getSession().setUseWorker(true);
-    editor.$blockScrolling = Infinity; //prevents ace from logging annoying warnings
-    ace.config.loadModule('ace/ext/tern', function() {
-        editor.setOptions({
+    var editor = null;
+
+    function pageloaded()
+    {   
+        editor = ace.edit("editor");
+        editor.setFontSize(16);
+        ace.config.set("basePath", window.location.origin + "/assets/editor/");
+        editor.getSession().setMode("ace/mode/javascript");
+        editor.setTheme("ace/theme/chrome");
+        editor.setHighlightActiveLine(true);
+        editor.setHighlightSelectedWord(false)
+        editor.setShowFoldWidgets(true);
+        editor.setShowPrintMargin(true);
+        editor.getSession().setUseWorker(true);
+
+        editor.$blockScrolling = Infinity; //prevents ace from logging annoying warnings
+        ace.config.loadModule('ace/ext/tern', function() {
+            editor.setOptions({
             /**
              * Either `true` or `false` or to enable with custom options pass object that
              * has options for tern server: http://ternjs.net/doc/manual.html#server_api
@@ -159,13 +167,14 @@ return execute();`;
              * This settings affects all modes when using tern, not just javascript.
              * For javascript mode the basic auto completion will be added to completion results if tern fails to find completions or if you double tab the hotkey for get completion (default is ctrl+space, so hit ctrl+space twice rapidly to include basic text completions in the result)
              */
-            enableBasicAutocompletion: true,
+                enableBasicAutocompletion: true,
+            });
         });
-    });
 
-    editor.on("input", function(e) {
-        conditionalTb.val(editor.getValue());
-    });
+        editor.on("input", function(e) {
+            conditionalTb.val(editor.getValue());
+        });
+    }
 
     function setConditional(value) {
         conditionalTb.val(value);
@@ -195,6 +204,10 @@ return execute();`;
     });
 
     function handleSubmitButtonClick() {
+        // if (editor === null || editor === undefined)
+        // {
+        //    editor = ace.edit("editor");
+        // }
         var annotations = editor.getSession().getAnnotations().filter(a => a.type == "error");
         if (annotations.length == 0) {
             $("#btnSubmit").click();

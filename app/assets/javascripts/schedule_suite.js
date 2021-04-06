@@ -67,6 +67,8 @@ function setupScheduleEvents() {
             ]
         });
 
+        
+        
         $(`${tableID} tbody`).on('click', '.edit-item', function (e) {
             e.preventDefault();
             var data = table.row($(this).parents('tr')).data();
@@ -251,89 +253,97 @@ function setupScheduleEvents() {
         });
     }
 
-    function setupButtonClickEvents() {
-        $(".btn-schedule-now").on('click', function (e) {
-            e.preventDefault();
-            var suiteID = $(this).data("id");
-            var suiteName = $(this).data("name");
+    // function setupButtonClickEvents() { 
+        
+    //     $(".btn-schedule-now").on('click', function (e) {
+    //         e.preventDefault();
+    //         var suiteID = $(this).data("id");
+    //         var suiteName = $(this).data("name");
 
-            var formHtml = `<form id="scheduleSubmitForm" style="min-height:100px;">
-            <div class="form-group">
-                <label for="number_of_times" class="col-md-4 col-form-label text-md-right left-align left-label">Number of Times</label>
-                <div >
-                    <input type="text" id="number_of_times" class="form-control" name="number_of_times" required="true"
-                          value="1" />
-                </div>
-            </div>
+    //         var formHtml = `<form id="scheduleSubmitForm" style="min-height:100px;">
+    //         <div class="form-group">
+    //             <label for="number_of_times" class="col-md-4 col-form-label text-md-right left-align left-label">Number of Times</label>
+    //             <div >
+    //                 <input type="text" id="number_of_times" class="form-control" name="number_of_times" required="true"
+    //                       value="1" />
+    //             </div>
+    //         </div>
 
-            <div class="col-md-6 offset-md-4" style="display: flex; justify-content: center; width: 100%; margin-top:5px;">
-                <button type="submit" class="btn btn-primary md-5">
-                    Schedule
-                </button>
-            </div>
-          </form>`;
+    //         <div class="col-md-6 offset-md-4" style="display: flex; justify-content: center; width: 100%; margin-top:5px;">
+    //             <button type="submit" class="btn btn-primary md-5">
+    //                 Schedule
+    //             </button>
+    //         </div>
+    //       </form>`;
 
-            var dialogID = $().showHtmlDialog("Create new Schedule",
-                formHtml, () => {
+    //         var dialogID = $().showHtmlDialog("Create new Schedule",
+    //             formHtml, () => {
 
-                }
-            );
+    //             }
+    //         );
 
-            $("#scheduleSubmitForm").submit(function (e) {
-                e.preventDefault();
-                var form = $(this);
+    //         $("#scheduleSubmitForm").submit(function (e) {
+    //             e.preventDefault();
+    //             var form = $(this);
 
-                var dataToSave = $().getFormData(form, getDefaultSchedule(suiteID));
-                var number_of_times = Number.parseInt(dataToSave.number_of_times);
-                if (number_of_times <= 0 || number_of_times > 100) {
-                    alert("Total load test should be between 1 and 100");
-                    return;
-                }
-                createNewSchedule(suiteID, dataToSave, dialogID, true);
-            });
-        });
+    //             var dataToSave = $().getFormData(form, getDefaultSchedule(suiteID));
+    //             var number_of_times = Number.parseInt(dataToSave.number_of_times);
+    //             if (number_of_times <= 0 || number_of_times > 100) {
+    //                 alert("Total load test should be between 1 and 100");
+    //                 return;
+    //             }
+    //             createNewSchedule(suiteID, dataToSave, dialogID, true);
+    //         });
+    //     });
 
-        $(".btn-schedule-later").on('click', function (e) {
-            e.preventDefault();
-            var suiteID = $(this).data("id");
-            var suiteName = $(this).data("name");
+    //     $(".btn-schedule-later").on('click', function (e) {
+    //         e.preventDefault();
+    //         var suiteID = $(this).data("id");
+    //         var suiteName = $(this).data("name");
 
-            var html = `<div>
-                <div style="display:flex; justify-content: flex-end; padding: 5px;">
-                    <button id="btnAddNew" class="btn btn-primary btn-sm">Add New</button>
-                </div>
-                <table id="scheduleTable" class="table table-bordered table-responsive table-hover stripe">
-                    <thead>
-                         <tr>
-                            <th>Id</th>
-                            <th>Name</th>
-                            <th>Start Date </th>
-                            <th>End Date</th>
-                            <th>Time</th>
-                            <th>Action</th>
-                         </tr>
-                    </thead>
-                </table>
-            </div>`;
-            $().showHtmlDialog(
-                suiteName,
-                html,
-                () => {
-                    firstTime = true
-                }
-            );
-            if (firstTime) {
-                initializeDataTable("#scheduleTable", suiteID);
-                firstTime = false;
-            }
-        });
-    }
+    //         var html = `<div>
+    //             <div style="display:flex; justify-content: flex-end; padding: 5px;">
+    //                 <button id="btnAddNew" class="btn btn-primary btn-sm">Add New</button>
+    //             </div>
+    //             <table id="scheduleTable" class="table table-bordered table-responsive table-hover stripe">
+    //                 <thead>
+    //                      <tr>
+    //                         <th>Id</th>
+    //                         <th>Name</th>
+    //                         <th>Start Date </th>
+    //                         <th>End Date</th>
+    //                         <th>Time</th>
+    //                         <th>Action</th>
+    //                      </tr>
+    //                 </thead>
+    //             </table>
+    //         </div>`;
+    //         $().showHtmlDialog(
+    //             suiteName,
+    //             html,
+    //             () => {
+    //                 firstTime = true
+    //             }
+    //         );
+    //         if (firstTime) {
+    //             initializeDataTable("#scheduleTable", suiteID);
+    //             firstTime = false;
+    //         }
+    //     });
+    // }
 
-    setupButtonClickEvents();
+    // setupButtonClickEvents();
 
-    $('#suite-table-dude').on('page.dt', function () {
-        setTimeout(() => {
-            setupButtonClickEvents();
-        }, 500);
-    });
+    // $('#suite-table-dude').on('page.dt', function () {
+    //     setTimeout(() => {
+    //         setupButtonClickEvents();
+    //     }, 500);
+    // });
+
+
+    // $('#suite-table-dude').on( 'draw.dt', function () {
+    //     setTimeout(() => {
+    //         setupButtonClickEvents();
+    //     }, 500);
+    // });
 }
