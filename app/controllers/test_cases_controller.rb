@@ -1,27 +1,22 @@
 class TestCasesController < ApplicationController
-  before_action :set_test_case, only: [:show, :edit, :update, :destroy]
+  before_action :set_test_case, only: [:show, :edit, :update, :destroy, :edit_test_case]
 
   # GET /test_cases
   # GET /test_cases.json
   def index
-    logger.debug("SESSION OBJECT #{session[:enviro_id].inspect}")
-    id = session[:enviro_id]
+    id = session[:environment_id]
     @e = Environment.find(id).name
     @tc = TestSuite.where(environment_id: id)
     @t = TestSuite.where(environment_id: id).pluck(:id)
-    logger.debug("TEST SUITE #{@t.inspect}")
     if @t.present?
       @test_cases = Array.new
       @t.each do |t_id|
         tc_ids = TestSuite.find(t_id).test_cases.pluck(:id)
-        logger.debug("TEST CASES #{tc_ids.inspect}")
         if tc_ids.present?
           tc_ids.each do |id|
           #@ids = tc_ids.pluck(:id) 
-          #logger.debug("TEST SUITES IDS #{@ids}")
           #@test_cases = TestCase.find(@ids)
             @test_cases << TestCase.find(id)
-            logger.debug("TEST SUITES ARE #{@test_cases.count}")
           end
       end
       end
@@ -42,6 +37,12 @@ class TestCasesController < ApplicationController
 
   # GET /test_cases/1/edit
   def edit
+    @dialog_mode = false
+  end
+
+  def edit_test_case
+    @dialog_mode = true
+    render partial: "test_cases/form"
   end
 
   # POST /test_cases
@@ -63,13 +64,23 @@ class TestCasesController < ApplicationController
   # PATCH/PUT /test_cases/1
   # PATCH/PUT /test_cases/1.json
   def update
+    dialog_mode = params[:test_case][:dialog_mode] == 'true'
+  
+    case_updated = @test_case.update(test_case_params)
+
+    if dialog_mode
+      message = case_updated ? "Test case updated successfully!" : "Failed to update test case!"
+      render_message = "alert('#{message}');"
+      render js: render_message;
+      return
+    end
     respond_to do |format|
-      if @test_case.update(test_case_params)
-        format.html { redirect_to @test_case, notice: 'Test case was successfully updated.' }
-        format.json { render :show, status: :ok, location: @test_case }
+      if case_updated
+          format.html { redirect_to @test_case, notice: 'Test case was successfully updated.' }
+          format.json { render :show, status: :ok, location: @test_case }
       else
-        format.html { render :edit }
-        format.json { render json: @test_case.errors, status: :unprocessable_entity }
+          format.html { render :edit }
+          format.json { render json: @test_case.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -97,8 +108,7 @@ class TestCasesController < ApplicationController
   end
 
   def export
-    Rails.logger.debug("PARRAAAAAAAAAAAAAAAMSSSSSSSSSSSS #{params.inspect}")
-    @results = TestSuite.find(params[:test_suite_ids]).test_cases.joins(:case_suites).select("test_cases.*", "case_suites.sequence")
+    @results = TestSuite.find(params[:test_suite_ids]).test_cases.joins(:case_suites).select("test_cases.*", "case_suites.sequence").order("case_suites.sequence ASC")
     respond_to do |format|
       format.html
       format.csv { send_data prep_csv(@results), filename: "test_suite_#{TestSuite.find(params[:test_suite_ids]).name.sub(" ", "")}_#{Time.now.strftime("%m/%d/%Y_%I:%M%p")}.csv"}
@@ -133,6 +143,6 @@ class TestCasesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def test_case_params
-      params.require(:test_case).permit(:field_name, :field_type, :read_element, :base_url, :input_value, :string, :action, :action_url, :base_url, :dependency, :login, :sleeps, :new_tab, :description, :need_screenshot, :xpath, :sort, :enter_action, test_suite_ids: [])
+      params.require(:test_case).permit(:field_name, :field_type, :read_element, :base_url, :input_value, :string, :action, :action_url, :base_url, :dependency, :login, :sleeps, :new_tab, :description, :need_screenshot, :xpath, :sort,  :javascript_conditional_enabled, :javascript_conditional, :enter_action, test_suite_ids: [])
     end
 end

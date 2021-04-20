@@ -1,28 +1,20 @@
 class ResultSuitesController < ApplicationController
   before_action :set_result_suite, only: [:show, :edit, :update, :destroy]
 
-  # GET /result_suites
-  # GET /result_suites.json
   def index
     @result_suites = ResultSuite.all
   end
 
-  # GET /result_suites/1
-  # GET /result_suites/1.json
   def show
   end
 
-  # GET /result_suites/new
   def new
     @result_suite = ResultSuite.new
   end
 
-  # GET /result_suites/1/edit
   def edit
   end
 
-  # POST /result_suites
-  # POST /result_suites.json
   def create
     @result_suite = ResultSuite.new(result_suite_params)
 
@@ -51,8 +43,6 @@ class ResultSuitesController < ApplicationController
     end
   end
 
-  # DELETE /result_suites/1
-  # DELETE /result_suites/1.json
   def destroy
     @result_suite.destroy
     respond_to do |format|

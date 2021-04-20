@@ -1,28 +1,20 @@
 class ResultCasesController < ApplicationController
   before_action :set_result_case, only: [:show, :edit, :update, :destroy]
 
-  # GET /result_cases
-  # GET /result_cases.json
   def index
     @result_cases = ResultCase.all
   end
 
-  # GET /result_cases/1
-  # GET /result_cases/1.json
   def show
   end
 
-  # GET /result_cases/new
   def new
     @result_case = ResultCase.new
   end
 
-  # GET /result_cases/1/edit
   def edit
   end
 
-  # POST /result_cases
-  # POST /result_cases.json
   def create
     #I know there will be multiple schedulers, but for testing i'm implementing for single scheduler.
     test_suite_id = Scheduler.find(result_case_params[:scheduler_id]).test_suite_id
@@ -45,8 +37,6 @@ class ResultCasesController < ApplicationController
     end
   end
 
-  # PATCH/PUT /result_cases/1
-  # PATCH/PUT /result_cases/1.json
   def update
     respond_to do |format|
       if @result_case.update(result_case_params)
@@ -59,8 +49,6 @@ class ResultCasesController < ApplicationController
     end
   end
 
-  # DELETE /result_cases/1
-  # DELETE /result_cases/1.json
   def destroy
     @result_case.destroy
     respond_to do |format|

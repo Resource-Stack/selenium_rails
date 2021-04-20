@@ -8,13 +8,9 @@ class TestSuite < ActiveRecord::Base
   has_many :schedulers
   
   def self.validate_header(header)
-    logger.debug "TestSuite.validate_header - header received is #{header}"
     if header[0] != "field_name" then
-      logger.error "TestSuite.validate_header - first column is #{header[0]}"
       return false
-      
     else
-      logger.debug "TestSuite.validate_header - Valid XLS file. Moving forward..."
       return true
     end
   end
@@ -28,7 +24,6 @@ class TestSuite < ActiveRecord::Base
       new_suite = TestSuite.new
       #new_suite_id = no_of_suites.to_i + 1
       new_suite.name = name
-      logger.debug "TestSuite.import - new suite name is #{new_suite.name}"
       new_suite.environment_id = environment_id
       new_suite.dependency = dependency
       new_suite.description = description
@@ -37,7 +32,6 @@ class TestSuite < ActiveRecord::Base
       # Now starting to iterate through each row. 
       (2..spreadsheet.last_row).each do |i|
       row = Hash[[header, spreadsheet.row(i)].transpose]
-      logger.debug "TestSuite.import - row is #{row}"
         test_case = TestCase.new
         test_case.dependency = dependency
         test_case.field_name = row['field_name']
@@ -52,6 +46,7 @@ class TestSuite < ActiveRecord::Base
         test_case.new_tab = row['new_tab']
         test_case.description = row['description']
         test_case.need_screenshot = row['need_screenshot']
+        test_case.priority = row['sequence']
         #test_case = TestCase.where(field_name: row['field_name']).first
         #if test_case.blank?
         #  test_case = TestCase.new
@@ -85,7 +80,6 @@ class TestSuite < ActiveRecord::Base
   
   def self.open_spreadsheet(file)
     require 'iconv'
-    logger.debug("ORIGINAL FILENAME: #{file.original_filename}")
     case File.extname(file.original_filename)
     when ".csv" then Roo::CSV.new(file.path)
     when ".xls" then Roo::Excel.new(file.path, nil, :ignore)

@@ -1,0 +1,17 @@
+ <%= form_tag project_user_id.present? ? update_project_user_path : create_project_user_path , remote: true  do |form| %>
+ <div class="form-group">
+     <%= hidden_field_tag "project_id", project_id %>
+     <%= hidden_field_tag "project_user_id", project_user_id %>
+     <label for="projectUser" class="col-md-4 col-form-label text-md-right left-align left-label">Project User</label>
+     <div>
+         <%= select_tag(:user_id, options_from_collection_for_select(users, :id, :email, user_id), include_blank: "Select User", disabled: project_user_id.present?)  %>
+     </div>
+     <label for="projectRole" class="col-md-4 col-form-label text-md-right left-align left-label">Project Role</label>
+     <div>
+         <%= select_tag(:project_role_id, options_from_collection_for_select(roles, :id, :name, role_id), include_blank: "Select Role")  %>
+     </div>
+ </div>
+ <div class="modal-footer">
+     <%= submit_tag "Submit", class: "btn btn-primary"%>
+ </div>
+ <% end  %>

@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   devise_scope :user do
     root to: "devise/sessions#new", via: 'get'
     match '/logout', to: "devise/sessions#destroy", via: 'get'
+    match '/invitation/resend_invite' => 'invitations#resend_invite', via: [:post]
   end
   resources :test_suites do
     put :sort, on: :collection
@@ -31,7 +32,10 @@ Rails.application.routes.draw do
   match "/list_all_reports", to: "environments#list_all_reports", via: "get"
   match "/list_all_result_suites", to: "result_suites#list_all_result_suites", via: "get"
 
-  match "/reports", to: "environments#reports", via: "get"
+  match "/reports", to: "environments#reports", via: ["get", "post"]
+
+  match "/filter_reports", to: "environments#filter_reports", via: ["get", "post"]
+
 
   match "run_suites", to: "environments#run_suites", via: "get"
 
@@ -86,6 +90,29 @@ Rails.application.routes.draw do
   post '/acknowledge_terms' => 'terms_and_conditions#acknowledge_terms'
   get '/privacy' => 'privacy_policies#privacy_policy'
   post '/acknowledge_privacy' => 'privacy_policies#acknowledge_privacy'
-  
+
+  post '/update_suite_flow' => 'test_suites#update_suite_flow'
+  get '/edit_test_case' => 'test_cases#edit_test_case'
+
+  post "/invite_user" => "users#invite_user"
+  delete "/remove_invitation" => "users#remove_invitation"
+  get "/resend_invitation" => "users#resend_invitation"
+
+  get "projects/index"
+  get "project_users/index"
+
+  match "/project_users", to: "project_users#index", via: ["get"]
+  get "create_project_user_script", to: "project_users#create_project_user_script"
+  delete "/delete_project_user" => "project_users#delete_project_user"
+  post "/create_project_user" => "project_users#create_project_user"
+  post "/update_project_user" => "project_users#update_project_user"
+
+  match "/projects", to: "projects#index", via: ["get"]
+  delete "/delete_project" => "projects#delete_project"
+  post "/create_project" => "projects#create_project"
+  get "/get_environments" => "projects#get_environments_for_filter"
+
+  match "/test_suite_main", to: "test_suites#test_suite_main", via: ["get", "post"]
+  match "/reports_main", to: "environments#reports_main", via: ["get", "post"]
 end
 

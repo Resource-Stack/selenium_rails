@@ -1,31 +1,30 @@
-<h1>Listing environments</h1>
+<div style="padding:20px;">
+    <h1>Environments</h1>
+    <span class="btn btn-primary" style="margin-bottom: 10px; color: white !important;">
+        <%= link_to 'New Environment', new_environment_path %>
+    </span>
+    <table id="envir_table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Url</th>
+                <th>Username</th>
+                <th>Password</th>
+                <th colspan="4">Actions</th>
+            </tr>
+        </thead>
 
-<table id="envir_table">
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Url</th>
-      <th>Username</th>
-      <th>Password</th>
-      <th colspan="4"></th>
-    </tr>
-  </thead>
+        <tbody>
+            <% @environments.each do |environment| %>
+            <tr>
+                <td><%= environment.name %></td>
+                <td><%= environment.url %></td>
+                <td><%= environment.username %></td>
+                <td><%= environment.password %></td>
 
-  <tbody>
-    <% @environments.each do |environment| %>
-      <tr>
-        <td><%= environment.name %></td>
-        <td><%= environment.url %></td>
-        <td><%= environment.username %></td>
-        <td><%= environment.password %></td>
-        <td><%= link_to 'Show', environment %></td>
-        <td><%= link_to 'Edit', edit_environment_path(environment) %></td>
-        <td><%= link_to 'Destroy', environment, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
-
-<br>
-
-<%= link_to 'New Environment', new_environment_path %>
+                <td><span class='btn btn-primary' style="color: #4680b5 !important;"><%= link_to 'Edit', edit_environment_path(environment)  %></span><span class='btn btn-primary' style="color: #4680b5 !important;"><%= link_to 'Destroy', environment, method: :delete, data: { confirm: 'Are you sure?' } %></span></td>
+            </tr>
+            <% end %>
+        </tbody>
+    </table>
+</div>

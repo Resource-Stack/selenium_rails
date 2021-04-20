@@ -3,6 +3,7 @@ class Environment < ActiveRecord::Base
   has_many :test_suites
   has_many :custom_commands
   belongs_to :user
+  belongs_to :project
   accepts_nested_attributes_for :custom_commands
 
 

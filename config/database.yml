@@ -6,7 +6,6 @@ defaults: &defaults
   pool: 5
   host: localhost
 
-
 test: &test
   <<: *defaults
   database: selenium_rails_test

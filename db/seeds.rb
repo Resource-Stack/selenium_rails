@@ -1,10 +1,10 @@
-# This file should contain all the record creation needed to seed the database with its default values.
-# The data can then be loaded with the rake db:seed (or created alongside the db with db:setup).
-#
-# Examples:
-#
-#   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
-#   Mayor.create(name: 'Emanuel', city: cities.first)
-ResultsDictionary.destroy_all
-ResultsDictionary.create(description: "SUCCESS")
-ResultsDictionary.create(description: "ERROR")
+if ResultsDictionary.count == 0
+    ResultsDictionary.create(description: "SUCCESS")
+    ResultsDictionary.create(description: "ERROR")
+end
+
+if ProjectRole.count == 0 
+    ProjectRole.create({:id=>1, :is_active=>true, :name=>"Manager"})
+    ProjectRole.create({:id=>2, :is_active=>true, :name=>"Tester"})
+    ProjectRole.create({:id=>3, :is_active=>true, :name=>"Developer"})
+end

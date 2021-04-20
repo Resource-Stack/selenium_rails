@@ -1,18 +1,20 @@
 <div class="container-fluid" id="internal-navbar">
-	<div>
-		<a href="/" class="user_profile"><%=link_to "#{current_user.email}", users_index_path %></a>
-	</div>
-	<div id="navbar">
-		<a href="/home" class="col-md-2 col-sm-1 col-xs-2 nav-button">Home</a>
-		<% if !session[:enviro_id].nil? %>
-			<a href="/test_suites" class="col-md-2 col-sm-1 col-xs-2 nav-button">Suites</a>
-			
-		<% else %>
-			<a href="/test_suites" class="col-md-2 col-sm-1 col-xs-2 nav-button">Suites</a>
-		<% end %>
-		<%#= <a href="/test_cases" class="col-md-2 col-sm-1 col-xs-2 nav-button">Cases</a> %>
-		<a href = "/reports" class="col-md-2 col-sm-1 col-xs-2 nav-button">Reports</a>
-		<a href="/logout" class="col-md-2 col-sm-1 col-xs-2 nav-button">Logout</a>
-	</div>
-	
+    <div style="display:flex; justify-content: flex-end;">
+        <span class="btn btn-link">
+            <%=link_to_if current_user.admin?, "#{current_user.email}", users_index_path %>
+        </span>
+    </div>
+    <div id="navbar">
+        <a href="/projects/index" class="col-md-2 col-sm-1 col-xs-2 nav-button">Home</a>
+        <% if !session[:enviro_id].nil? %>
+        <a href="/test_suites" class="col-md-2 col-sm-1 col-xs-2 nav-button">Suites</a>
+
+        <% else %>
+        <a href="/test_suites" class="col-md-2 col-sm-1 col-xs-2 nav-button">Suites</a>
+        <% end %>
+        <%#= <a href="/test_cases" class="col-md-2 col-sm-1 col-xs-2 nav-button">Cases</a> %>
+        <a href="/reports" class="col-md-2 col-sm-1 col-xs-2 nav-button">Reports</a>
+        <a href="/logout" class="col-md-2 col-sm-1 col-xs-2 nav-button">Logout</a>
+    </div>
+
 </div>

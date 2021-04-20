@@ -5,7 +5,7 @@ Rails.application.configure do
   # every request. This slows down response time but is perfect for development
   # since you don't have to restart the web server when you make code changes.
   config.cache_classes = false
-
+	config.hosts << "testing.resourcestack.com"
   # Do not eager load code on boot.
   config.eager_load = false
 
@@ -31,6 +31,8 @@ Rails.application.configure do
 
   config.action_mailer.perform_caching = false
 
+  config.action_mailer.default_url_options = { :host => Rails.application.secrets[:default_url] }
+
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
 
@@ -50,16 +52,18 @@ Rails.application.configure do
 
   # Suppress logger output for asset requests.
   config.assets.quiet = true
-  config.action_mailer.delivery_method = :smtp
+  # Action Mailer Configuration
   config.action_mailer.perform_deliveries = true
+  config.action_mailer.delivery_method = :smtp
+
   config.action_mailer.smtp_settings = {
-    address:         'smtp.office365.com',
-    port:            '587',
-    authentication:  :login,
-    user_name:       Rails.application.secrets.microsoft_account,
-    password:        Rails.application.secrets.microsoft_password,
-    domain:          'resourcestack.com',
-    enable_starttls_auto: true
+      address:         'smtp.office365.com',
+      port:            '587',
+      authentication:  :login,
+      user_name:       Rails.application.secrets[:microsoft_account],
+      password:        Rails.application.secrets[:microsoft_password],
+      domain:          'resourcestack.com',
+      enable_starttls_auto: true
   }
 
   # Raises error for missing translations

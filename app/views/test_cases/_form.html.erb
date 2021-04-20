@@ -1,75 +1,223 @@
-<%= form_for(@test_case) do |f| %>
-  <% if @test_case.errors.any? %>
+<%= javascript_include_tag "editor/ace.js", async: Rails.env.production?, onload: 'pageloaded()' %>
+
+<div style="padding: 20px;">
+    <%= form_for(@test_case, :remote=>true)  do |f| %>
+    <%= f.hidden_field :dialog_mode, :value => @dialog_mode %>
+    <% if @test_case.errors.any? %>
     <div id="error_explanation">
-      <h2><%= pluralize(@test_case.errors.count, "error") %> prohibited this test_case from being saved:</h2>
+        <h2><%= pluralize(@test_case.errors.count, "error") %> prohibited this test_case from being saved:</h2>
 
-      <ul>
-      <% @test_case.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
-      <% end %>
-      </ul>
+        <ul>
+            <% @test_case.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+            <% end %>
+        </ul>
     </div>
-  <% end %>
+    <% end %>
 
-  <div class="field" id = "leftbox">
-    <%= f.label :field_name %>
-    <%= f.text_field :field_name %>
-  </div>
-  <div class="field" id = "middlebox">
-    <%= f.label :field_type %>
-    <%= f.text_field :field_type %>
-  </div>
-  <div class="field" id = "rightbox">
-    <%= f.label :read_element %>
-    <%= f.text_field :read_element %>
-  </div>
-  <div class="field" id = "endbox">
-    <%= f.label :input_value %>
-    <%= f.text_field :input_value %>
-  </div>
-  <div class="field" id = "leftbox">
-    <%= f.label :string %>
-    <%= f.text_field :string %>
-  </div>
-  <div class="field" id = "middlebox">
-    <%= f.label :action %>
-    <%= f.text_field :action %>
-  </div>
-  <div class="field" id = "rightbox">
-    <%= f.label :action_url %>
-    <%= f.text_area :action_url %>
-  </div>
-  <div class="field" id = "endbox">
-    <%= f.label :base_url %>
-    <%= f.text_area :base_url %>
-  </div>
-  <div class="field" id = "leftbox">
-    <%= f.label :xpath %>
-    <%= f.text_area :xpath %>
-  </div>
-  <div class="field" id = "middlebox">
-    <%= f.label :sleeps %>
-    <%= f.text_area :sleeps %>
-  </div>
-  <div class="field" id = "rightbox">
-    <%= f.label :new_tab %>
-    <%= f.text_area :new_tab %>
-  </div>
-  <div class="field" id = "endbox">
-    <%= f.label :description %>
-    <%= f.text_area :description %>
-  </div>
-  <div class="field">
-    <%= f.label :need_screenshot %>
-    <%= f.text_area :need_screenshot %>
-  </div>
-  <div class="field">
-  	<%= f.label :enter_action %>
-  	<%= f.check_box :enter_action %>
-  </div>
-  <div class="actions">
-    <%= f.submit %>
-  </div>
-<% end %>
+    <div style="display:flex;">
+        <div class="form-group row">
+            <%= f.label :field_name %>
+            <%= f.text_field :field_name, class: "form-control form-control-sm" %>
+        </div>
+        <div class="form-group row">
+            <%= f.label :field_type %>
+            <%= f.text_field :field_type, class: "form-control form-control-sm" %>
+        </div>
+        <div class="form-group row">
+            <%= f.label :read_element %>
+            <%= f.text_field :read_element, class: "form-control form-control-sm" %>
+        </div>
+    </div>
+    <div style="display:flex;">
+        <div class="form-group row">
+            <%= f.label :input_value %>
+            <%= f.text_field :input_value, class: "form-control form-control-sm" %>
+        </div>
+        <div class="form-group row">
+            <%= f.label :string %>
+            <%= f.text_field :string, class: "form-control form-control-sm" %>
+        </div>
+        <div class="form-group row">
+            <%= f.label :action %>
+            <%= f.text_field :action , class: "form-control form-control-sm"%>
+        </div>
+    </div>
+    <div style="display:flex;">
+        <div class="form-group row">
+            <%= f.label :action_url %>
+            <%= f.text_area :action_url, class: "form-control form-control-sm" %>
+        </div>
+        <div class="form-group row">
+            <%= f.label :base_url %>
+            <%= f.text_area :base_url , class: "form-control form-control-sm"%>
+        </div>
+        <div class="form-group row">
+            <%= f.label :xpath %>
+            <%= f.text_area :xpath , class: "form-control form-control-sm"%>
+        </div>
+    </div>
+    <div style="display:flex;">
+        <div class="form-group row">
+            <%= f.label :sleeps %>
+            <%= f.text_area :sleeps , class: "form-control form-control-sm"%>
+        </div>
+        <div class="form-group row">
+            <%= f.label :new_tab %>
+            <%= f.text_area :new_tab, class: "form-control form-control-sm" %>
+        </div>
+        <div class="form-group row">
+            <%= f.label :description %>
+            <%= f.text_area :description, class: "form-control form-control-sm" %>
+        </div>
+    </div>
+    <div style="display:flex;">
+        <div class="form-group row">
+            <%= f.label :need_screenshot %>
+            <%= f.text_area :need_screenshot, class: "form-control form-control-sm" %>
+        </div>
+        <div class="form-group row">
+            <%= f.label :enter_action %>
+            <%= f.check_box :enter_action , class: "form-check-input",style:"margin-left: 80%;" %>
+        </div>
+        <div class="form-group row">
+            <%= f.label "Enable JS Condition" %>
+            <%= f.check_box :javascript_conditional_enabled, id: 'enableJavascript', class: "form-check-input", style:"margin-left: 80%;" %>
+        </div>
+    </div>
+    <div class="form-group row" id="conditionalDiv">
+        <%= f.label "Conditional" %>
+        <%= f.text_area :javascript_conditional, id: "conditionalTb", style: "display: none;" %>
+        <div id="editor" style="height: 200px;">
+        </div>
+    </div>
+    <div class="actions">
+        <input type='button' onclick="handleSubmitButtonClick();" value="Submit" class="btn btn-primary">
+        <%= f.submit "Submit", id: "btnSubmit",  :class=> "btn btn-primary", style: "display: none;" %>
+    </div>
+    <% end %>
+</div>
+<script>
 
+    
+    var defaultJsConditional = `function execute(){ 
+        return true;
+    } 
+return execute();`;
 
+    var conditionalTb = $("#conditionalTb");
+
+    var editor = null;
+
+    function pageloaded()
+    {   
+        editor = ace.edit("editor");
+        editor.setFontSize(16);
+        ace.config.set("basePath", window.location.origin + "/assets/editor/");
+        editor.getSession().setMode("ace/mode/javascript");
+        editor.setTheme("ace/theme/chrome");
+        editor.setHighlightActiveLine(true);
+        editor.setHighlightSelectedWord(false)
+        editor.setShowFoldWidgets(true);
+        editor.setShowPrintMargin(true);
+        editor.getSession().setUseWorker(true);
+
+        editor.$blockScrolling = Infinity; //prevents ace from logging annoying warnings
+        ace.config.loadModule('ace/ext/tern', function() {
+            editor.setOptions({
+            /**
+             * Either `true` or `false` or to enable with custom options pass object that
+             * has options for tern server: http://ternjs.net/doc/manual.html#server_api
+             * If `true`, then default options will be used
+             */
+            enableTern: {
+                /* http://ternjs.net/doc/manual.html#option_defs */
+                defs: ['browser', 'ecma5'],
+                /* http://ternjs.net/doc/manual.html#plugins */
+                plugins: {
+                    doc_comment: {
+                        fullDocs: true
+                    }
+                },
+                /**
+                 * (default is true) If web worker is used for tern server.
+                 * This is recommended as it offers better performance, but prevents this from working in a local html file due to browser security restrictions
+                 */
+                useWorker: true,
+                /* if your editor supports switching between different files (such as tabbed interface) then tern can do this when jump to defnition of function in another file is called, but you must tell tern what to execute in order to jump to the specified file */
+                switchToDoc: function(name, start) {
+                    console.log('switchToDoc called but not defined. name=' + name + '; start=', start);
+                },
+                /**
+                 * if passed, this function will be called once ternServer is started.
+                 * This is needed when useWorker=false because the tern source files are loaded asynchronously before the server is started.
+                 */
+                startedCb: function() {
+                    //once tern is enabled, it can be accessed via editor.ternServer
+                    console.log('editor.ternServer:', editor.ternServer);
+                },
+            },
+            /**
+             * when using tern, it takes over Ace's built in snippets support.
+             * this setting affects all modes when using tern, not just javascript.
+             */
+            enableSnippets: true,
+            /**
+             * when using tern, Ace's basic text auto completion is enabled still by deafult.
+             * This settings affects all modes when using tern, not just javascript.
+             * For javascript mode the basic auto completion will be added to completion results if tern fails to find completions or if you double tab the hotkey for get completion (default is ctrl+space, so hit ctrl+space twice rapidly to include basic text completions in the result)
+             */
+                enableBasicAutocompletion: true,
+            });
+        });
+
+        editor.on("input", function(e) {
+            conditionalTb.val(editor.getValue());
+        });
+    }
+
+    function setConditional(value) {
+        conditionalTb.val(value);
+        editor.setValue(value);
+    }
+
+    $(function() {
+        var enableJavascriptCb = document.getElementById("enableJavascript");
+        var conditionalDiv = document.getElementById("conditionalDiv");
+        if (!enableJavascriptCb.checked) {
+            conditionalDiv.style.display = "none";
+        } else {
+            setConditional(conditionalTb.val());
+        }
+
+        $("#enableJavascript").change(function() {
+            var checked = this.checked;
+
+            if (checked) {
+                conditionalDiv.style.display = "block";
+                setConditional(defaultJsConditional);
+            } else {
+                conditionalDiv.style.display = "none";
+                setConditional("");
+            }
+        });
+    });
+
+    function handleSubmitButtonClick() {
+        // if (editor === null || editor === undefined)
+        // {
+        //    editor = ace.edit("editor");
+        // }
+        var annotations = editor.getSession().getAnnotations().filter(a => a.type == "error");
+        if (annotations.length == 0) {
+            $("#btnSubmit").click();
+        } else {
+            var html = "<div>";
+            annotations.map((a, i) => {
+                html += `<span>${i+1}. ${a.text}</span><br/>`;
+            });
+            html += "</div>";
+            $().showHtmlDialog("JS Conditional Error", html);
+        }
+    }
+</script>

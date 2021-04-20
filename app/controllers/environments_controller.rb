@@ -2,73 +2,60 @@ class EnvironmentsController < ApplicationController
   skip_before_action :verify_authenticity_token, only: [:create, :update]
   before_action :set_environment, only: [:show, :edit, :update, :destroy]
 
-  # GET /environments
-  # GET /environments.json
   def index
-    @environments = Environment.all
+    project_id = params[:project_id]
+    if project_id.present?
+      #TODO: Validate user access to projects
+      session[:project_id] = project_id
+      @environments = Environment.where.not(:project_id=>nil).where(:project_id=>project_id)
+    else
+      redirect_to projects_index_path
+    end    
   end
 
-  # GET /environments/1
-  # GET /environments/1.json
   def show
   end
 
-  # GET /environments/new
   def new
     @environment = Environment.new
+    @environment.project_id = session[:project_id]
   end
 
-  # GET /environments/1/edit
   def edit
     @custom = @environment.custom_commands.new
   end
 
-  # POST /environments
-  # POST /environments.json
   def create
     @environment = Environment.new(environment_params)
-    
-
-    respond_to do |format|
       if @environment.save
-        format.html { redirect_to @environment, notice: 'Environment was successfully created.' }
-        format.json { render :show, status: :created, location: @environment }
+        redirect_to environments_path(:project_id=> @environment.project_id)
       else
+        respond_to do |format|
         format.html { render :new }
         format.json { render json: @environment.errors, status: :unprocessable_entity }
+        end
       end
-    end
   end
 
-  # PATCH/PUT /environments/1
-  # PATCH/PUT /environments/1.json
   def update
     custom_command_params = params[:custom_command]
-    logger.debug("PARAMS OF CUSTOM COMMAND #{custom_command_params.inspect}")
     if !custom_command_params.present?
       @custom.update(custom_command_params)
-      logger.debug("IN THE ENV UPDATE CUSTOM COMMAND #{@custom.inspect}")
     end
-    respond_to do |format|
-      if @environment.update(environment_params)
-        format.html { redirect_to @environment, notice: 'Environment was successfully updated.' }
-        format.json { render :show, status: :ok, location: @environment }
-      else
-        format.html { render :edit }
-        format.json { render json: @environment.errors, status: :unprocessable_entity }
+   
+    if @environment.update(environment_params)
+      redirect_to environments_path(:project_id=> @environment.project_id)
+    else
+      respond_to do |format|
+          format.html { render :edit }
+          format.json { render json: @environment.errors, status: :unprocessable_entity }
       end
-
     end
   end
 
-  # DELETE /environments/1
-  # DELETE /environments/1.json
   def destroy
     @environment.destroy
-    respond_to do |format|
-      format.html { redirect_to environments_url, notice: 'Environment was successfully destroyed.' }
-      format.json { head :no_content }
-    end
+    redirect_to environments_path(:project_id=> @environment.project_id)
   end
   
   def test_suites
@@ -81,13 +68,9 @@ class EnvironmentsController < ApplicationController
     #  @status = "Draft"
     #end
     if !params[:status].nil?
-      logger.debug("STATUS AND ENVIRONMENT")
-      
       @test_suites = TestSuite.where('environment_id = ? AND status = ?', @environment_id, @status)
-      logger.debug("TEST SUITE #{@test_suites.inspect}")
     else
       @test_suites = TestSuite.where(environment_id: @environment_id)
-      logger.debug("TEST SUITE in ELSE #{@test_suites.inspect}")
     end
     respond_to do |format|  
       format.html
@@ -110,27 +93,81 @@ class EnvironmentsController < ApplicationController
   end
 
   def download_results
-    logger.debug("PARAMS FROM DOWNLOAD #{params.inspect}")
     ids = params[:result_cases]
     @rc_cases = Array.new
     ids.each do |rc|
       @rc_cases << ResultCase.find(rc)
     end
-    logger.debug("RC IN RESULTS ENVIRO #{@rc_cases.inspect}")
     respond_to do |format|
       format.html
       format.csv do#{ send_data @results.to_csv, filename: "result-#{Date.today}.csv" }
         headers['Content-Disposition'] = "attachment; filename=\"reports-#{Date.today}.csv\""
         headers['Content-Type'] ||= 'text/csv'
       end
-      #format.xlsx #{render xlsx: 'export_results'}
     end
   end
 
+  def reports_main
+    @project_id = session[:project_id]
+    @environment_id = session[:environment_id]
+
+    if params[:project_id].present?
+      @project_id = params[:project_id] 
+      @environment_id = params[:environment_id]
+    end
+
+    session[:project_id] = @project_id
+    session[:environment_id] = @environment_id
+
+    @projects = ProjectUser.where({:is_active=>true, :user_id=> current_user.id}).joins(:project).select("projects.id, projects.name")
+    @environments = @project_id.nil? ? [] : Environment.where(:project_id=>@project_id).select(:id, :name)
+
+    if @project_id.present? && @environment_id.present?
+        @sche_status_name = Scheduler.group(:status)
+        if params[:start_date].present? && params[:end_date].present?
+          @sche_status = Scheduler.where('scheduled_date BETWEEN ? AND ?', params[:start_date], params[:end_date]).group(:status).count
+        else 
+          @sche_status = Scheduler.group(:status).count
+        end
+        @suite_status = TestSuite.group(:status).count
+        @schedule = Array.new
+        @test_suites = TestSuite.where(environment_id: @environment_id).pluck(:id)
+        if @test_suites.present?
+          @test_suites.each do |ts_id|
+            sch = Scheduler.where(test_suite_id: ts_id)
+            if params[:start_date].present? && params[:end_date].present?
+              sch = sch.where('scheduled_date BETWEEN ? AND ?', params[:start_date], params[:end_date])
+            end
+
+            if !params[:status].nil?
+              sch = sch.where(status: params[:status])
+            end
+            sch_id = sch.pluck(:id)
+
+            if !sch_id.blank?
+              sch_id.each do |id|
+                @schedule << Scheduler.find(id)
+              end
+            end
+        end
+        end
+      end 
+    end
+
   def reports
-    logger.debug("SESSION OBJECT #{session[:enviro_id].inspect}")
-    if session[:enviro_id].present?
-      id = session[:enviro_id]
+    redirect_to reports_main_path
+  end
+
+  def filter_reports
+    @sche_status_name = Scheduler.group(:status)
+    if params[:start_date].present? && params[:end_date].present?
+      @sche_status = Scheduler.where('scheduled_date BETWEEN ? AND ?', params[:start_date], params[:end_date]).group(:status).count
+    else 
+      @sche_status = Scheduler.group(:status).count
+    end
+    @suite_status = TestSuite.group(:status).count
+    if session[:environment_id].present?
+      id = session[:environment_id]
     else
       id = current_user.default_environ
     end
@@ -139,37 +176,36 @@ class EnvironmentsController < ApplicationController
     @schedule = Array.new
     @test_suites = TestSuite.where(environment_id: id).pluck(:id)
     if @test_suites.present?
-      logger.debug(" TEST SUITE #{@test_suites} ")
       @test_suites.each do |ts_id|
-        sch_id = Scheduler.where(test_suite_id: ts_id).pluck(:id)
+        if !params[:status].nil?
+          sch_id = Scheduler.where(test_suite_id: ts_id, status: params[:status]).pluck(:id)
+        else
+          sch_id = Scheduler.where(test_suite_id: ts_id).pluck(:id)
+        end
         if !sch_id.blank?
-          #@sch << sch_id
-        
-        logger.debug("SCHEDULERS #{sch_id}")
-      
-        sch_id.each do |id|
+          sch_id.each do |id|
           
           @schedule << Scheduler.find(id)
-          logger.debug(" TEST SUITE #{@schedule.inspect}")
         end
         end
       
     end
     end
+    respond_to do |format|
+     format.js
+   end
+
   end
   
   def run_suites
-    logger.debug "COMMIT #{params[:commit]}"
     if params[:suite].present?
       params[:suite].each do |s|
-        logger.debug "CHECK CHECK SUITE SUITE #{s}"
         suite = TestSuite.find(s[0])
         schedule = Scheduler.new
         schedule.test_suite_id = s[0]
         schedule.scheduled_date = DateTime.now
         schedule.status = "READY"
         schedule.save!
-        logger.debug "#{suite.id} #{suite.name}"
         if params[:commit] == "Schedule Now"
           system "/home/newprod/SeleniumWebTester/start.sh"
         end
@@ -193,6 +229,6 @@ class EnvironmentsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def environment_params
-      params.require(:environment).permit(:name, :url, :username, :password, :login_field, :password_field, :action_button,:default_suite_id, :user_emails, :git_url, :git_username, :git_password, :git_branch, :selenium_tester_url, :login_required, test_suite_ids: [])
+      params.require(:environment).permit(:name, :url, :username, :password, :login_field, :password_field, :action_button,:default_suite_id, :user_emails, :git_url, :git_username, :project_id, :git_password, :git_branch, :selenium_tester_url, :login_required, test_suite_ids: [])
     end
 end

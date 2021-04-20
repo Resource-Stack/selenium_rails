@@ -1,0 +1,7 @@
+ <% if @user.admin? %>
+ <div style="padding: 20px;">
+     <%= render 'invite_user_form' %>
+     <br />
+     <%= render 'invited_users_list' %>
+ </div>
+ <% end %>

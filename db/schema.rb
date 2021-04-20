@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_27_152827) do
+ActiveRecord::Schema.define(version: 202012111533081) do
 
   create_table "case_suites", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "test_case_id"
@@ -18,6 +18,8 @@ ActiveRecord::Schema.define(version: 2020_10_27_152827) do
     t.integer "sequence"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string "accepted_case_ids", default: "[]"
+    t.string "rejected_case_ids", default: "[]"
   end
 
   create_table "custom_commands", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -51,6 +53,36 @@ ActiveRecord::Schema.define(version: 2020_10_27_152827) do
     t.string "staging_folder"
     t.string "git_status"
     t.boolean "login_required", default: true
+    t.bigint "project_id"
+    t.index ["project_id"], name: "index_environments_on_project_id"
+  end
+
+  create_table "project_roles", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "name"
+    t.boolean "is_active", default: true
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "project_users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "project_id"
+    t.integer "user_id"
+    t.bigint "project_role_id"
+    t.boolean "is_active", default: true
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["project_id"], name: "index_project_users_on_project_id"
+    t.index ["project_role_id"], name: "index_project_users_on_project_role_id"
+    t.index ["user_id"], name: "index_project_users_on_user_id"
+  end
+
+  create_table "projects", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "name"
+    t.boolean "is_active", default: true
+    t.integer "user_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_projects_on_user_id"
   end
 
   create_table "result_cases", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -123,16 +155,8 @@ ActiveRecord::Schema.define(version: 2020_10_27_152827) do
     t.integer "custom_command_id", default: 0
     t.boolean "enter_action", default: false
     t.integer "priority"
-  end
-
-  create_table "test_data", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci", force: :cascade do |t|
-    t.integer "test_id"
-    t.integer "result_id"
-    t.datetime "date_of_test"
-    t.string "browser"
-    t.text "details"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.boolean "javascript_conditional_enabled", default: false
+    t.string "javascript_conditional"
   end
 
   create_table "test_suites", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -145,14 +169,7 @@ ActiveRecord::Schema.define(version: 2020_10_27_152827) do
     t.integer "base_suite_id"
     t.string "description"
     t.string "status"
-  end
-
-  create_table "testing_cases", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci", force: :cascade do |t|
-    t.string "field_name"
-    t.string "field_type"
-    t.text "business_rules"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.text "flow_state"
   end
 
   create_table "users", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -170,8 +187,28 @@ ActiveRecord::Schema.define(version: 2020_10_27_152827) do
     t.datetime "updated_at", null: false
     t.boolean "terms_acknowledged", default: false
     t.boolean "privacy_acknowledged", default: false
+    t.integer "default_environ"
+    t.boolean "admin"
+    t.string "invitation_token"
+    t.datetime "invitation_created_at"
+    t.datetime "invitation_sent_at"
+    t.datetime "invitation_accepted_at"
+    t.integer "invitation_limit"
+    t.string "invited_by_type"
+    t.bigint "invited_by_id"
+    t.integer "invitations_count", default: 0
+    t.datetime "invite_start_date"
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
+    t.index ["invitations_count"], name: "index_users_on_invitations_count"
+    t.index ["invited_by_id"], name: "index_users_on_invited_by_id"
+    t.index ["invited_by_type", "invited_by_id"], name: "index_users_on_invited_by_type_and_invited_by_id"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "environments", "projects"
+  add_foreign_key "project_users", "project_roles"
+  add_foreign_key "project_users", "projects"
+  add_foreign_key "project_users", "users"
+  add_foreign_key "projects", "users"
 end

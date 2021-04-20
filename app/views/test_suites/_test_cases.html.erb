@@ -1,30 +1,30 @@
 <h3 style="text-align:center;">Test Cases for <%= @test_suite.name %></h3>
 <table id="test-cases">
-	<thead>
-		<tr>
-			<th>Field Name</th>
-  			<th>Field Type</th>
-  			<th>Read Element</th>
-  			<th>Input Value</th>
-  			<th>Action</th>
-  			<th>Action URL</th>
-  			<th>Created At</th>
-		</tr>
-	</thead>
-	<tbody>
-	  <% @test_cases.each do |tc| %>
-		<tr>
-			<td><%= tc.field_name %></td>
-  			<td><%= tc.field_type %></td>
-  			<td><%= tc.read_element %></td>
-  			<td><%= tc.input_value %></td>
-  			<td><%= tc.action %></td>
-  			<td><%= tc.action_url %></td>
-  			<td><%= tc.created_at %></td>
-		</tr>
-	  <% end %>
-	</tbody>
+    <thead>
+        <tr>
+            <th>Field Name</th>
+            <th>Field Type</th>
+            <th>Read Element</th>
+            <th>Input Value</th>
+            <th>Action</th>
+            <th>Action URL</th>
+            <th>Created At</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% @test_cases.each do |tc| %>
+        <tr>
+            <td><%= tc.field_name %></td>
+            <td><%= tc.field_type %></td>
+            <td><%= tc.read_element %></td>
+            <td><%= tc.input_value %></td>
+            <td><%= tc.action %></td>
+            <td><%= tc.action_url %></td>
+            <td><%= tc.created_at %></td>
+        </tr>
+        <% end %>
+    </tbody>
 </table>
 
-<%= link_to 'Export to CSV', export_path(test_suite_ids: @test_suite.id, format: 'csv'), class: "btn btn-default btn-sm"%>
+<%= link_to 'Export to CSV', export_path(test_suite_ids: @test_suite.id, format: 'csv'), class: "btn btn-primary btn-sm"%>
 <%= hidden_field_tag :id, @test_suite.id  %>

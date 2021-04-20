@@ -76,7 +76,8 @@ class BrowserExtensionController < ApplicationController
   
   def get_environments
     begin
-      @environments = Environment.select(:id,:name).as_json
+      project_ids = ProjectUser.where(:user_id=>current_user.id, :is_active=>true).pluck(:project_id)
+      @environments = Environment.where(:project_id=>project_ids).select(:id,:name).as_json
       render json: format_response_json({
         message: 'Environments retrieved!',
         status: true,
