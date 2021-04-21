@@ -147,8 +147,12 @@
         var nodeCaseIdMap = {};
         var nodeResult = [];
         var nodes = result.drawflow.Home.data;
+        var firstTestCaseID = -1;
         for (node in nodes) {
             var curNode = nodes[node];
+            if (firstTestCaseID < 0 && curNode.inputs.input_1.connections.length === 0) {
+                firstTestCaseID = curNode.data.id;
+            }
             var test_case_id = curNode.data.id;
             nodeCaseIdMap[node] = test_case_id;
 
@@ -165,6 +169,7 @@
         var dataToSave = {
             flow_state: result,
             suite_id: suiteID,
+            first_test_case_id: firstTestCaseID,
             case_data: nodeResult.map(n => {
                 return {
                     test_case_id: n.test_case_id,

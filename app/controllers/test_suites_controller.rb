@@ -7,22 +7,22 @@ class TestSuitesController < ApplicationController
     @environment_id = session[:environment_id]
 
     if params[:project_id].present?
-      @project_id = params[:project_id] 
+      @project_id = params[:project_id]
       @environment_id = params[:environment_id]
     end
 
     session[:project_id] = @project_id
     session[:environment_id] = @environment_id
 
-    @projects = ProjectUser.where({:is_active=>true, :user_id=> current_user.id}).joins(:project).select("projects.id, projects.name")
-    @environments = @project_id.nil? ? [] : Environment.where(:project_id=>@project_id).select(:id, :name)
+    @projects = ProjectUser.where({ :is_active => true, :user_id => current_user.id }).joins(:project).select("projects.id, projects.name")
+    @environments = @project_id.nil? ? [] : Environment.where(:project_id => @project_id).select(:id, :name)
 
     if @project_id.present? && @environment_id.present?
-      if !params[:status].blank? 
-          @test_suites = TestSuite.where(environment_id: @environment_id, status: params[:status])
-        else
-          @test_suites = TestSuite.where(environment_id: @environment_id)
-      end  
+      if !params[:status].blank?
+        @test_suites = TestSuite.where(environment_id: @environment_id, status: params[:status])
+      else
+        @test_suites = TestSuite.where(environment_id: @environment_id)
+      end
     end
   end
 
@@ -32,10 +32,10 @@ class TestSuitesController < ApplicationController
 
   def show
     @ts = TestSuite.find(params[:id])
-      respond_to do |format|
+    respond_to do |format|
       format.html
       format.js
-      end
+    end
   end
 
   def new
@@ -55,7 +55,7 @@ class TestSuitesController < ApplicationController
 
     respond_to do |format|
       if @test_suite.save
-        format.html { redirect_to @test_suite, notice: 'Test suite was successfully created.' }
+        format.html { redirect_to @test_suite, notice: "Test suite was successfully created." }
         format.json { render :show, status: :created, location: @test_suite }
       else
         format.html { render :new }
@@ -69,7 +69,7 @@ class TestSuitesController < ApplicationController
 
     respond_to do |format|
       if @test_suite.update(test_suite_params)
-        format.html { redirect_to test_suites_path, notice: 'Test suite was successfully updated.' }
+        format.html { redirect_to test_suites_path, notice: "Test suite was successfully updated." }
         format.json { render :index, status: :ok, location: @test_suite }
       else
         format.html { render :edit }
@@ -103,18 +103,18 @@ class TestSuitesController < ApplicationController
     end
     @test_suite.destroy #This will destroy caseSuites also
     respond_to do |format|
-      format.html { redirect_to "/test_suites", notice: 'Test suite was successfully destroyed.' }
+      format.html { redirect_to "/test_suites", notice: "Test suite was successfully destroyed." }
       format.json { head :no_content }
     end
   end
-  
+
   def test_cases
     @test_suite = TestSuite.find(params[:id])
-    @test_cases = @test_suite.test_cases.order('id DESC')
+    @test_cases = @test_suite.test_cases.order("id DESC")
     @chartData = {
       suiteID: @test_suite.id,
       case_detail: @test_cases.select(:id, :description).reverse.as_json,
-      flowState: @test_suite.flow_state
+      flowState: @test_suite.flow_state,
     }
   end
 
@@ -123,42 +123,40 @@ class TestSuitesController < ApplicationController
       flow_state = params[:flow_state]
       suite_id = params[:suite_id]
       case_data = params[:case_data]
+      first_test_case_id = params[:first_test_case_id]
 
       @test_suite = TestSuite.find(suite_id)
       @test_suite.flow_state = flow_state.to_json
       @test_suite.save!
       case_ids = case_data.pluck(:test_case_id)
 
-      @caseSuites = CaseSuite.where(:test_case_id=> case_ids, :test_suite_id => suite_id)
+      @caseSuites = CaseSuite.where(:test_case_id => case_ids, :test_suite_id => suite_id)
 
-      @caseSuites.each do |suite|
-        @case_suite =case_data.to_a.find { |cd| cd[:test_case_id] == suite.test_case_id}.as_json
+      @caseSuites.each_with_index do |suite, index|
+        @case_suite = case_data.to_a.find { |cd| cd[:test_case_id] == suite.test_case_id }.as_json
         rejected_case_id_array = @case_suite["rejectedCaseIds"]
         accepted_case_id_array = @case_suite["acceptedCaseIds"]
-
+        suite.sequence = first_test_case_id == @case_suite["test_case_id"] ? 0 : -1
         suite.rejected_case_ids = rejected_case_id_array.as_json
         suite.accepted_case_ids = accepted_case_id_array.as_json
         suite.save!
       end
 
       render json: format_response_json({
-                  message: 'Updated the flow!',
-                  status: true
-              })
+               message: "Updated the flow!",
+               status: true,
+             })
     rescue => exception
       render json: format_response_json({
-                  message: 'Failed to update the flow!',
-                  status: false
-              })
+               message: "Failed to update the flow!",
+               status: false,
+             })
     end
-
   end
 
-  
   def import_suite
-    
   end
-  
+
   def import
     if params[:dependency].present?
       dependency = params[:dependency]
@@ -167,13 +165,13 @@ class TestSuitesController < ApplicationController
     end
     TestSuite.import(params[:file], params[:name], session[:environment_id], params[:description], dependency)
   end
-  
+
   def tests_ran
     @test_suite = TestSuite.find(params[:id])
     @schedulers = @test_suite.schedulers
   end
 
-  def unschedule 
+  def unschedule
     id = params[:id]
     #environ_id = id = session[:enviro_id]
     #@test_suites = TestSuite.where(environment_id: environ_id)
@@ -184,19 +182,20 @@ class TestSuitesController < ApplicationController
       end
     end
     respond_to do |format|
-        format.html {redirect_to "/test_suites/"}
+      format.html { redirect_to "/test_suites/" }
     end
     #render :template => "environments/test_suites.html.erb"
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_test_suite
-      @test_suite = TestSuite.find(params[:id])
-    end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def test_suite_params
-      params.require(:test_suite).permit(:name, :environment_id, :description, :status, :dependency, test_case_ids: [])
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_test_suite
+    @test_suite = TestSuite.find(params[:id])
+  end
+
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def test_suite_params
+    params.require(:test_suite).permit(:name, :environment_id, :description, :status, :dependency, test_case_ids: [])
+  end
 end
