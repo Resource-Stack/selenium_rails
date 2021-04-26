@@ -22,7 +22,7 @@ class EnvironmentsController < ApplicationController
   end
 
   def edit
-    @custom = @environment.custom_commands.select("id,name,command").as_json
+    @custom = @environment.custom_commands.select("id,name,command,parameters").as_json
   end
 
   def create
@@ -34,6 +34,25 @@ class EnvironmentsController < ApplicationController
         format.html { render :new }
         format.json { render json: @environment.errors, status: :unprocessable_entity }
       end
+    end
+  end
+
+  def update_custom_command
+    data = params[:custom_command]
+    if data.present?
+      command = CustomCommand.find(data["id"])
+      if command.nil?
+        return render_result(false, "Command not found!")
+      end
+
+      command.name = data["name"]
+      command.parameters = data["parameters"]
+      command.command = data["command"]
+      command.save!
+
+      return render_result(true, "Command updated!")
+    else
+      return render_result(false, "Command not found!")
     end
   end
 

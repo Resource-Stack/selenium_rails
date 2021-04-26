@@ -91,57 +91,6 @@
     var graphInitialized = false;
     var suiteID = -1;
 
-    function initializeGraphView() {
-        if (graphInitialized) return;
-        graphInitialized = true;
-        var id = document.getElementById("drawflow");
-
-        drawFlow = new Drawflow(id);
-        drawFlow.reroute = true;
-        drawFlow.start();
-        drawFlow.on('connectionCreated', function(connection) {
-            if (disableMultipleConnections) {
-                var node = drawFlow.getNodeFromId(connection.output_id);
-                var outputConnections = node.outputs[connection.output_class].connections;
-                var connectionToRemove = outputConnections.filter(c => c.node != connection.input_id);
-                if (connectionToRemove && connectionToRemove.length == 1) {
-                    connectionToRemove = connectionToRemove[0];
-                    drawFlow.removeSingleConnection(connection.output_id, connectionToRemove.node, connection.output_class, connectionToRemove.output);
-                }
-            }
-        });
-
-
-        var chartData = $('#chartData').data();
-        if (chartData && chartData.flowstate != null) {
-            drawFlow.drawflow = chartData.flowstate;
-            drawFlow.start();
-        } else {
-            var test_cases = chartData.caseDetail;
-
-            var curNode = 0;
-            test_cases.forEach(c => {
-                var newNode = drawFlow.addNode("1", 1, 2, curNode * 200, curNode * 80, "", {
-                    id: c.id
-                }, "<div style='title'>" + c.description + "</div>");
-                drawFlow.addConnection(curNode, newNode, 'output_1', 'input_1')
-                curNode = newNode;
-            });
-        }
-
-        suiteID = chartData.suiteid;
-    }
-
-    function changeMode(option) {
-        if (option == 'lock') {
-            lock.style.display = 'none';
-            unlock.style.display = 'block';
-        } else {
-            lock.style.display = 'block';
-            unlock.style.display = 'none';
-        }
-    }
-
     function exportResult() {
         var result = drawFlow.export();
         var nodeCaseIdMap = {};
@@ -194,6 +143,98 @@
         });
     }
 
+    function initializeGraphView() {
+        if (graphInitialized) return;
+        graphInitialized = true;
+        var id = document.getElementById("drawflow");
+
+        drawFlow = new Drawflow(id);
+        drawFlow.reroute = true;
+        drawFlow.start();
+        drawFlow.on('connectionCreated', function(connection) {
+            if (disableMultipleConnections) {
+                var node = drawFlow.getNodeFromId(connection.output_id);
+                var outputConnections = node.outputs[connection.output_class].connections;
+                var connectionToRemove = outputConnections.filter(c => c.node != connection.input_id);
+                if (connectionToRemove && connectionToRemove.length == 1) {
+                    connectionToRemove = connectionToRemove[0];
+                    drawFlow.removeSingleConnection(connection.output_id, connectionToRemove.node, connection.output_class, connectionToRemove.output);
+                }
+            }
+        });
+
+        var recursivelyTraverseObject = (object, properties) => {
+            if (object === null) return null;
+
+            if (properties.length === 0) return object;
+
+            var propertyToTraverse = properties[0];
+            return recursivelyTraverseObject(object[propertyToTraverse], properties.slice(1));
+        }
+
+        var chartData = $('#chartData').data();
+        var test_cases = chartData.caseDetail;
+
+        var initializeFlowDiagram = () => {
+            var curNode = 0;
+            test_cases.forEach(c => {
+                var newNode = drawFlow.addNode("1", 1, 2, curNode * 200, curNode * 80, "", {
+                    id: c.id
+                }, "<div style='title'>" + c.description + "</div>");
+                drawFlow.addConnection(curNode, newNode, 'output_1', 'input_1')
+                curNode = newNode;
+            });
+        }
+
+        suiteID = chartData.suiteid;
+        if (chartData.flowstate != null) {
+            var chartNodes = recursivelyTraverseObject(chartData, ["flowstate", "drawflow", "Home", "data"]);
+            var existingNodeTestCaseIds = [];
+            for (const [key, value] of Object.entries(chartNodes)) {
+                existingNodeTestCaseIds.push(value.data.id);
+            }
+
+            var testCaseIds = test_cases.map(c => c.id);
+            var addedCaseIds = testCaseIds.filter(c => !existingNodeTestCaseIds.includes(c));
+            var deletedCaseIds = existingNodeTestCaseIds.filter(c => !testCaseIds.includes(c));
+
+            if (deletedCaseIds.length > 0) {
+                alert("Some existing nodes where deleted, so the diagram is reinitialized!");
+                initializeFlowDiagram();
+                exportResult();
+                return;
+            }
+
+            drawFlow.drawflow = chartData.flowstate;
+            if (addedCaseIds.length > 0) {
+                var addedCases = test_cases.filter(c => addedCaseIds.includes(c.id));
+                var curNode = addedCaseIds.length + 1;
+                addedCases.forEach(c => {
+                    var newNode = drawFlow.addNode("1", 1, 2, curNode * 200, curNode * 80, "", {
+                        id: c.id
+                    }, "<div style='title'>" + c.description + "</div>");
+
+                    curNode++;
+                });
+
+                alert("Some new nodes are added. Please update the connections and save!");
+            }
+
+            drawFlow.start();
+        } else {
+            initializeFlowDiagram();
+        }
+    }
+
+    function changeMode(option) {
+        if (option == 'lock') {
+            lock.style.display = 'none';
+            unlock.style.display = 'block';
+        } else {
+            lock.style.display = 'block';
+            unlock.style.display = 'none';
+        }
+    }
 
     function setupTabs() {
         var tableViewTab = document.getElementById("tableViewTab");
@@ -217,10 +258,6 @@
         });
     }
 
-    setupTabs();
-
-    initializeGraphView();
-
     document.getElementById("drawflow").addEventListener('dblclick', function(e) {
         var node = $(e.target).parents(".drawflow-node")[0];
         if (node) {
@@ -232,5 +269,11 @@
                     $().showHtmlDialog("Update case", data);
                 });
         }
+    });
+
+    $(document).ready(function() {
+        setupTabs();
+
+        initializeGraphView();
     });
 </script>

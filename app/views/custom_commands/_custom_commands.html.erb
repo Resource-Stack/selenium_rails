@@ -15,7 +15,7 @@
 </div>
 <%= cc.submit 'Submit', :class => 'btn btn-primary' %>
 <br>
-<% end -%>
+<% end %>
 
 <br>
 <br>
@@ -26,6 +26,7 @@
         <tr>
             <th>Name</th>
             <th>Command</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -33,6 +34,7 @@
         <tr>
             <td><%= custom["name"] %></td>
             <td><%= custom["command"] %></td>
+            <td><span class='btn btn-primary btn-command-edit' data-custom-command='<%= custom.to_json %>'>Edit</span></td>
         </tr>
         <% end %>
     </tbody>
@@ -40,6 +42,137 @@
 <% end %>
 
 <script>
+    function isEmpty(value) {
+        return (
+            value === undefined ||
+            value === null ||
+            value === "" ||
+            value === "<div></div>" ||
+            (typeof value === "object" && Object.keys(value).length === 0) ||
+            (typeof value === "string" && value.trim().length === 0)
+        );
+    }
+    $(document).ready(function() {
+        $(".btn-command-edit").on('click', function() {
+            var command = $(this).data("customCommand");
+            var id = command.id;
+            var formHtml = "";
+            formHtml += `<div class="form-group row">
+    <label
+      for="name"
+      class="col-md-4 col-form-label text-md-right"
+      >Name</label
+    >
+    <div class="col-md-6">
+      <input
+        type="text"
+        id="name"
+        class="form-control"
+        value='${command.name}'
+        name="name"
+        required="true"
+      />
+    </div>
+  </div>`;
+
+            formHtml += `<div class="form-group row">
+    <label
+      for="command"
+      class="col-md-4 col-form-label text-md-right"
+      >Command</label
+    >
+    <div class="col-md-6">
+      <input
+        type="text"
+        id="command"
+        value='${command.command}'
+        class="form-control"
+        name="command"
+        required="true"
+      />
+    </div>
+  </div>`;
+
+            formHtml += `<div class="form-group row">
+    <label
+      for="name"
+      class="col-md-4 col-form-label text-md-right"
+      >Parameters</label
+    >
+    <div class="col-md-6">
+      <input
+        type="text"
+        id="parameters"
+        value='${command.parameters}'
+        class="form-control"
+        name="parameters"
+        required="true"
+      />
+    </div>
+  </div>`;
+
+            formHtml += `<div class="col-md-6 offset-md-4" style="display: flex; justify-content: center; width: 100%; margin-top:5px;">
+                <button type="submit" id="btnUpdateCommand" class="btn btn-primary md-5">
+                    Save
+                </button>
+            </div>`;
+
+            var dialogID = $().showHtmlDialog(
+                "Edit Command",
+                formHtml, () => {}
+            );
+
+            $("#btnUpdateCommand").on("click", function() {
+                var name = $("#name").val();
+                if (isEmpty(name)) {
+                    $().showMessage("Error", "Please add a name first!");
+                    return;
+                }
+
+                var command = $("#command").val();
+                if (isEmpty(command)) {
+                    $().showMessage("Error", "Please add a command first!");
+                    return;
+                }
+
+                var parameters = $("#parameters").val();
+                if (isEmpty(parameters)) {
+                    $().showMessage("Error", "Please add a parameters first!");
+                    return;
+                }
+
+                var failureAction = (message) => {
+                    message = (message === '') ?
+                        `Failed to update the custom command.` :
+                        message;
+                    $().showMessage("Error", message);
+                    return;
+                };
+
+                var successAction = (result) => {
+                    $().hideHtmlDialog(dialogID);
+                    alert("Custom command updated!")
+                    window.location.reload(false);
+                    return;
+                };
+
+                $().makeHttpRequest(
+                    `${window.location.origin}/update_custom_command`,
+                    "POST", {
+                        custom_command: {
+                            id: id,
+                            name: name,
+                            command: command,
+                            parameters: parameters
+                        },
+                    },
+                    successAction,
+                    failureAction
+                );
+            });
+        });
+    });
+
     jQuery(document).ready(function() {
         var max_fields = 40;
         var wrapper = jQuery(".input_fields_wrap_additional");
