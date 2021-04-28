@@ -3,9 +3,9 @@ class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
   before_action :authenticate_user!
 
-  before_action :one_agent_init_before_action
-  after_action :one_agent_complete_after_action
-  around_action :one_agent_ensure_execution_between_action
+  # before_action :one_agent_init_before_action
+  # after_action :one_agent_complete_after_action
+  # around_action :one_agent_ensure_execution_between_action
 
   def web_application_info_handle
     return OneAgentSdk.onesdk_webapplicationinfo_create("testing.resourcestack.com", "SeleniumApplication", "/selenium_rails")

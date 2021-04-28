@@ -1,4 +1,4 @@
-class Scheduler < ActiveRecord::Base
+class Scheduler < ApplicationRecord
   belongs_to :test_suite
   has_many :result_suites
 
@@ -6,18 +6,18 @@ class Scheduler < ActiveRecord::Base
 
   def schedule_created
     status = self.test_suite.status
-    if !status.nil? && status.downcase=='final'
-       tester_path = self.test_suite.environment.selenium_tester_url
-       if !tester_path.nil?
-          scheduler_id = self.id
-          mode = "headless"
-            file_directory = File.dirname(tester_path)
-            if Dir.exists?(file_directory)
-              Dir.chdir(file_directory){
-                        system("#{tester_path} #{mode} #{scheduler_id}")
-              }
-            end
-       end
+    if !status.nil? && status.downcase == "final"
+      tester_path = self.test_suite.environment.selenium_tester_url
+      if !tester_path.nil?
+        scheduler_id = self.id
+        mode = "headless"
+        file_directory = File.dirname(tester_path)
+        if Dir.exists?(file_directory)
+          Dir.chdir(file_directory) {
+            system("#{tester_path} #{mode} #{scheduler_id}")
+          }
+        end
+      end
     end
   end
 
