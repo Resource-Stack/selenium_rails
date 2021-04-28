@@ -266,6 +266,7 @@ DEPENDENCIES
   coffee-rails (~> 4.2)
   devise
   devise_invitable (~> 2.0.0)
+  ffi
   groupdate
   iconv (~> 1.0.3)
   jbuilder (~> 2.5)
