@@ -27,6 +27,20 @@ module RsOneAgent
     ret_init
   end
 
+  def self.clean_up(ret_init)
+    return if ret_init == OneAgentSdk::ONESDK_SUCCESS
+    puts "shutting down OneAgentSdk"
+    OneAgentSdk.onesdk_shutdown
+  end
+
+  def self.dbinfo_handle
+    return OneAgentSdk.onesdk_databaseinfo_create("selenium_rails", OneAgentSdk::ONESDK_DATABASE_VENDOR_MYSQL, OneAgentSdk::ONESDK_CHANNEL_TYPE_TCP_IP, "localhost")
+  end
+
+  def self.web_application_info_handle
+    return OneAgentSdk.onesdk_webapplicationinfo_create("sparsha.testing.resourcestack.com", "SeleniumApplicationSparsha", "/selenium_rails_backup")
+  end
+
   def self.subscribe_events
     # Subscribe to the controller specific web request events
     ActiveSupport::Notifications.subscribe "process_action.action_controller" do |event|
@@ -43,9 +57,11 @@ module RsOneAgent
 
   class DatabaseAgent
     @event = nil
+    @ret_init = nil
 
     def initialize(event)
       @event = event
+      @ret_init = RsOneAgent.init
     end
 
     def event
@@ -62,15 +78,9 @@ module RsOneAgent
       #   statement_name: nil
       # }
       begin
-        dbinfo_handle = OneAgentSdk.onesdk_databaseinfo_create(
-          "selenium_rails",
-          OneAgentSdk::ONESDK_DATABASE_VENDOR_MYSQL,
-          OneAgentSdk::ONESDK_CHANNEL_TYPE_TCP_IP,
-          "localhost"
-        )
-        stmt = event.sql
+        stmt = event.payload[:sql]
 
-        tracer = OneAgentSdk.onesdk_databaserequesttracer_create_sql(dbinfo_handle, stmt)
+        tracer = OneAgentSdk.onesdk_databaserequesttracer_create_sql(RsOneAgent.dbinfo_handle, stmt)
 
         OneAgentSdk.onesdk_tracer_start(tracer)
 
@@ -81,15 +91,19 @@ module RsOneAgent
 
         OneAgentSdk.onesdk_databaseinfo_delete(dbinfo_handle)
       rescue => exception
+      ensure
+        RsOneAgent.clean_up(@ret_init)
       end
     end
   end
 
   class ControllerAgent
     @event = nil
+    @ret_init = nil
 
     def initialize(event)
       @event = event
+      @ret_init = RsOneAgent.init
     end
 
     def event
@@ -113,11 +127,9 @@ module RsOneAgent
 
       begin
         request = event.payload[:request]
-
         path = request.url
-        web_application_info_handle = OneAgentSdk.onesdk_webapplicationinfo_create("testing.resourcestack.com", "SeleniumApplication", "/selenium_rails")
 
-        tracer = OneAgentSdk.onesdk_incomingwebrequesttracer_create(web_application_info_handle, path, request.method)
+        tracer = OneAgentSdk.onesdk_incomingwebrequesttracer_create(RsOneAgent.web_application_info_handle, path, request.method)
 
         remote_address = request.remote_ip
         request_headers = []
@@ -140,11 +152,11 @@ module RsOneAgent
         OneAgentSdk.onesdk_tracer_end(tracer)
         OneAgentSdk.onesdk_webapplicationinfo_delete(web_application_info_handle)
       rescue => exception
+      ensure
+        RsOneAgent.clean_up(@ret_init)
       end
     end
   end
 end
-
-RsOneAgent.init
 
 RsOneAgent.subscribe_events
