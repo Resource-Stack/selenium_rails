@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 class TestSuitesController < ApplicationController
   include FormatConcern
-  before_action :set_test_suite, only: [:show, :edit, :update, :destroy]
+  before_action :set_test_suite, only: %i[show edit update destroy]
 
   def test_suite_main
     @project_id = session[:project_id]
@@ -14,15 +16,16 @@ class TestSuitesController < ApplicationController
     session[:project_id] = @project_id
     session[:environment_id] = @environment_id
 
-    @projects = ProjectUser.where({ :is_active => true, :user_id => current_user.id }).joins(:project).select("projects.id, projects.name")
-    @environments = @project_id.nil? ? [] : Environment.where(:project_id => @project_id).select(:id, :name)
+    @projects = ProjectUser.where({ is_active: true,
+                                    user_id: current_user.id }).joins(:project).select('projects.id, projects.name')
+    @environments = @project_id.nil? ? [] : Environment.where(project_id: @project_id).select(:id, :name)
 
     if @project_id.present? && @environment_id.present?
-      if !params[:status].blank?
-        @test_suites = TestSuite.where(environment_id: @environment_id, status: params[:status])
-      else
-        @test_suites = TestSuite.where(environment_id: @environment_id)
-      end
+      @test_suites = if !params[:status].blank?
+                       TestSuite.where(environment_id: @environment_id, status: params[:status])
+                     else
+                       TestSuite.where(environment_id: @environment_id)
+                     end
     end
   end
 
@@ -55,7 +58,7 @@ class TestSuitesController < ApplicationController
 
     respond_to do |format|
       if @test_suite.save
-        format.html { redirect_to @test_suite, notice: "Test suite was successfully created." }
+        format.html { redirect_to @test_suite, notice: 'Test suite was successfully created.' }
         format.json { render :show, status: :created, location: @test_suite }
       else
         format.html { render :new }
@@ -69,7 +72,7 @@ class TestSuitesController < ApplicationController
 
     respond_to do |format|
       if @test_suite.update(test_suite_params)
-        format.html { redirect_to test_suites_path, notice: "Test suite was successfully updated." }
+        format.html { redirect_to test_suites_path, notice: 'Test suite was successfully updated.' }
         format.json { render :index, status: :ok, location: @test_suite }
       else
         format.html { render :edit }
@@ -99,70 +102,67 @@ class TestSuitesController < ApplicationController
         sch = Scheduler.where(id: s_id)
         sch.destroy_all
       end
-      #test_suite.schedulers.destroy
+      # test_suite.schedulers.destroy
     end
-    @test_suite.destroy #This will destroy caseSuites also
+    @test_suite.destroy # This will destroy caseSuites also
     respond_to do |format|
-      format.html { redirect_to "/test_suites", notice: "Test suite was successfully destroyed." }
+      format.html { redirect_to '/test_suites', notice: 'Test suite was successfully destroyed.' }
       format.json { head :no_content }
     end
   end
 
   def test_cases
     @test_suite = TestSuite.find(params[:id])
-    @test_cases = @test_suite.test_cases.order("id DESC")
+    @test_cases = @test_suite.test_cases.order('id DESC')
     @chartData = {
       suiteID: @test_suite.id,
       case_detail: @test_cases.select(:id, :description).reverse.as_json,
-      flowState: @test_suite.flow_state,
+      flowState: @test_suite.flow_state
     }
   end
 
   def update_suite_flow
-    begin
-      flow_state = params[:flow_state]
-      suite_id = params[:suite_id]
-      case_data = params[:case_data]
-      first_test_case_id = params[:first_test_case_id]
+    flow_state = params[:flow_state]
+    suite_id = params[:suite_id]
+    case_data = params[:case_data]
+    first_test_case_id = params[:first_test_case_id]
 
-      @test_suite = TestSuite.find(suite_id)
-      @test_suite.flow_state = flow_state.to_json
-      @test_suite.save!
-      case_ids = case_data.pluck(:test_case_id)
+    @test_suite = TestSuite.find(suite_id)
+    @test_suite.flow_state = flow_state.to_json
+    @test_suite.save!
+    case_ids = case_data.pluck(:test_case_id)
 
-      @caseSuites = CaseSuite.where(:test_case_id => case_ids, :test_suite_id => suite_id)
+    @caseSuites = CaseSuite.where(test_case_id: case_ids, test_suite_id: suite_id)
 
-      @caseSuites.each_with_index do |suite, index|
-        @case_suite = case_data.to_a.find { |cd| cd[:test_case_id] == suite.test_case_id }.as_json
-        rejected_case_id_array = @case_suite["rejectedCaseIds"]
-        accepted_case_id_array = @case_suite["acceptedCaseIds"]
-        suite.sequence = first_test_case_id == @case_suite["test_case_id"] ? 0 : -1
-        suite.rejected_case_ids = rejected_case_id_array.as_json
-        suite.accepted_case_ids = accepted_case_id_array.as_json
-        suite.save!
-      end
-
-      render json: format_response_json({
-               message: "Updated the flow!",
-               status: true,
-             })
-    rescue => exception
-      render json: format_response_json({
-               message: "Failed to update the flow!",
-               status: false,
-             })
+    @caseSuites.each_with_index do |suite, _index|
+      @case_suite = case_data.to_a.find { |cd| cd[:test_case_id] == suite.test_case_id }.as_json
+      rejected_case_id_array = @case_suite['rejectedCaseIds']
+      accepted_case_id_array = @case_suite['acceptedCaseIds']
+      suite.sequence = first_test_case_id == @case_suite['test_case_id'] ? 0 : -1
+      suite.rejected_case_ids = rejected_case_id_array.as_json
+      suite.accepted_case_ids = accepted_case_id_array.as_json
+      suite.save!
     end
+
+    render json: format_response_json({
+                                        message: 'Updated the flow!',
+                                        status: true
+                                      })
+  rescue StandardError => e
+    render json: format_response_json({
+                                        message: 'Failed to update the flow!',
+                                        status: false
+                                      })
   end
 
-  def import_suite
-  end
+  def import_suite; end
 
   def import
-    if params[:dependency].present?
-      dependency = params[:dependency]
-    else
-      dependency = 0
-    end
+    dependency = if params[:dependency].present?
+                   params[:dependency]
+                 else
+                   0
+                 end
     TestSuite.import(params[:file], params[:name], session[:environment_id], params[:description], dependency)
   end
 
@@ -173,18 +173,16 @@ class TestSuitesController < ApplicationController
 
   def unschedule
     id = params[:id]
-    #environ_id = id = session[:enviro_id]
-    #@test_suites = TestSuite.where(environment_id: environ_id)
+    # environ_id = id = session[:enviro_id]
+    # @test_suites = TestSuite.where(environment_id: environ_id)
     s = Scheduler.where(test_suite_id: id)
     s.each do |st|
-      if st.status == "READY"
-        st.destroy
-      end
+      st.destroy if st.status == 'READY'
     end
     respond_to do |format|
-      format.html { redirect_to "/test_suites/" }
+      format.html { redirect_to '/test_suites/' }
     end
-    #render :template => "environments/test_suites.html.erb"
+    # render :template => "environments/test_suites.html.erb"
   end
 
   private

@@ -1,23 +1,27 @@
+# frozen_string_literal: true
+
 class Scheduler < ActiveRecord::Base
   belongs_to :test_suite
+  belongs_to :suite_schedule
+  belongs_to :browser
   has_many :result_suites
 
   after_create :schedule_created
 
   def schedule_created
-    status = self.test_suite.status
-    if !status.nil? && status.downcase=='final'
-       tester_path = self.test_suite.environment.selenium_tester_url
-       if !tester_path.nil?
-          scheduler_id = self.id
-          mode = "headless"
-            file_directory = File.dirname(tester_path)
-            if Dir.exists?(file_directory)
-              Dir.chdir(file_directory){
-                        system("#{tester_path} #{mode} #{scheduler_id}")
-              }
-            end
-       end
+    status = test_suite.status
+    if !status.nil? && status.downcase == 'final'
+      tester_path = test_suite.environment.selenium_tester_url
+      unless tester_path.nil?
+        scheduler_id = id
+        mode = 'headless'
+        file_directory = File.dirname(tester_path)
+        if Dir.exist?(file_directory)
+          Dir.chdir(file_directory) do
+            system("#{tester_path} #{mode} #{scheduler_id}")
+          end
+        end
+      end
     end
   end
 
@@ -26,7 +30,7 @@ class Scheduler < ActiveRecord::Base
     schedule.test_suite_id = suite_id
     schedule.scheduled_date = date
     schedule.number_of_times = number_of_times
-    schedule.status = "READY"
+    schedule.status = 'READY'
     schedule.save!
   end
 end

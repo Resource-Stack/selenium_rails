@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
@@ -5,7 +7,7 @@ Rails.application.configure do
   # every request. This slows down response time but is perfect for development
   # since you don't have to restart the web server when you make code changes.
   config.cache_classes = false
-	config.hosts << "testing.resourcestack.com"
+  config.hosts << 'testing.resourcestack.com'
   # Do not eager load code on boot.
   config.eager_load = false
 
@@ -31,7 +33,7 @@ Rails.application.configure do
 
   config.action_mailer.perform_caching = false
 
-  config.action_mailer.default_url_options = { :host => Rails.application.secrets[:default_url] }
+  config.action_mailer.default_url_options = { host: Rails.application.secrets[:default_url] }
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
@@ -39,11 +41,11 @@ Rails.application.configure do
   # Raise an error on page load if there are pending migrations.
   config.active_record.migration_error = :page_load
 
-  #recaptcha setings
+  # recaptcha setings
 
-  RECAPTCHA_PUBLIC_KEY= '6LcYBNoUAAAAADTnUfbLyehtbHpIt02B3G0f-alD'
+  RECAPTCHA_PUBLIC_KEY = '6LcYBNoUAAAAADTnUfbLyehtbHpIt02B3G0f-alD'
 
-  RECAPTCHA_PRIVATE_KEY= '6LcYBNoUAAAAANPBXHeGjQfiUerKD3SjnIrq73fZ'
+  RECAPTCHA_PRIVATE_KEY = '6LcYBNoUAAAAANPBXHeGjQfiUerKD3SjnIrq73fZ'
 
   # Debug mode disables concatenation and preprocessing of assets.
   # This option may cause significant delays in view rendering with a large
@@ -57,13 +59,13 @@ Rails.application.configure do
   config.action_mailer.delivery_method = :smtp
 
   config.action_mailer.smtp_settings = {
-      address:         'smtp.office365.com',
-      port:            '587',
-      authentication:  :login,
-      user_name:       Rails.application.secrets[:microsoft_account],
-      password:        Rails.application.secrets[:microsoft_password],
-      domain:          'resourcestack.com',
-      enable_starttls_auto: true
+    address: 'smtp.office365.com',
+    port: '587',
+    authentication: :login,
+    user_name: Rails.application.secrets[:microsoft_account],
+    password: Rails.application.secrets[:microsoft_password],
+    domain: 'resourcestack.com',
+    enable_starttls_auto: true
   }
 
   # Raises error for missing translations

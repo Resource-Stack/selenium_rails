@@ -1,19 +1,19 @@
+# frozen_string_literal: true
+
 class ResultsDictionariesController < ApplicationController
-  before_action :set_results_dictionary, only: [:show, :edit, :update, :destroy]
+  before_action :set_results_dictionary, only: %i[show edit update destroy]
 
   def index
     @results_dictionaries = ResultsDictionary.all
   end
 
-  def show
-  end
+  def show; end
 
   def new
     @results_dictionary = ResultsDictionary.new
   end
 
-  def edit
-  end
+  def edit; end
 
   def create
     @results_dictionary = ResultsDictionary.new(results_dictionary_params)
@@ -50,13 +50,14 @@ class ResultsDictionariesController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_results_dictionary
-      @results_dictionary = ResultsDictionary.find(params[:id])
-    end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def results_dictionary_params
-      params.require(:results_dictionary).permit(:description)
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_results_dictionary
+    @results_dictionary = ResultsDictionary.find(params[:id])
+  end
+
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def results_dictionary_params
+    params.require(:results_dictionary).permit(:description)
+  end
 end
