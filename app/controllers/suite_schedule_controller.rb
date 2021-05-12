@@ -13,7 +13,7 @@ class SuiteScheduleController < ApplicationController
         schedule_immediately = params[:schedule_immediately]
         if schedule_immediately
           Scheduler.create_new_schedule(@suite_schedule.test_suite_id, @suite_schedule.start_date,
-                                        params[:suite_schedule][:number_of_times])
+                                        params[:suite_schedule][:number_of_times], Browser.browsers[:chrome])
         end
         format.html { redirect_to '/test_suites' }
       end
