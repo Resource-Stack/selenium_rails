@@ -1,4 +1,4 @@
-<%= javascript_include_tag "editor/ace.js", async: Rails.env.production?, onload: 'pageloaded()' %>
+
 
 <div style="padding: 20px;">
     <%= form_for(@test_case, :remote=>true)  do |f| %>
@@ -178,10 +178,11 @@ return execute();`;
 
     function setConditional(value) {
         conditionalTb.val(value);
-        editor.setValue(value);
+        if (editor!==null) editor.setValue(value);
     }
 
     $(function() {
+        pageloaded();
         var enableJavascriptCb = document.getElementById("enableJavascript");
         var conditionalDiv = document.getElementById("conditionalDiv");
         if (!enableJavascriptCb.checked) {
@@ -204,11 +205,7 @@ return execute();`;
     });
 
     function handleSubmitButtonClick() {
-        // if (editor === null || editor === undefined)
-        // {
-        //    editor = ace.edit("editor");
-        // }
-        var annotations = editor.getSession().getAnnotations().filter(a => a.type == "error");
+        var annotations = editor ? editor.getSession().getAnnotations().filter(a => a.type == "error"): [];
         if (annotations.length == 0) {
             $("#btnSubmit").click();
         } else {
