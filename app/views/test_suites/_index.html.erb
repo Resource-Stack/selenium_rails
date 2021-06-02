@@ -32,6 +32,7 @@
                 <th>Actions</th>
             </tr>
         </thead>
+
         <tbody>
             <% test_suites.each do |ts| %>
             <tr>
@@ -40,7 +41,7 @@
                     <td><%= link_to "#{ts.name}", edit_test_suite_path(ts.id), {:remote => true, 'data-toggle' =>  "modal", 'data-target' => '#modal-window'}%> <%#= link_to "#{ts.name}", {controller: "test_suites", action: "edit", id: ts.id }, class: "btn btn-default btn-sm", target: :_blank %></td>
                 </div>
 
-                <td><%= ts.description %></td>
+                <td><%= ts.description %></td> 
                 <td><%= ts.status%></td>
                 <td class="button-cell">
                     <%= link_to "Cases", {controller: "test_suites", action: "test_cases", id: ts.id }, class: "btn btn-default btn-sm", target: :_blank%>
@@ -67,9 +68,12 @@
 </div>
 <% end %>
 
+
+
 <div id="modal-window" class="modal fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content"></div>
+        
     </div>
 </div>
 </div>
@@ -86,6 +90,65 @@
 
 var table = null;
 
+function loadBrowsers(){
+
+        var response_array = [];
+        $.ajax({
+          type: "GET", 
+          url: "/display_browser",
+          async: false,
+          success: function(data){
+            response_array = data.complete_result
+          }
+        });
+
+        var single_schedule = document.createElement("select");
+        single_schedule.id = "single_schedule_browser_id"
+        single_schedule.className = "form-control"
+        console.log("array", response_array)
+        for (var i = response_array.length - 1; i >= 0; i--) {
+            var option = document.createElement("option");
+            option.value = response_array[i].id
+            option.text = response_array[i].name
+            single_schedule.appendChild(option)
+        }
+        document.getElementById('browser_section').appendChild(single_schedule);
+
+}
+
+function loadMultipleBrowser(){
+        var response_array = [];
+        $.ajax({
+          type: "GET", 
+          url: "/display_browser",
+          async: false,
+          success: function(data){
+            response_array = data.complete_result
+          }
+        });
+
+        console.log("array", response_array)
+        for (var i = response_array.length - 1; i >= 0; i--) {
+
+            var checkbox = document.createElement('input');
+            checkbox.className = "form-check-input multiple_browser";
+            checkbox.type = "checkbox";
+            checkbox.name = response_array[i].name;
+            checkbox.value = response_array[i].id;
+            checkbox.id = response_array[i].name;
+
+            var newlabel = document. createElement("Label");
+            newlabel.className = 'form-check-label';
+            newlabel.setAttribute("for", response_array[i].name);
+            newlabel.innerHTML = response_array[i].name;
+
+            document.getElementById('multiple_browser_selection').appendChild(checkbox);
+            document.getElementById('multiple_browser_selection').appendChild(newlabel);
+            
+        }
+        
+}
+
 function getApiUrl(partialUrl) {
         return `${window.location.origin}/${partialUrl}`;
     }
@@ -96,6 +159,7 @@ function getApiUrl(partialUrl) {
         }
         return new Date(date).toISOString().split("T")[0];
     }
+
 
 function initializeDataTable(tableID, suiteID) {
     var processing = false;
@@ -248,6 +312,16 @@ function initializeDataTable(tableID, suiteID) {
                 }"  required="true"/>
                 </div>
             </div>
+            <div class="form-group">
+                <label for="time" class="col-md-4 col-form-label text-md-right left-align left-label">Time</label>
+                <div >
+                <input type="time" id="time" class="form-control" name="time" value="${model.time
+                }"  required="true"/>
+                </div>
+            </div>
+            <div "class="form-check" id="multiple_browser_selection">
+
+            </div
           
             <div class="col-md-6 offset-md-4" style="display: flex; justify-content: center; width: 100%; margin-top:5px;">
                 <button type="submit" class="btn btn-primary md-5">
@@ -272,12 +346,26 @@ function initializeDataTable(tableID, suiteID) {
 
                 var dataToSave = $().getFormData(form, getDefaultSchedule(suiteID));
 
-                createNewSchedule(suiteID, dataToSave, dialogID, false);
+                //bad code 
+                var all_browser_checkboxes = document.getElementsByClassName('multiple_browser');
+                var checkboxesChecked = [];
+                for (var i = all_browser_checkboxes.length - 1; i >= 0; i--) {
+                    current_browser = all_browser_checkboxes[i]
+                    if (current_browser.checked){
+                        checkboxesChecked.push(current_browser.value)
+                    }
+                }
+                browserID = checkboxesChecked
+                //
+
+                createNewSchedule(suiteID, dataToSave, dialogID, false, browserID);
             });
         }
 
         $("#btnAddNew").off().on('click', function () {
+            console.log("Here")
             showScheduleForm(null);
+            loadMultipleBrowser();
         });
     }
 
@@ -305,11 +393,11 @@ function initializeDataTable(tableID, suiteID) {
     }
 
 
-    function createNewSchedule(suiteID, data = null, dialogID = null, scheduleImmediately = false) {
+    function createNewSchedule(suiteID, data = null, dialogID = null, scheduleImmediately = false, browserID) {
         var dataToSave = getDefaultSchedule(suiteID);
         var forUpdate = false;
         if (data != null) {
-            Object.assign(dataToSave, data);
+            Object.assign(dataToSave, data, {browser: browserID});
         }
         forUpdate = dataToSave.id > 0;
         var tableID = "#scheduleTable";
@@ -344,8 +432,11 @@ function initializeDataTable(tableID, suiteID) {
             "iDisplayLength": 50
         });
         setupScheduleEvents();
+
         
         $("#suite-table-dude").on('click', '.btn-schedule-now', function(e){
+            
+            //create a function that will get the browsers and attach them to a ID
             e.preventDefault();
             var suiteID = $(this).data("id");
             var suiteName = $(this).data("name");
@@ -353,10 +444,13 @@ function initializeDataTable(tableID, suiteID) {
             var formHtml = `<form id="scheduleSubmitForm" style="min-height:100px;">
             <div class="form-group">
                 <label for="number_of_times" class="col-md-4 col-form-label text-md-right left-align left-label">Number of Times</label>
-                <div >
+                <div id="browser_section">
                     <input type="text" id="number_of_times" class="form-control" name="number_of_times" required="true"
                           value="1" />
+
                 </div>
+
+                
             </div>
 
             <div class="col-md-6 offset-md-4" style="display: flex; justify-content: center; width: 100%; margin-top:5px;">
@@ -382,9 +476,17 @@ function initializeDataTable(tableID, suiteID) {
                     alert("Total load test should be between 1 and 100");
                     return;
                 }
-                createNewSchedule(suiteID, dataToSave, dialogID, true);
+                // bad code
+                var browser_select = document.getElementById('single_schedule_browser_id');
+                var browserID = browser_select.options[browser_select.selectedIndex].value;
+
+                //
+                createNewSchedule(suiteID, dataToSave, dialogID, true, browserID);
             });
+
+            loadBrowsers();
         });
+        
 
 
         $("#suite-table-dude").on('click', '.btn-schedule-later', function(e){
