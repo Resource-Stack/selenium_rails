@@ -7,6 +7,7 @@
                     <th>Schedule Id</th>
                     <th>TestSuite Name</th>
                     <th>Status</th>
+                    <th>Browser</th>
                     <th>Schedule Date</th>
                     <th></th>
 
@@ -21,6 +22,7 @@
                     <% hidden_field_tag 'id', '#{s.id}' %>
                     <td><%= TestSuite.find(s.test_suite_id).name %></td>
                     <td><%= s.status %></td>
+                    <td><%= s.browser_id %></td>
                     <td><%= s.scheduled_date%></td>
                     <td class="button-cell"><%#= link_to "List all the reports", {controller: "test_suites", action: "schedule_cases", id: s.id }, "data-toggle" => "modal", "data-target" => "#cases", class: "btn btn-default btn-sm", remote: true %>
                         <%= link_to "List All Reports",list_all_reports_path(id: s.id), target: :_blank %>

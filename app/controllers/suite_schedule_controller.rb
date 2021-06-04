@@ -5,13 +5,14 @@ class SuiteScheduleController < ApplicationController
   protect_from_forgery with: :null_session
 
   def display_browser
-    @browsers = Browser.all #set to browser that are only true
+
+    @browsers = Browser.where(is_active: true)
     render :json => {status: :ok, complete_result: @browsers }
   end 
 
   def create_suite_schedule 
     environ_id = id = session[:enviro_id]
-    @suite_schedule = SuiteSchedule.new(suite_schedule_params(params[:suite_schedule]).except(:id, :number_of_times))
+    @suite_schedule = SuiteSchedule.new(suite_schedule_params(params[:suite_schedule]).except(:id, :number_of_times)) 
 
     respond_to do |format|
       if @suite_schedule.save
@@ -21,7 +22,7 @@ class SuiteScheduleController < ApplicationController
                                         params[:suite_schedule][:number_of_times], params[:suite_schedule][:browser])
         else
         ### Schedule Multiple
-          #validate it works against one item in array!!!!!IMPORTANT
+          #validate it works against one item in array!!!!!IMPORTANT 
             params[:suite_schedule][:browser].each do |x|
               ssb = SuiteScheduleBrowser.new
               ssb.browser_id = x
