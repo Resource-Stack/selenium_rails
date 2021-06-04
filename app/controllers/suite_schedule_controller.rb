@@ -4,20 +4,38 @@ class SuiteScheduleController < ApplicationController
   include FormatConcern
   protect_from_forgery with: :null_session
 
-  def create_suite_schedule
+  def display_browser
+
+    @browsers = Browser.where(is_active: true)
+    render :json => {status: :ok, complete_result: @browsers }
+  end 
+
+  def create_suite_schedule 
     environ_id = id = session[:enviro_id]
-    @suite_schedule = SuiteSchedule.new(suite_schedule_params(params[:suite_schedule]).except(:id, :number_of_times))
+    @suite_schedule = SuiteSchedule.new(suite_schedule_params(params[:suite_schedule]).except(:id, :number_of_times)) 
 
     respond_to do |format|
       if @suite_schedule.save
-        schedule_immediately = params[:schedule_immediately]
-        if schedule_immediately
+        schedule_immediately = params[:schedule_immediately] 
+        if schedule_immediately 
           Scheduler.create_new_schedule(@suite_schedule.test_suite_id, @suite_schedule.start_date,
-                                        params[:suite_schedule][:number_of_times], Browser.browsers[:chrome])
+                                        params[:suite_schedule][:number_of_times], params[:suite_schedule][:browser])
+        else
+        ### Schedule Multiple
+          #validate it works against one item in array!!!!!IMPORTANT 
+            params[:suite_schedule][:browser].each do |x|
+              ssb = SuiteScheduleBrowser.new
+              ssb.browser_id = x
+              ssb.suite_schedule_id = @suite_schedule.id
+              ssb.save
+            end 
+        ###
         end
         format.html { redirect_to '/test_suites' }
       end
     end
+
+
   end
 
   def get_suite_schedules
