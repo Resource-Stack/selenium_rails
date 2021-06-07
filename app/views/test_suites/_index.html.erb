@@ -124,7 +124,7 @@ function initializeDataTable(tableID, suiteID) {
     var info = true;
     var searchable = true;
     var searchDelay = 1000;
-    var lengthMenu = [10, 20, 50];
+    var lengthMenu = [5, 10, 20];
     var pagingType = "full_numbers";
     if (table != null) {
         $(tableID).DataTable({ destroy: true });
@@ -225,7 +225,7 @@ function initializeDataTable(tableID, suiteID) {
             model.end_date = getFormattedDate(model.end_date);
 
             var forUpdate = model.id > 0;
-            var formHtml = `<form id="scheduleForm" style="min-height:250px;">
+            var formHtml = `<form id="scheduleForm" style="min-height:415px;">
             <div class="form-group" style="display: none;">
                 <label for="id" class="col-md-4 col-form-label text-md-right left-align">Schedule
                 ID</label>
@@ -276,12 +276,15 @@ function initializeDataTable(tableID, suiteID) {
                 </div>
             </div>`
             
+            formHtml+= '<div style="display: flex; justify-content: space-between;">';
             for (var i = browser_list.length - 1; i >= 0; i--) {
                 current_value = browser_list[i].id
                 current_text = browser_list[i].name
                 formHtml+=`<div class="form-check" id="multiple_browser_selection ${current_value}"><input type="checkbox" id=${current_value} class="form-check-input multiple_browser" name="browser" value="${current_value}" />`
                 formHtml+=`<label for=${current_value} class="form-check-label">${current_text}</label></div>`
             }
+
+            formHtml+='</div>';
 
             formHtml+=`<div class="col-md-6 offset-md-4" style="display: flex; justify-content: center; width: 100%; margin-top:5px;">
                 <button type="submit" class="btn btn-primary md-5">
@@ -401,7 +404,7 @@ function initializeDataTable(tableID, suiteID) {
             var suiteName = $(this).data("name");
             var browser_list = loadBrowsers();
 
-            var formHtml = `<form id="scheduleSubmitForm" style="min-height:100px;">
+            var formHtml = `<form id="scheduleSubmitForm" style="min-height:170px;">
             <div class="form-group">
                 <label for="number_of_times" class="col-md-4 col-form-label text-md-right left-align left-label">Number of Times</label>
                 <input type="text" id="number_of_times" class="form-control" name="number_of_times" required="true" value="1" />
