@@ -18,7 +18,7 @@ class Scheduler < ActiveRecord::Base
         file_directory = File.dirname(tester_path)
         if Dir.exist?(file_directory)
           Dir.chdir(file_directory) do
-            system("#{tester_path} #{mode} #{scheduler_id}")
+            Process.fork { system("#{tester_path} #{mode} #{scheduler_id}") }
           end
         end
       end
