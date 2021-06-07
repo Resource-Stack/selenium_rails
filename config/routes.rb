@@ -113,4 +113,6 @@ Rails.application.routes.draw do
 
   match '/test_suite_main', to: 'test_suites#test_suite_main', via: %w[get post]
   match '/reports_main', to: 'environments#reports_main', via: %w[get post]
+
+  get 'display_browser', to: 'suite_schedule#display_browser'
 end
