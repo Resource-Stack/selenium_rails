@@ -178,7 +178,7 @@ class BrowserExtensionController < ApplicationController
     @test_case = params[:data][:test_case]
     @test_case['id'] = @test_case[:case_id]
     @case_id = @test_case[:id]
-    @success = TestCase.find(@case_id).update_attributes(test_case_params(@test_case))
+    @success = TestCase.find(@case_id).update(test_case_params(@test_case.except(:case_id)))
 
     if @success
       render json: format_response_json({
