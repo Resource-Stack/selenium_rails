@@ -10,7 +10,7 @@ class SuiteSchedule < ActiveRecord::Base
 
     @schedules =  SuiteSchedule.where(active:true).where("start_date>=?",today).where("?<=end_date",today).select(:id, :start_date, :end_date, :test_suite_id, :time).as_json
   
-
+byebug
     @schedules.map do |s|
       browser_ids = SuiteScheduleBrowser.where(:suite_schedule_id=>s["id"]).pluck(:browser_id)
       if browser_ids.empty? 
