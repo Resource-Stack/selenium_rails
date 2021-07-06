@@ -9,8 +9,8 @@ class Scheduler < ActiveRecord::Base
   after_create :schedule_created
 
   def schedule_created
-    status = self.status
-    if !status.nil? && status.downcase == 'final'
+    test_suite = self.test_suite
+    if !test_suite.nil? && test_suite.status.downcase == 'final'
       tester_path = test_suite.environment.selenium_tester_url
       unless tester_path.nil?
         scheduler_id = id
