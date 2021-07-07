@@ -434,12 +434,10 @@ function initializeDataTable(tableID, suiteID) {
                     alert("Total load test should be between 1 and 100");
                     return;
                 }
-                // bad code
                 var browser_select = document.getElementById('single_schedule_browser_id');
-                console.log("yea yea", browser_select)
+             
                 var browserID = browser_select.options[browser_select.selectedIndex].value;
 
-                //
                 createNewSchedule(suiteID, dataToSave, dialogID, true, browserID);
             });
         });
