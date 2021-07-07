@@ -9,8 +9,8 @@ class Scheduler < ActiveRecord::Base
   after_create :schedule_created
 
   def schedule_created
-    status = test_suite.status
-    if !status.nil? && status.downcase == 'final'
+    test_suite = self.test_suite
+    if !test_suite.nil? && test_suite.status.downcase == 'final'
       tester_path = test_suite.environment.selenium_tester_url
       unless tester_path.nil?
         scheduler_id = id
@@ -26,12 +26,7 @@ class Scheduler < ActiveRecord::Base
   end
 
   def self.create_new_schedule(suite_id, date, number_of_times, browser_id)
-    schedule = Scheduler.new
-    schedule.test_suite_id = suite_id
-    schedule.scheduled_date = date
-    schedule.number_of_times = number_of_times
-    schedule.browser_id = browser_id
-    schedule.status = 'READY'
-    schedule.save!
+    schedule = Scheduler.create({ test_suite_id: suite_id, scheduled_date: date, number_of_times: number_of_times,
+                                  browser_id: browser_id, status: 'READY' })
   end
 end

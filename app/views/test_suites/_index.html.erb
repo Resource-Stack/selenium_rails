@@ -268,13 +268,7 @@ function initializeDataTable(tableID, suiteID) {
                 }"  required="true"/>
                 </div>
             </div>
-            <div class="form-group">
-                <label for="time" class="col-md-4 col-form-label text-md-right left-align left-label">Time</label>
-                <div >
-                <input type="time" id="time" class="form-control" name="time" value="${model.time
-                }"  required="true"/>
-                </div>
-            </div>`
+            console.log(suiteID)`
             
             formHtml+= '<div style="display: flex; justify-content: space-between;">';
             for (var i = 0; i < browser_list.length; i++) {    
@@ -456,7 +450,6 @@ function initializeDataTable(tableID, suiteID) {
             e.preventDefault();
             var suiteID = $(this).data("id");
             var suiteName = $(this).data("name");
-
             var html = `<div>
                 <div style="display:flex; justify-content: flex-end; padding: 5px;">
                     <button id="btnAddNew" class="btn btn-primary btn-sm">Add New</button>
@@ -476,10 +469,8 @@ function initializeDataTable(tableID, suiteID) {
             </div>`;
             $().showHtmlDialog(
                 suiteName,
-                html,
-                () => {
-                    firstTime = true
-                }
+                html,                
+                firstTime = true
             );
             if (firstTime) {
                 initializeDataTable("#scheduleTable", suiteID);
