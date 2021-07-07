@@ -68,7 +68,6 @@ class TestCasesController < ApplicationController
     url_string = '/test_suites/' + test_suite_id.to_s + '/test_cases'
 
     dialog_mode = params[:test_case][:dialog_mode] == 'true'
-
     case_updated = @test_case.update(test_case_params)
 
     if dialog_mode
