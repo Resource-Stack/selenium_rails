@@ -1,28 +1,20 @@
-class ResultSuitesController < ApplicationController
-  before_action :set_result_suite, only: [:show, :edit, :update, :destroy]
+# frozen_string_literal: true
 
-  # GET /result_suites
-  # GET /result_suites.json
+class ResultSuitesController < ApplicationController
+  before_action :set_result_suite, only: %i[show edit update destroy]
+
   def index
     @result_suites = ResultSuite.all
   end
 
-  # GET /result_suites/1
-  # GET /result_suites/1.json
-  def show
-  end
+  def show; end
 
-  # GET /result_suites/new
   def new
     @result_suite = ResultSuite.new
   end
 
-  # GET /result_suites/1/edit
-  def edit
-  end
+  def edit; end
 
-  # POST /result_suites
-  # POST /result_suites.json
   def create
     @result_suite = ResultSuite.new(result_suite_params)
 
@@ -51,8 +43,6 @@ class ResultSuitesController < ApplicationController
     end
   end
 
-  # DELETE /result_suites/1
-  # DELETE /result_suites/1.json
   def destroy
     @result_suite.destroy
     respond_to do |format|
@@ -62,17 +52,18 @@ class ResultSuitesController < ApplicationController
   end
 
   def list_all_result_suites
-    @result_suites = ResultSuite.where(:scheduler_id=>params[:id])
+    @result_suites = ResultSuite.where(scheduler_id: params[:id])
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_result_suite
-      @result_suite = ResultSuite.find(params[:id])
-    end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def result_suite_params
-      params.require(:result_suite).permit(:rd_id, :test_suite_id, :start_time, :end_time)
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_result_suite
+    @result_suite = ResultSuite.find(params[:id])
+  end
+
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def result_suite_params
+    params.require(:result_suite).permit(:rd_id, :test_suite_id, :start_time, :end_time)
+  end
 end

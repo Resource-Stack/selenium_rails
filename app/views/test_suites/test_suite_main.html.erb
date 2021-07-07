@@ -1,0 +1,7 @@
+<div class="main">
+    <%= render 'common/project_environment_filter', project_id: @project_id, environment_id: @environment_id, projects: @projects, environments: @environments, request_path: test_suite_main_path%>
+
+    <% if @project_id.present? && @environment_id.present? %>
+    <%= render 'index', test_suites: @test_suites, project_id: @project_id, environment_id: @environment_id%>
+    <% end %>
+</div>

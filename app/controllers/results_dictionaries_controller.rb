@@ -1,28 +1,20 @@
-class ResultsDictionariesController < ApplicationController
-  before_action :set_results_dictionary, only: [:show, :edit, :update, :destroy]
+# frozen_string_literal: true
 
-  # GET /results_dictionaries
-  # GET /results_dictionaries.json
+class ResultsDictionariesController < ApplicationController
+  before_action :set_results_dictionary, only: %i[show edit update destroy]
+
   def index
     @results_dictionaries = ResultsDictionary.all
   end
 
-  # GET /results_dictionaries/1
-  # GET /results_dictionaries/1.json
-  def show
-  end
+  def show; end
 
-  # GET /results_dictionaries/new
   def new
     @results_dictionary = ResultsDictionary.new
   end
 
-  # GET /results_dictionaries/1/edit
-  def edit
-  end
+  def edit; end
 
-  # POST /results_dictionaries
-  # POST /results_dictionaries.json
   def create
     @results_dictionary = ResultsDictionary.new(results_dictionary_params)
 
@@ -37,8 +29,6 @@ class ResultsDictionariesController < ApplicationController
     end
   end
 
-  # PATCH/PUT /results_dictionaries/1
-  # PATCH/PUT /results_dictionaries/1.json
   def update
     respond_to do |format|
       if @results_dictionary.update(results_dictionary_params)
@@ -51,8 +41,6 @@ class ResultsDictionariesController < ApplicationController
     end
   end
 
-  # DELETE /results_dictionaries/1
-  # DELETE /results_dictionaries/1.json
   def destroy
     @results_dictionary.destroy
     respond_to do |format|
@@ -62,13 +50,14 @@ class ResultsDictionariesController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_results_dictionary
-      @results_dictionary = ResultsDictionary.find(params[:id])
-    end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def results_dictionary_params
-      params.require(:results_dictionary).permit(:description)
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_results_dictionary
+    @results_dictionary = ResultsDictionary.find(params[:id])
+  end
+
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def results_dictionary_params
+    params.require(:results_dictionary).permit(:description)
+  end
 end

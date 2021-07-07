@@ -1,0 +1,55 @@
+<div style="padding:20px;">
+    <h1>Projects</h1>
+    <button class="btn btn-primary" id="btnCreateProject" style="margin-bottom: 10px;"> Create New </button>
+    <table id="activeProjects">
+        <thead>
+            <tr>
+                <th>Project ID </th>
+                <th>Name</th>
+                <th>Created At</th>
+                <th>Project Owner</th>
+                <th colspan="4">Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <% @user_projects.map do |project| %>
+            <tr>
+                <td><%= project["id"] %></td>
+                <td><%= project["name"] %></td>
+                <td><%= project["created_at"] %></td>
+                <td><%= project["owner"] %></td>
+                <td>
+                    <% if project["owner_id"].to_i == current_user.id %>
+                    <span class='btn btn-primary' style="color: #4680b5 !important;"><%= link_to 'Environments', environments_path(:project_id=> project["id"]), method: :get %> </span>
+                    <span class='btn btn-primary' style="color: #4680b5 !important;"><%= link_to 'Users', project_users_path(:project_id=> project["id"]), method: :get %> </span>
+                    <span class='btn btn-primary' style="color: #4680b5 !important;"><%= link_to 'Delete', delete_project_path(:project_id=> project["id"]), method: :delete, data: { confirm: 'Are you sure you want to delete the project?' } %> </span>
+                    <% end %>
+                </td>
+            </tr>
+            <% end %>
+            <% if @user_projects.count == 0 %>
+            <tr>
+                <td align="center" colspan="4">
+                    <center>No user project available!</center>
+                </td>
+            </tr>
+            <% end %>
+        </tbody>
+    </table>
+</div>
+
+<script type="text/javascript">
+    $("#btnCreateProject").on("click", function(params) {
+        $().showHtmlDialog("Create Project", "<div id='projectFormDiv'></div>", () => {
+
+        });
+        $("#projectFormDiv").html("<%=j render :partial => 'form' %>")
+    })
+</script>
+
+<style>
+    .btn>a {
+        color: inherit;
+    }
+</style>

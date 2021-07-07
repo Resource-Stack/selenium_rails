@@ -1,41 +1,50 @@
-class TestSuitesController < ApplicationController
-  before_action :set_test_suite, only: [:show, :edit, :update, :destroy]
+# frozen_string_literal: true
 
-  # GET /test_suites
-  # GET /test_suites.json
-  def index
-    if session[:enviro_id].present?
-      environ_id = session[:enviro_id]
-    else
-      environ_id = current_user.default_environ
+class TestSuitesController < ApplicationController
+  include FormatConcern
+  before_action :set_test_suite, only: %i[show edit update destroy]
+
+  def test_suite_main
+    @project_id = session[:project_id]
+    @environment_id = session[:environment_id]
+
+    if params[:project_id].present?
+      @project_id = params[:project_id]
+      @environment_id = params[:environment_id]
     end
-    @environment_name = Environment.find(environ_id).name
-    if !params[:status].blank? 
-      logger.debug("INSIDE IF TESTSUITES")
-      @test_suites = TestSuite.where(environment_id: environ_id, status: params[:status])
-    else
-      @test_suites = TestSuite.where(environment_id: environ_id)
-    end  
-    logger.debug("#{@test_suites.count}")
+
+    session[:project_id] = @project_id
+    session[:environment_id] = @environment_id
+
+    @projects = ProjectUser.where({ is_active: true,
+                                    user_id: current_user.id }).joins(:project).select('projects.id, projects.name')
+    @environments = @project_id.nil? ? [] : Environment.where(project_id: @project_id).select(:id, :name)
+
+    if @project_id.present? && @environment_id.present?
+      @test_suites = if !params[:status].blank?
+                       TestSuite.where(environment_id: @environment_id, status: params[:status])
+                     else
+                       TestSuite.where(environment_id: @environment_id)
+                     end
+    end
   end
 
-  # GET /test_suites/1
-  # GET /test_suites/1.json
+  def index
+    redirect_to test_suite_main_path
+  end
+
   def show
     @ts = TestSuite.find(params[:id])
-    logger.debug("INSIDE TS SHOW ACTION")
-      respond_to do |format|
+    respond_to do |format|
       format.html
       format.js
-      end
+    end
   end
 
-  # GET /test_suites/new
   def new
     @test_suite = TestSuite.new
   end
 
-  # GET /test_suites/1/edit
   def edit
     @test_cases = @test_suite.test_cases
     respond_to do |format|
@@ -44,8 +53,6 @@ class TestSuitesController < ApplicationController
     end
   end
 
-  # POST /test_suites
-  # POST /test_suites.json
   def create
     @test_suite = TestSuite.new(test_suite_params)
 
@@ -60,23 +67,8 @@ class TestSuitesController < ApplicationController
     end
   end
 
-  # PATCH/PUT /test_suites/1
-  # PATCH/PUT /test_suites/1.json
   def update
     env = Environment.find(@test_suite.environment_id)
-    #logger.debug "deeeefault #{params[:default]} default_suite_id #{env.default_suite_id != @test_suite.id} params is 1? #{params[:default] == '1'}"
-    #if (params[:default] == "1") && (env.default_suite_id != @test_suite.id)
-    #  logger.debug "Getting here"
-    #  env.update(default_suite_id: @test_suite.id)
-    #end
-    #if !params[:case].nil?
-    #  params[:case].each do |c|
-    #    logger.debug "#{c[0]}"
-    #    CaseSuite.create(test_suite_id: @test_suite.id, test_case_id: c[0])
-    #  end
-      
-    #end
-    logger.debug("TEST SUITE #{test_suite_params.inspect}")
 
     respond_to do |format|
       if @test_suite.update(test_suite_params)
@@ -89,13 +81,10 @@ class TestSuitesController < ApplicationController
     end
   end
 
-  # DELETE /test_suites/1
-  # DELETE /test_suites/1.json
   def destroy
     id = params[:id]
     test_suite = TestSuite.find(id)
     if test_suite.test_cases.present?
-      logger.debug("TEST CASES ARE #{test_suite.test_cases.inspect}")
       tc_ids = test_suite.test_cases.pluck(:id)
       tc_ids.each do |id|
         rc = ResultCase.where(test_case_id: id)
@@ -113,70 +102,98 @@ class TestSuitesController < ApplicationController
         sch = Scheduler.where(id: s_id)
         sch.destroy_all
       end
-      logger.debug("SCHEDULERS ARE  #{test_suite.schedulers.inspect}")
-      #test_suite.schedulers.destroy
+      # test_suite.schedulers.destroy
     end
-    @test_suite.destroy #This will destroy caseSuites also
+    @test_suite.destroy # This will destroy caseSuites also
     respond_to do |format|
-      format.html { redirect_to "/test_suites", notice: 'Test suite was successfully destroyed.' }
+      format.html { redirect_to '/test_suites', notice: 'Test suite was successfully destroyed.' }
       format.json { head :no_content }
     end
   end
-  
+
   def test_cases
     @test_suite = TestSuite.find(params[:id])
-    @test_cases = @test_suite.test_cases.order('priority DESC')
+    @test_cases = @test_suite.test_cases.order('id DESC')
+    @chartData = {
+      suiteID: @test_suite.id,
+      case_detail: @test_cases.select(:id, :description).reverse.as_json,
+      flowState: @test_suite.flow_state
+    }
   end
 
-  
-  def import_suite
-    
-  end
-  
-  def import
-    logger.debug("THE PARAMS ARE #{params.inspect}")
-    if params[:dependency].present?
-      logger.debug("DEPENDENCY PRESENT")
-      dependency = params[:dependency]
-    else
-      dependency = 0
+  def update_suite_flow
+    flow_state = params[:flow_state]
+    suite_id = params[:suite_id]
+    case_data = params[:case_data]
+    first_test_case_id = params[:first_test_case_id]
+
+    @test_suite = TestSuite.find(suite_id)
+    @test_suite.flow_state = flow_state.to_json
+    @test_suite.save!
+    case_ids = case_data.pluck(:test_case_id)
+
+    @caseSuites = CaseSuite.where(test_case_id: case_ids, test_suite_id: suite_id)
+
+    @caseSuites.each_with_index do |suite, _index|
+      @case_suite = case_data.to_a.find { |cd| cd[:test_case_id] == suite.test_case_id }.as_json
+      rejected_case_id_array = @case_suite['rejectedCaseIds']
+      accepted_case_id_array = @case_suite['acceptedCaseIds']
+      suite.sequence = first_test_case_id == @case_suite['test_case_id'] ? 0 : -1
+      suite.rejected_case_ids = rejected_case_id_array.as_json
+      suite.accepted_case_ids = accepted_case_id_array.as_json
+      suite.save!
     end
-    TestSuite.import(params[:file], params[:name], session[:enviro_id], params[:description], dependency)
+
+    render json: format_response_json({
+                                        message: 'Updated the flow!',
+                                        status: true
+                                      })
+  rescue StandardError => e
+    render json: format_response_json({
+                                        message: 'Failed to update the flow!',
+                                        status: false
+                                      })
   end
-  
+
+  def import_suite; end
+
+  def import
+    dependency = if params[:dependency].present?
+                   params[:dependency]
+                 else
+                   0
+                 end
+    TestSuite.import(params[:file], params[:name], session[:environment_id], params[:description], dependency)
+  end
+
   def tests_ran
     @test_suite = TestSuite.find(params[:id])
     @schedulers = @test_suite.schedulers
   end
 
-  def unschedule 
-    logger.debug("THE PARAMS IN UNSCHEDULE ARE")
+  def unschedule
     id = params[:id]
-    logger.debug("THE ID is #{id.inspect}")
-    #environ_id = id = session[:enviro_id]
-    #@test_suites = TestSuite.where(environment_id: environ_id)
+    # environ_id = id = session[:enviro_id]
+    # @test_suites = TestSuite.where(environment_id: environ_id)
     s = Scheduler.where(test_suite_id: id)
-    logger.debug("THE Scheduler is #{s.inspect}")
     s.each do |st|
-      if st.status == "READY"
-        logger.debug("GOING INTO READY")
-        st.destroy
-      end
+      st.destroy if st.status == 'READY'
     end
     respond_to do |format|
-        format.html {redirect_to "/test_suites/"}
+      format.html { redirect_to '/test_suites/' }
     end
-    #render :template => "environments/test_suites.html.erb"
+    # render :template => "environments/test_suites.html.erb"
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_test_suite
-      @test_suite = TestSuite.find(params[:id])
-    end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def test_suite_params
-      params.require(:test_suite).permit(:name, :environment_id, :description, :status, :dependency, test_case_ids: [])
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_test_suite
+    @test_suite = TestSuite.find(params[:id])
+  end
+
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def test_suite_params
+    params.require(:test_suite).permit(:name, :environment_id, :description, :status, :dependency, test_case_ids: [])
+  end
 end

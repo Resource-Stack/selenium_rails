@@ -1,0 +1,14 @@
+ <%= form_tag create_project_path , remote: true  do |form| %>
+ <div class="form-group">
+     <label for="projectName" class="col-md-4 col-form-label text-md-right left-align left-label">Project Name</label>
+     <div>
+         <input type="projectName" id="projectName" class="form-control" name="projectName" value="" required="true" />
+     </div>
+ </div>
+ <br>
+ <br />
+ <div class="modal-footer">
+     <br />
+     <%= submit_tag "Submit", class: "btn btn-primary"%>
+ </div>
+ <% end  %>

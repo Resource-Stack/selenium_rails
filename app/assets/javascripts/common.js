@@ -1,7 +1,13 @@
 $(function () {
-    jQuery.fn.extend({
-        showConfirmationDialog: function (title, message, yesAction, noAction, closeAction) {
-            var modalHtml = `<div class="modal fade modal-dialog-container" id="confirmationModal" role="dialog">
+  jQuery.fn.extend({
+    showConfirmationDialog: function (
+      title,
+      message,
+      yesAction,
+      noAction,
+      closeAction
+    ) {
+      var modalHtml = `<div class="modal fade modal-dialog-container" id="confirmationModal" role="dialog">
             <div class="modal-dialog err-pop" style="">
                 <div class="modal-content" style ="width: auto !important;">
                     <div class="modal-header"> ${title}
@@ -16,42 +22,41 @@ $(function () {
             </div>
           </div>`;
 
-            var removeConfirmAction = () => {
-                var dialog = $("#confirmationModal");
-                if (dialog) {
-                    dialog
-                        .on("hidden.bs.modal", () => {
-                            $(dialog).remove();
-                        })
-                        .modal("hide");
-                }
-            };
+      var removeConfirmAction = () => {
+        var dialog = $("#confirmationModal");
+        if (dialog) {
+          dialog
+            .on("hidden.bs.modal", () => {
+              $(dialog).remove();
+            })
+            .modal("hide");
+        }
+      };
 
-            $(modalHtml)
-                .appendTo(document.body)
-                .modal({ show: true, backdrop: 'static', keyboard: false })
-                .on("click", "#divClose", function () {
-                    if (closeAction) closeAction();
-                    removeConfirmAction();
-                })
-                .on("click", "#yesButton", function () {
-                    if (yesAction) yesAction();
-                    removeConfirmAction();
-                })
-                .on("click", "#noButton", function () {
-                    if (noAction) noAction();
-                    removeConfirmAction();
-                });
-        },
-        showMessage: function (title, message) {
-            if (message)
-                alert(message);
-        },
-        showHtmlDialog: function (title, body, closeAction = null) {
-            var curTimeString = Date.now();
-            var dialogID = "modalDialog_" + curTimeString;
-            var closeID = "closeDiv_" + curTimeString;
-            var modalHtml = `<div class="modal fade modal-dialog-container" id="${dialogID}" role="dialog">
+      $(modalHtml)
+        .appendTo(document.body)
+        .modal({ show: true, backdrop: "static", keyboard: false })
+        .on("click", "#divClose", function () {
+          if (closeAction) closeAction();
+          removeConfirmAction();
+        })
+        .on("click", "#yesButton", function () {
+          if (yesAction) yesAction();
+          removeConfirmAction();
+        })
+        .on("click", "#noButton", function () {
+          if (noAction) noAction();
+          removeConfirmAction();
+        });
+    },
+    showMessage: function (title, message) {
+      if (message) alert(message);
+    },
+    showHtmlDialog: function (title, body, closeAction = null) {
+      var curTimeString = Date.now();
+      var dialogID = "modalDialog_" + curTimeString;
+      var closeID = "closeDiv_" + curTimeString;
+      var modalHtml = `<div class="modal fade modal-dialog-container" id="${dialogID}" role="dialog">
                                         <div class="modal-dialog err-pop" style="">
                                             <div class="modal-content" style="width: auto !important;">
                                                 <div class="modal-header">
@@ -65,81 +70,83 @@ $(function () {
                                         </div>
                                       </div>`;
 
-            var removeConfirmAction = () => {
-                var dialog = $(`#${dialogID}`);
-                if (dialog) {
-                    dialog
-                        .on("hidden.bs.modal", () => {
-                            $(dialog).remove();
-                        })
-                        .modal("hide");
-                }
-            };
+      var removeConfirmAction = () => {
+        var dialog = $(`#${dialogID}`);
+        if (dialog) {
+          dialog
+            .on("hidden.bs.modal", () => {
+              $(dialog).remove();
+            })
+            .modal("hide");
+        }
+      };
 
-            // var prevDialog = $(`#${dialogID}`);
-            // if (prevDialog) {
-            //     $(prevDialog).remove();
-            // }
+      // var prevDialog = $(`#${dialogID}`);
+      // if (prevDialog) {
+      //     $(prevDialog).remove();
+      // }
 
-            $(modalHtml)
-                .appendTo(document.body)
-                .modal({ show: true, backdrop: 'static', keyboard: false })
-                .on("click", `#${closeID}`, function () {
-                    removeConfirmAction();
-                    if (closeAction) closeAction();
-                });
+      $(modalHtml)
+        .appendTo(document.body)
+        .modal({ show: true, backdrop: "static", keyboard: false })
+        .on("click", `#${closeID}`, function () {
+          removeConfirmAction();
+          if (closeAction) closeAction();
+        });
 
-            return dialogID;
-        },
-        hideHtmlDialog: function (dialogID) {
-            var dialog = $(`#${dialogID}`);
-            if (dialog) {
-                dialog.modal("hide");
-            }
-            var modal = $(".modal-backdrop")[0];
-            if (modal) {
-                modal.parentNode.removeChild(modal);
-            }
-        },
-        getFormData: function ($form, model = null) {
-            var unindexed_array = $form.serializeArray();
-            var indexed_array = {};
-            if (model != null) {
-                indexed_array = model;
-            }
-            $.map(unindexed_array, function (n, i) {
-                indexed_array[n["name"]] = n["value"];
-            });
+      return dialogID;
+    },
+    hideHtmlDialog: function (dialogID) {
+      var dialog = $(`#${dialogID}`);
+      if (dialog) {
+        dialog.modal("hide");
+      }
+      var modal = $(".modal-backdrop")[0];
+      if (modal) {
+        modal.parentNode.removeChild(modal);
+      }
+    },
+    getFormData: function ($form, model = null) {
+      var unindexed_array = $form.serializeArray();
+      var indexed_array = {};
+      if (model != null) {
+        indexed_array = model;
+      }
+      $.map(unindexed_array, function (n, i) {
+        indexed_array[n["name"]] = n["value"];
+      });
 
-            return indexed_array;
+      return indexed_array;
+    },
+    makeHttpRequest: function (
+      url,
+      method = "GET",
+      data = null,
+      successAction = null,
+      failureAction = null
+    ) {
+      if (data == null) data = {};
+      if (method == "POST") {
+        data = JSON.stringify(data);
+      }
+      $.ajax({
+        url: url,
+        method: method,
+        contentType: "application/json; charset=utf-8",
+        data: data,
+        success: function (res) {
+          if (res.status) {
+            if (successAction) successAction(res.result);
+          } else {
+            if (failureAction) failureAction(res.message);
+          }
         },
-        makeHttpRequest: function (url,
-            method = "GET",
-            data = null,
-            successAction = null,
-            failureAction = null) {
-            if (data == null) data = {};
-            if (method == "POST") {
-                data = JSON.stringify(data);
-            }
-            $.ajax({
-                url: url,
-                method: method,
-                contentType: "application/json; charset=utf-8",
-                data: data,
-                success: function (res) {
-                    if (res.status) {
-                        if (successAction) successAction(res.result);
-                    } else {
-                        if (failureAction) failureAction(res.message);
-                    }
-                },
-                error: function (xhr) {
-                    if (xhr.status != 401) {
-                        if (failureAction) failureAction();
-                    }
-                },
-            });
+        error: function (xhr) {
+          if (xhr.status != 401) {
+            if (failureAction) failureAction();
+          }
         },
-    });
+      });
+    },
+  });
 });

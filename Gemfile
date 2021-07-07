@@ -1,17 +1,18 @@
+# frozen_string_literal: true
+
 source 'https://rubygems.org'
 
 git_source(:github) do |repo_name|
-  repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?("/")
+  repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?('/')
   "https://github.com/#{repo_name}.git"
 end
-
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 6.0', '>= 6.0.2.1'
 # Use sqlite3 as the database for Active Record
-#gem 'sqlite3'
-gem 'mysql2'
+# gem 'sqlite3'
 gem 'jwt'
+gem 'mysql2'
 # Use Puma as the app server
 gem 'puma', '~> 3.0'
 # Use SCSS for stylesheets
@@ -24,27 +25,31 @@ gem 'coffee-rails', '~> 4.2'
 # gem 'therubyracer', platforms: :ruby
 # Bootstrap to make designing quicker
 gem 'bootstrap-sass'
+# Cancancan for user environments restriction
+gem 'cancancan'
 # Use jquery as the JavaScript library
 gem 'jquery-rails'
 # Turbolinks makes navigating your web application faster. Read more: https://github.com/turbolinks/turbolinks
 gem 'turbolinks', '~> 5'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
-gem 'jbuilder', '~> 2.5'
-gem 'devise'
 gem 'acts_as_xlsx'
-gem 'rubyzip', '~> 1.2'
+gem 'devise'
+gem 'devise_invitable', '~> 2.0.0'
 gem 'iconv', '~> 1.0.3'
-gem 'roo'
+gem 'jbuilder', '~> 2.5'
 gem 'jquery-datatables-rails', '~> 3.4.0'
-gem 'recaptcha', require: "recaptcha/rails" 
-#gem 'axlsx', '~> 2.0'
-#gem 'axlsx_rails'
+gem 'json'
+gem 'recaptcha'
+gem 'roo'
+gem 'rubyzip', '~> 1.2'
+# gem 'axlsx', '~> 2.0'
+# gem 'axlsx_rails'
 gem 'caxlsx_rails'
 gem 'whenever', require: false
-#TabsOnRails is a simple Rails plugin for creating tabs and navigation menus. It provides helpers for generating navigation menus with a flexible interface.
-gem "tabs_on_rails"
-gem "jquery-ui-rails", '~> 5.0.5'
+# TabsOnRails is a simple Rails plugin for creating tabs and navigation menus. It provides helpers for generating navigation menus with a flexible interface.
+gem 'jquery-ui-rails', '~> 5.0.5'
 gem 'rails_sortable'
+gem 'tabs_on_rails'
 # Use Redis adapter to run Action Cable in production
 # gem 'redis', '~> 3.0'
 # Use ActiveModel has_secure_password
@@ -53,22 +58,28 @@ gem 'rails_sortable'
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 
-#modalwindow setup
+# modalwindow setup
 gem 'popper_js'
+
+# gem for generate charts
+
+gem 'chartkick'
+gem 'groupdate'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
-  gem 'byebug', platform: :mri
+  gem 'byebug', platform: %i[mri mingw x64_mingw]
 end
 
 group :development do
   # Access an IRB console on exception pages or by using <%= console %> anywhere in the code.
-  gem 'web-console', '>= 3.3.0'
   gem 'listen', '~> 3.0.5'
+  gem 'rails-erd'
+  gem 'web-console', '>= 3.3.0'
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
+gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
