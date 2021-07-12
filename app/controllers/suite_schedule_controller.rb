@@ -103,6 +103,11 @@ class SuiteScheduleController < ApplicationController
                                       })
   end
 
+  def get_scheduled_suite
+    suite_schedule = Scheduler.where(test_suite_id: params[:suite_id]).last
+    render json: { suite_schedule: suite_schedule }
+  end
+
   private
 
   def suite_schedule_params(suite_schedule)

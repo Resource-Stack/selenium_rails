@@ -398,6 +398,18 @@ function initializeDataTable(tableID, suiteID) {
             var suiteName = $(this).data("name");
             var browser_list = loadBrowsers();
 
+            $.ajax({
+              url: '/get_scheduled_suite',
+              method: 'get',
+              data: {suite_id: suiteID},
+              success: function(result){
+                if (result['suite_schedule'] == null || result['suite_schedule']['browser_id'] == null)
+                  $('#single_schedule_browser_id').val('4')
+                else
+                  $('#single_schedule_browser_id').val(result['suite_schedule']['browser_id'])
+              }
+            })
+
             var formHtml = `<form id="scheduleSubmitForm" style="min-height:170px;">
             <div class="form-group">
                 <label for="number_of_times" class="col-md-4 col-form-label text-md-right left-align left-label">Number of Times</label>

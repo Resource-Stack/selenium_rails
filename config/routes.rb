@@ -66,6 +66,8 @@ Rails.application.routes.draw do
 
   post 'update' => 'users#update'
 
+  get '/get_scheduled_suite' => 'suite_schedule#get_scheduled_suite'
+
   # Browser Extension Apis
   match '/api/login', to: 'browser_extension#login_user', via: [:post]
   match '/api/logout', to: 'browser_extension#logout_user', via: [:get]
