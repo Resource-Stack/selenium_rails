@@ -404,7 +404,7 @@ function initializeDataTable(tableID, suiteID) {
               data: {suite_id: suiteID},
               success: function(result){
                 if (result['suite_schedule'] == null || result['suite_schedule']['browser_id'] == null)
-                  $('#single_schedule_browser_id').val('1')
+                  $('#single_schedule_browser_id').val(result['default_broswer']['id'])
                 else
                   $('#single_schedule_browser_id').val(result['suite_schedule']['browser_id'])
               }
