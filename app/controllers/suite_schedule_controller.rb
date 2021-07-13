@@ -103,6 +103,12 @@ class SuiteScheduleController < ApplicationController
                                       })
   end
 
+  def get_scheduled_suite
+    suite_schedule = Scheduler.where(test_suite_id: params[:suite_id]).last
+    default_broswer = Browser.find_by_name('chrome')
+    render json: { suite_schedule: suite_schedule, default_broswer: default_broswer}
+  end
+
   private
 
   def suite_schedule_params(suite_schedule)
