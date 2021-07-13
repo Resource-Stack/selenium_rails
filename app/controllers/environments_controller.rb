@@ -169,7 +169,11 @@ class EnvironmentsController < ApplicationController
           next if sch_id.blank?
 
           sch_id.each do |id|
-            @schedule << Scheduler.find(id)
+            @schedule << Scheduler.find(id) 
+
+              #@schedule.each do |x|
+              # p x.status
+              #end 
           end
         end
       end

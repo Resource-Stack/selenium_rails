@@ -63,8 +63,11 @@ class TestCasesController < ApplicationController
   # PATCH/PUT /test_cases/1
   # PATCH/PUT /test_cases/1.json
   def update
-    dialog_mode = params[:test_case][:dialog_mode] == 'true'
+    test_case = TestCase.find(params[:id])   
+    test_suite_id =  test_case.test_suites[0].id
+    url_string = '/test_suites/' + test_suite_id.to_s + '/test_cases'
 
+    dialog_mode = params[:test_case][:dialog_mode] == 'true'
     case_updated = @test_case.update(test_case_params)
 
     if dialog_mode
@@ -75,13 +78,14 @@ class TestCasesController < ApplicationController
     end
     respond_to do |format|
       if case_updated
-        format.html { redirect_to @test_case, notice: 'Test case was successfully updated.' }
+        format.html { redirect_to url_string, notice: 'Test case was successfully updated.' }
         format.json { render :show, status: :ok, location: @test_case }
       else
         format.html { render :edit }
         format.json { render json: @test_case.errors, status: :unprocessable_entity }
       end
     end
+
   end
 
   def modal_show
@@ -122,11 +126,15 @@ class TestCasesController < ApplicationController
   # DELETE /test_cases/1
   # DELETE /test_cases/1.json
   def destroy
+    test_suite_id =  @test_case.test_suites[0].id
+    url_string = '/test_suites/' + test_suite_id.to_s + '/test_cases'
+    
     @test_case.destroy
     respond_to do |format|
-      format.html { redirect_to test_cases_url, notice: 'Test case was successfully destroyed.' }
+      format.html { redirect_to url_string, notice: 'Test case was successfully destroyed.' }
       format.json { head :no_content }
     end
+
   end
 
   private

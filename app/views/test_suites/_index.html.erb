@@ -271,7 +271,7 @@ function initializeDataTable(tableID, suiteID) {
             console.log(suiteID)`
             
             formHtml+= '<div style="display: flex; justify-content: space-between;">';
-            for (var i = browser_list.length - 1; i >= 0; i--) {
+            for (var i = 0; i < browser_list.length; i++) {    
                 current_value = browser_list[i].id
                 current_text = browser_list[i].name
                 formHtml+=`<div class="form-check" id="multiple_browser_selection ${current_value}"><input type="checkbox" id=${current_value} class="form-check-input multiple_browser" name="browser" value="${current_value}" />`
@@ -408,7 +408,7 @@ function initializeDataTable(tableID, suiteID) {
             <label class="col-md-4 col-form-label text-md-right left-align left-label">Browser</label>
             <select class="form-control" id="single_schedule_browser_id">`;
 
-            for (var i = browser_list.length - 1; i >= 0; i--) {
+            for (var i = 0; i < browser_list.length; i++) {    
                 current_value = browser_list[i].id
                 current_text = browser_list[i].name
                 formHtml+=`<option value=${current_value}>${current_text}</option>`;
@@ -434,12 +434,10 @@ function initializeDataTable(tableID, suiteID) {
                     alert("Total load test should be between 1 and 100");
                     return;
                 }
-                // bad code
                 var browser_select = document.getElementById('single_schedule_browser_id');
-                console.log("yea yea", browser_select)
+             
                 var browserID = browser_select.options[browser_select.selectedIndex].value;
 
-                //
                 createNewSchedule(suiteID, dataToSave, dialogID, true, browserID);
             });
         });
