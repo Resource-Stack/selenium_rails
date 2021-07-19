@@ -145,7 +145,15 @@ class BrowserExtensionController < ApplicationController
   def create_test_case
     @params = params[:data]
     suite_id = @params[:suite_id]
-    @test_case = TestCase.new(test_case_params(@params[:test_case].except(:case_id)))
+    cleanup_patient_custom_command_id = CustomCommand.find_by_name("cleanup patient").id
+    unless @params["test_case"]["custom_command_id"].to_i == cleanup_patient_custom_command_id
+      @test_case = TestCase.new(test_case_params(@params[:test_case].except(:case_id)))
+    else
+      @test_case = TestCase.new(test_case_params(@params[:test_case].except(:case_id, :input_value)))
+      input_value = @params["test_case"]["input_value"].split(',')
+      @test_case.input_value = {"patient_firstname" => input_value[0], "patient_lastname" => input_value[1], "patient_phone" => input_value[2]}
+      @test_case.read_element = @test_case.input_value
+    end
     record_saved = false
     if @test_case.save
       @total_suites = CaseSuite.where(test_suite_id: suite_id).count
